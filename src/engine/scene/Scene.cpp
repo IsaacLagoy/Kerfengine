@@ -1,7 +1,7 @@
-#include "scene/Scene.h"
-#include "node/Model.h"
-#include "render/camera/Camera.h"
-#include "resource/ShaderServer.h"
+#include "engine/scene/Scene.h"
+#include "engine/node/Model.h"
+#include "engine/render/camera/Camera.h"
+#include "engine/resource/ShaderServer.h"
 
 #include <glm/gtc/type_ptr.hpp>
 

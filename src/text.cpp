@@ -14,7 +14,7 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-#include "resource/ShaderServer.h"
+#include "engine/resource/ShaderServer.h"
 
 #include <algorithm>
 #include <cstddef>

@@ -1,6 +1,6 @@
-#include "node/Model.h"
-#include "resource/ObjServer.h"
-#include "resource/ShaderServer.h"
+#include "engine/node/Model.h"
+#include "engine/resource/ObjServer.h"
+#include "engine/resource/ShaderServer.h"
 
 #include <glm/gtc/type_ptr.hpp>
 

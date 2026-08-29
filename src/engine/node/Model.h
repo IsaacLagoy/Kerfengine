@@ -1,6 +1,6 @@
 #pragma once
 
-#include "node/Node.h"
+#include "engine/node/Node.h"
 
 // TODO add material
 

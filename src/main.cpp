@@ -1,9 +1,9 @@
-#include "scene/Scene.h"
-#include "resource/ObjServer.h"
-#include "resource/ShaderServer.h"
-#include "node/Model.h"
-#include "render/context/Context.h"
-#include "render/camera/Camera.h"
+#include "engine/scene/Scene.h"
+#include "engine/resource/ObjServer.h"
+#include "engine/resource/ShaderServer.h"
+#include "engine/node/Model.h"
+#include "engine/render/context/Context.h"
+#include "engine/render/camera/Camera.h"
 
 int main()
 {
@@ -55,6 +55,10 @@ int main()
         glfwGetFramebufferSize(context.getWindow(), &framebufferWidth, &framebufferHeight);
         glViewport(0, 0, framebufferWidth, framebufferHeight);
         camera.resize(framebufferWidth, framebufferHeight);
+
+        glm::vec3 poseRed = red->getPose();
+        poseRed.z += 0.01f;
+        red->setPose(poseRed);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.draw();

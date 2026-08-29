@@ -1,4 +1,4 @@
-#include "ObjServer.h"
+#include "engine/resource/ObjServer.h"
 
 #include "shared/Const.h"
 

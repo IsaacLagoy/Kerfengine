@@ -1,4 +1,4 @@
-#include "ShaderServer.h"
+#include "engine/resource/ShaderServer.h"
 
 #include "shared/Const.h"
 
