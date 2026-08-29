@@ -1,6 +1,6 @@
 #include "engine/render/buffer/FrameBuffer.h"
 
-#include "engine/render/texture/Texture.h"
+#include "engine/resource/Texture.h"
 #include "shared/Const.h"
 
 #include <stdexcept>

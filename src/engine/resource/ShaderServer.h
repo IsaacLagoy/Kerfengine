@@ -53,12 +53,12 @@ public:
      * @param fragmentShaderPath fragment shader file path, relative to the executable
      */
     Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
-
-    /**
-     * @brief Destroy the Shader
-     * 
-     */
     ~Shader();
+
+    Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
+    Shader(Shader&&) = delete;
+    Shader& operator=(Shader&&) = delete;
 
     /**
      * @brief Initializes the shader in OpenGL
@@ -117,23 +117,6 @@ public:
     void unbind();
 
     static void setMissingPolicy(MissingPolicy policy) { missingPolicy = policy; }
-
-private:
-    /**
-     * @brief Reads shader source from a file on disk
-     *
-     * @param filename path to the glsl source file
-     * @return std::string
-     */
-    static inline std::string readTextFile(const std::string& filename);
-
-    /**
-     * @brief Reads shader source from a file relative to the executable
-     *
-     * @param shaderPath path to the glsl source file, relative to the executable
-     * @return std::string
-     */
-    static std::string readShaderFile(const std::string& shaderPath);
 };
 
 // ------------------------------------------------------------

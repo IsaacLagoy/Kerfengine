@@ -1,22 +1,10 @@
 #include "engine/resource/ShaderServer.h"
 
 #include "shared/Const.h"
+#include "shared/Files.h"
 
 #include <stdexcept>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <filesystem>
-#include <vector>
-
-#if defined(__APPLE__)
-#include <mach-o/dyld.h>
-#elif defined(_WIN32)
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#endif
 
 
 // ------------------------------------------------------------
@@ -48,8 +36,8 @@ void Shader::init(const std::string& vertexShaderPath, const std::string& fragme
     this->fShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
     // read shader source
-    std::string vShaderSrc = readShaderFile(vertexShaderPath);
-    std::string fShaderSrc = readShaderFile(fragmentShaderPath);
+    std::string vShaderSrc = Files::readTextFile(Files::resolvePath(vertexShaderPath));
+    std::string fShaderSrc = Files::readTextFile(Files::resolvePath(fragmentShaderPath));
     const char* vShaderText = vShaderSrc.c_str();
     const char* fShaderText = fShaderSrc.c_str();
     glShaderSource(vShaderID, 1, &vShaderText, NULL);
@@ -177,57 +165,6 @@ void Shader::bind()
 void Shader::unbind()
 {
     glUseProgram(0);
-}
-
-std::string Shader::readTextFile(const std::string& filename)
-{
-    // read in file
-    std::ifstream file(filename);
-
-    if (!file)
-    {
-        throw std::runtime_error("Failed to open file: " + filename);
-    }
-
-    // ouput as string
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
-static std::filesystem::path executableDirectory()
-{
-#if defined(__APPLE__)
-    uint32_t size = 0;
-    _NSGetExecutablePath(nullptr, &size);
-    std::vector<char> buf(size);
-    if (_NSGetExecutablePath(buf.data(), &size) != 0)
-    {
-        throw std::runtime_error("Failed to get executable path");
-    }
-    std::filesystem::path exe(buf.data());
-#elif defined(_WIN32)
-    wchar_t buf[MAX_PATH];
-    DWORD n = GetModuleFileNameW(nullptr, buf, MAX_PATH);
-    if (n == 0 || n == MAX_PATH)
-    {
-        throw std::runtime_error("Failed to get executable path");
-    }
-    std::filesystem::path exe(buf);
-#else
-    std::filesystem::path exe = "/proc/self/exe";
-#endif
-    return std::filesystem::weakly_canonical(exe).parent_path();
-}
-
-std::string Shader::readShaderFile(const std::string& shaderPath)
-{
-    std::filesystem::path path(shaderPath);
-    if (path.is_relative())
-    {
-        path = executableDirectory() / path;
-    }
-    return readTextFile(path.string());
 }
 
 // ------------------------------------------------------------

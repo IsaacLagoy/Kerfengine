@@ -53,12 +53,12 @@ public:
      * @param objPath 
      */
     Mesh(const std::string& meshName, const std::string& objPath);
-
-    /**
-     * @brief Destroy the Mesh object
-     * 
-     */
     ~Mesh();
+
+    Mesh(const Mesh&) = delete;
+    Mesh& operator=(const Mesh&) = delete;
+    Mesh(Mesh&&) = delete;
+    Mesh& operator=(Mesh&&) = delete;
 
     /**
      * @brief Initializes the map and uploads to OpenGL

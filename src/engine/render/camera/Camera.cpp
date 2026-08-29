@@ -14,6 +14,9 @@ Camera::~Camera() {}
 
 void Camera::resize(int viewportWidth, int viewportHeight)
 {
+    // only resize if the viewport has changed
+    if (this->viewportWidth == viewportWidth && this->viewportHeight == viewportHeight) return;
+
     this->viewportWidth = static_cast<float>(viewportWidth);
     this->viewportHeight = static_cast<float>(viewportHeight);
     setAspect(this->viewportWidth / this->viewportHeight);

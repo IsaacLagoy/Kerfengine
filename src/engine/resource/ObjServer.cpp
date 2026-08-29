@@ -1,6 +1,7 @@
 #include "engine/resource/ObjServer.h"
 
 #include "shared/Const.h"
+#include "shared/Files.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -37,10 +38,11 @@ void Mesh::init(const std::string& objPath)
     std::string warnStr, errStr;
 
     // load file
-    int rc = tinyobj::LoadObj(&attrib, &shapes, &materials, &warnStr, &errStr, objPath.c_str());
+    const std::string resolved = Files::resolvePath(objPath);
+    int rc = tinyobj::LoadObj(&attrib, &shapes, &materials, &warnStr, &errStr, resolved.c_str());
     if (!rc) 
     {
-        throw std::runtime_error(ANSI_RED + "[ObjServer] " + objPath + " failed to load!" + errStr + ANSI_RESET);
+        throw std::runtime_error(ANSI_RED + "[ObjServer] " + resolved + " failed to load!" + errStr + ANSI_RESET);
     }
 
     // load mesh buffers
