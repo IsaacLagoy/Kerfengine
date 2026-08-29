@@ -1,0 +1,291 @@
+#include "ShaderServer.h"
+
+#include "shared/Const.h"
+
+#include <stdexcept>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
+#include <vector>
+
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#elif defined(_WIN32)
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
+
+// ------------------------------------------------------------
+// Initialize static variables
+// ------------------------------------------------------------
+
+Shader::MissingPolicy Shader::missingPolicy = Shader::MissingPolicy::Error;
+ShaderServer::DuplicatePolicy ShaderServer::duplicatePolicy = ShaderServer::DuplicatePolicy::Print;
+std::unordered_map<std::string, std::unique_ptr<Shader>> ShaderServer::shaderMap;
+
+// ------------------------------------------------------------
+// Shader class
+// ------------------------------------------------------------
+
+Shader::Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath) : name(name)
+{
+    init(vertexShaderPath, fragmentShaderPath);
+}
+
+Shader::~Shader()
+{
+    destroy();
+}
+
+void Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+{
+    // create shader handles
+    this->vShaderID = glCreateShader(GL_VERTEX_SHADER);
+    this->fShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // read shader source
+    std::string vShaderSrc = readShaderFile(vertexShaderPath);
+    std::string fShaderSrc = readShaderFile(fragmentShaderPath);
+    const char* vShaderText = vShaderSrc.c_str();
+    const char* fShaderText = fShaderSrc.c_str();
+    glShaderSource(vShaderID, 1, &vShaderText, NULL);
+    glShaderSource(fShaderID, 1, &fShaderText, NULL);
+
+    // compile vertex shader
+    int rc;
+    glCompileShader(vShaderID);
+    glGetShaderiv(vShaderID, GL_COMPILE_STATUS, &rc);
+
+    // failed to cmopile vertex shader
+    if (rc == GL_FALSE) 
+    {
+        char log[512];
+        glGetShaderInfoLog(vShaderID, sizeof(log), nullptr, log);
+        throw std::runtime_error(ANSI_RED + "[Shader] vertex shader compilation failed (" + vertexShaderPath + "):\n" + ANSI_RESET + log);
+    }
+
+    // compile fragment shader
+    glCompileShader(fShaderID);
+    glGetShaderiv(fShaderID, GL_COMPILE_STATUS, &rc);
+
+    // failed to compile fragment shader
+    if (rc == GL_FALSE) 
+    {
+        char log[512];
+        glGetShaderInfoLog(fShaderID, sizeof(log), nullptr, log);
+        throw std::runtime_error(ANSI_RED + "[Shader] fragment shader compilation failed (" + fragmentShaderPath + "):\n" + ANSI_RESET + log);
+    }
+
+    // link shader
+    this->programID = glCreateProgram();
+    glAttachShader(programID, vShaderID);
+    glAttachShader(programID, fShaderID);
+    glLinkProgram(programID);
+    glGetProgramiv(programID, GL_LINK_STATUS, &rc);
+
+    // failed to link shaders
+    if (rc == GL_FALSE) 
+    {
+        char log[512];
+        glGetProgramInfoLog(programID, sizeof(log), nullptr, log);
+        throw std::runtime_error(ANSI_RED + "[Shader] linking failed (" + vertexShaderPath + " + " + fragmentShaderPath + "):\n" + ANSI_RESET + log);
+    }
+}
+
+void Shader::destroy()
+{
+    glDeleteShader(vShaderID);
+    glDeleteShader(fShaderID);
+    glDeleteProgram(programID);
+}
+
+GLuint Shader::getProgramID()
+{
+    return programID;
+}
+
+GLuint Shader::getUniformLocation(const std::string& name)
+{
+    GLint loc = glGetUniformLocation(programID, name.c_str());
+
+    // location exists
+    if (loc != -1)
+    {
+        return loc;
+    }
+        
+    // location does not exist
+    switch (missingPolicy)
+    {
+        case MissingPolicy::Error:
+            throw std::runtime_error(ANSI_RED + "[Shader] " + this->name + " missing uniform " + name + ANSI_RESET);
+
+        case MissingPolicy::Print:
+            std::cerr << ANSI_YELLOW << "[Shader] " << this->name << " missing uniform " << name << ANSI_RESET << std::endl;
+            return -1;
+
+        case MissingPolicy::Ignore:
+            return -1;
+
+        default:
+            throw std::runtime_error(ANSI_RED + "[Shader] invalid missing policy!" + ANSI_RESET);
+    }
+}
+
+GLuint Shader::getAttributeLocation(const std::string& name)
+{
+    GLint loc = glGetAttribLocation(programID, name.c_str());
+
+    // location exists
+    if (loc != -1)
+    {
+        return loc;
+    }
+        
+    // location does not exist
+    switch (missingPolicy)
+    {
+        case MissingPolicy::Error:
+            throw std::runtime_error(ANSI_RED + "[Shader] " + this->name + " missing attribute " + name + ANSI_RESET);
+
+        case MissingPolicy::Print:
+            std::cerr << ANSI_YELLOW << "[Shader] " << this->name << " missing attribute " << name << ANSI_RESET << std::endl;
+            return -1;
+
+        case MissingPolicy::Ignore:
+            return -1;
+
+        default:
+            throw std::runtime_error(ANSI_RED + "[Shader] invalid missing policy!" + ANSI_RESET);
+    }
+}
+
+const std::string& Shader::getName() const
+{
+    return name;
+}
+
+void Shader::bind()
+{
+    glUseProgram(programID);
+}
+
+void Shader::unbind()
+{
+    glUseProgram(0);
+}
+
+std::string Shader::readTextFile(const std::string& filename)
+{
+    // read in file
+    std::ifstream file(filename);
+
+    if (!file)
+    {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+
+    // ouput as string
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+static std::filesystem::path executableDirectory()
+{
+#if defined(__APPLE__)
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    std::vector<char> buf(size);
+    if (_NSGetExecutablePath(buf.data(), &size) != 0)
+    {
+        throw std::runtime_error("Failed to get executable path");
+    }
+    std::filesystem::path exe(buf.data());
+#elif defined(_WIN32)
+    wchar_t buf[MAX_PATH];
+    DWORD n = GetModuleFileNameW(nullptr, buf, MAX_PATH);
+    if (n == 0 || n == MAX_PATH)
+    {
+        throw std::runtime_error("Failed to get executable path");
+    }
+    std::filesystem::path exe(buf);
+#else
+    std::filesystem::path exe = "/proc/self/exe";
+#endif
+    return std::filesystem::weakly_canonical(exe).parent_path();
+}
+
+std::string Shader::readShaderFile(const std::string& shaderPath)
+{
+    std::filesystem::path path(shaderPath);
+    if (path.is_relative())
+    {
+        path = executableDirectory() / path;
+    }
+    return readTextFile(path.string());
+}
+
+// ------------------------------------------------------------
+// ShaderServer class
+// ------------------------------------------------------------
+
+void ShaderServer::loadShader(const std::string& shaderName, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+{
+    // if shader doesn't exist, simply build it
+    if (shaderMap.find(shaderName) == shaderMap.end()) 
+    {
+        shaderMap[shaderName] = std::make_unique<Shader>(shaderName, vertexShaderPath, fragmentShaderPath);
+        return;
+    }
+
+    // handle the case when the shader does exist
+    switch (duplicatePolicy)
+    {
+        case ShaderServer::DuplicatePolicy::Error:
+            throw std::runtime_error(ANSI_RED + "[ShaderServer] " + shaderName + " shader already exists!" + ANSI_RESET);
+
+        case ShaderServer::DuplicatePolicy::Print:
+            std::cerr << ANSI_YELLOW << "[ShaderServer] " + shaderName + " shader already exists!" << ANSI_RESET << std::endl;
+            return;
+
+        case ShaderServer::DuplicatePolicy::Ignore:
+            return;
+
+        // rebuild the shader with the new vertex and fragment
+        case ShaderServer::DuplicatePolicy::Replace:
+        {
+            auto replacement = std::make_unique<Shader>(shaderName, vertexShaderPath, fragmentShaderPath);
+            shaderMap[shaderName] = std::move(replacement);
+            return;
+        }
+
+        // should never reach
+        default: 
+            throw std::runtime_error(ANSI_RED + "[ShaderServer] invalid duplicate policy!" + ANSI_RESET);
+    }
+}
+
+Shader* ShaderServer::getShader(const std::string& shaderName) 
+{
+    auto itr = shaderMap.find(shaderName);
+    if (itr == shaderMap.end()) 
+    {
+        throw std::runtime_error(ANSI_RED + "[ShaderServer] " + shaderName + " shader not found!" + ANSI_RESET);
+    }
+    return itr->second.get();
+}
+
+void ShaderServer::removeShader(const std::string& shaderName)
+{
+    auto itr = shaderMap.find(shaderName);
+    if (itr == shaderMap.end()) 
+    {
+        throw std::runtime_error(ANSI_RED + "[ShaderServer] " + shaderName + " shader not found!" + ANSI_RESET);
+    }
+    shaderMap.erase(itr);
+}
