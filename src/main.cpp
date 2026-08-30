@@ -2,6 +2,8 @@
 #include "engine/resource/ObjServer.h"
 #include "engine/resource/ShaderServer.h"
 #include "engine/resource/TextureServer.h"
+#include "engine/node/RigidBody.h"
+#include "engine/physics/collision/ColliderPolygon2DMesh.h"
 #include "engine/render/material/Material.h"
 #include "engine/node/Model.h"
 #include "engine/render/camera/Camera.h"
@@ -9,20 +11,26 @@
 
 int main()
 {
+    // create scene
     const int width = 800;
     const int height = 600;
-    Engine engine(800, 600);
+    Engine engine(width, height);
 
     Camera camera(width, height, 1.0f);
     Scene scene;
     scene.setCamera(&camera);
     engine.setScene(&scene);
 
+    // load meshes
     ObjServer::loadMesh("quad", "resources/mesh/quad.obj");
     Mesh* quad = ObjServer::getMesh("quad");
 
+    ColliderPolygon2DMeshServer::loadMesh("quad", quad->getVertices());
+
+    // load shaders
     ShaderServer::loadShader("default2d", "shaders/default2d.vert", "shaders/default2d.frag");
 
+    // load materials
     TextureServer::loadTexture("white", "resources/image/white.png");
     TextureServer::loadTexture("fan", "resources/image/fan.png");
     Texture* white = TextureServer::getTexture("white");
@@ -31,6 +39,7 @@ int main()
     Material solid(white);
     Material fanMaterial(fan, white);
 
+    // create scene
     Model* backdrop = new Model(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(0.7f, 0.45f), quad, &solid);
     backdrop->setColor(glm::vec4(0.22f, 0.24f, 0.32f, 1.0f));
     backdrop->setLayer(-1.0f);
@@ -46,7 +55,15 @@ int main()
     green->setLayer(1.0f);
     scene.addNode(green);
 
-    Model* yellow = new Model(glm::vec3(0.38f, -0.12f, -0.2f), glm::vec2(0.18f, 0.28f), quad, &solid);
+    RigidBody* yellow = new RigidBody(
+        glm::vec3(0.38f, -0.12f, -0.2f),
+        glm::vec2(0.18f, 0.28f),
+        quad,
+        &solid,
+        Collider2D::polygon(ColliderPolygon2DMeshServer::getMesh("quad")),
+        1.0f,
+        glm::vec3(-1.0f, 0.0f, 0.0f)
+    );
     yellow->setColor(glm::vec4(0.92f, 0.78f, 0.28f, 1.0f));
     yellow->setLayer(0.5f);
     scene.addNode(yellow);
@@ -56,6 +73,7 @@ int main()
     fanModel->setLayer(1.5f);
     scene.addNode(fanModel);
 
+    // main loop
     while (!engine.shouldClose())
     {
         glm::vec3 poseFan = fanModel->getPose();

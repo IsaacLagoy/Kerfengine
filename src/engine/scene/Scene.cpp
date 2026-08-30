@@ -1,5 +1,6 @@
 #include "engine/scene/Scene.h"
 #include "engine/node/Model.h"
+#include "engine/node/RigidBody.h"
 #include "engine/render/camera/Camera.h"
 #include "engine/resource/ShaderServer.h"
 
@@ -19,6 +20,12 @@ Scene::Scene()
     modelTail = new Model();
     modelHead->nextModel = modelTail;
     modelTail->prevModel = modelHead;
+
+    // create rigid body doubly-linked list
+    rigidBodyHead = new RigidBody();
+    rigidBodyTail = new RigidBody();
+    rigidBodyHead->nextRigidBody = rigidBodyTail;
+    rigidBodyTail->prevRigidBody = rigidBodyHead;
 }
 
 Scene::~Scene()
@@ -31,14 +38,20 @@ Scene::~Scene()
     delete tail;
     delete modelHead;
     delete modelTail;
+    delete rigidBodyHead;
+    delete rigidBodyTail;
 }
 
 void Scene::addNode(Node* node)
 {
     node->insertNode(tail);
 
-    if (node->type == NodeType::MODEL) {
+    if (node->type == NodeType::MODEL || node->type == NodeType::RIGID_BODY) {
         static_cast<Model*>(node)->insertModel(modelTail);
+    }
+
+    if (node->type == NodeType::RIGID_BODY) {
+        static_cast<RigidBody*>(node)->insertRigidBody(rigidBodyTail);
     }
 }
 
@@ -55,6 +68,16 @@ void Scene::setCamera(Camera* camera)
 Camera* Scene::getCamera() const
 {
     return camera;
+}
+
+RigidBody* Scene::getRigidBodyHead() const
+{
+    return rigidBodyHead;
+}
+
+RigidBody* Scene::getRigidBodyTail() const
+{
+    return rigidBodyTail;
 }
 
 // ------------------------------------------------
@@ -77,5 +100,16 @@ void Scene::draw() const
     // draw all models
     for (Model* model = modelHead->nextModel; model != modelTail; model = model->nextModel) {
         model->draw();
+    }
+}
+
+// ------------------------------------------------
+// updating
+// ------------------------------------------------
+
+void Scene::update(float dt)
+{
+    for (RigidBody* rigidBody = rigidBodyHead->nextRigidBody; rigidBody != rigidBodyTail; rigidBody = rigidBody->nextRigidBody) {
+        rigidBody->update(dt);
     }
 }

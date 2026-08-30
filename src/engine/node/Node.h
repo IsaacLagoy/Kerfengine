@@ -12,6 +12,7 @@ enum class NodeType {
     NODE,
     MODEL,
     LIGHT,
+    RIGID_BODY,
 };
 
 class Node {

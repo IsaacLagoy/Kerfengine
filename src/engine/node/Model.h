@@ -10,7 +10,7 @@ class Material;
 class Model : public Node {
 friend class Scene;
 
-private:
+protected:
     Mesh* mesh = nullptr;
     Material* material = nullptr;
 
@@ -21,10 +21,6 @@ private:
 
     // color multiplier applied to the material color
     glm::vec4 color = glm::vec4(1.0f);
-
-private:
-    // private constructor for scene sentinel nodes
-    Model();
 
 public:
     Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material);
@@ -44,6 +40,13 @@ public:
     void draw() const;
 
 protected:
+    // private constructor for scene sentinel nodes
+    Model();
+
+protected:
+    explicit Model(NodeType type);
+    Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, NodeType type);
+
     void insertModel(Model* pos);
     void unlinkModel();
 };

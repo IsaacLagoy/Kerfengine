@@ -6,9 +6,19 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-Model::Model() : Node(NodeType::MODEL) {}
+Model::Model() : Model(NodeType::MODEL) {}
 
-Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material) : Node(pose, scale, NodeType::MODEL), mesh(mesh), material(material) {}
+Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material) :
+    Model(pose, scale, mesh, material, NodeType::MODEL) 
+{}
+
+Model::Model(NodeType type) : Node(type) {}
+
+Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, NodeType type) :
+    Node(pose, scale, type),
+    mesh(mesh),
+    material(material) 
+{}
 
 Model::~Model() 
 {

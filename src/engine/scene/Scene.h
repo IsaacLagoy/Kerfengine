@@ -3,6 +3,7 @@
 class Node;
 class Model;
 class Camera;
+class RigidBody;
 
 class Scene {
 private:
@@ -14,6 +15,9 @@ private:
 
     Model* modelHead;
     Model* modelTail;
+
+    RigidBody* rigidBodyHead;
+    RigidBody* rigidBodyTail;
 
     Camera* camera = nullptr;
 
@@ -32,9 +36,16 @@ public:
     Node* getNodeTail() const;
     Model* getModelHead() const;
     Model* getModelTail() const;
+    RigidBody* getRigidBodyHead() const;
+    RigidBody* getRigidBodyTail() const;
 
     // ------------------------------------------------
     // rendering
     // ------------------------------------------------
     void draw() const;
+
+    // ------------------------------------------------
+    // updating
+    // ------------------------------------------------
+    void update(float dt);
 };

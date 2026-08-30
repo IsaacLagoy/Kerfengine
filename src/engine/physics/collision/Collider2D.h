@@ -6,62 +6,38 @@
 // forward declarations
 class ColliderPolygon2DMesh;
 
+enum class ColliderType {
+    INVALID,
+    BOX,
+    CIRCLE,
+    POLYGON
+};
+
 // ------------------------------------------------
-// Collider2D class - Interface
+// Collider2D - local-space shape data
 // ------------------------------------------------
 
 class Collider2D {
-protected:
-    float area;
-
 public:
-    virtual float getInertia(float density) const = 0;
+    struct Box {
+        float width;
+        float height;
+    };
 
-    float getMass(float density) const { return density * area; };
-    float getArea() const { return area; };
-};
+    ColliderType type = ColliderType::INVALID;
+    float area = 0.0f;
 
-// ------------------------------------------------
-// Collider2D class - Box
-// ------------------------------------------------
+    union {
+        Box boxShape;
+        float radius;
+        ColliderPolygon2DMesh* mesh;
+    };
 
-class ColliderBox2D : public Collider2D {
-private:
-    float width;
-    float height;
+    static Collider2D box(float width, float height);
+    static Collider2D circle(float radius);
+    static Collider2D polygon(ColliderPolygon2DMesh* mesh);
 
-public:
-    ColliderBox2D(float width, float height);
-    float getInertia(float density) const override;
-};
-
-// ------------------------------------------------
-// Collider2D class - Circle
-// ------------------------------------------------
-
-class ColliderCircle2D : public Collider2D {
-private:
-    float radius;
-
-public:
-    ColliderCircle2D(float radius);
-    float getInertia(float density) const override;
-};
-
-// ------------------------------------------------
-// Collider2D class - Polygon
-// ------------------------------------------------
-
-class ColliderPolygon2D : public Collider2D {
-private:
-    glm::vec2 scale;
-    ColliderPolygon2DMesh* mesh;
-
-public:
-    ColliderPolygon2D(ColliderPolygon2DMesh* mesh);
-    float getInertia(float density) const override;
-
-    void setScale(const glm::vec2& scale);
-    glm::vec2 getScale() const { return scale; }
-    ColliderPolygon2DMesh* getMesh() const { return mesh; }
+    float getArea(const glm::vec2& scale = glm::vec2(1.0f)) const;
+    float getMass(float density, const glm::vec2& scale = glm::vec2(1.0f)) const;
+    float getInertia(float density, const glm::vec2& scale = glm::vec2(1.0f)) const;
 };

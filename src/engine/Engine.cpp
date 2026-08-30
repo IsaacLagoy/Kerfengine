@@ -59,6 +59,8 @@ void Engine::render()
 
 void Engine::update()
 {
+    if (scene) scene->update(0.016f); // 60 fps
+
     glfwPollEvents();
 }
 
