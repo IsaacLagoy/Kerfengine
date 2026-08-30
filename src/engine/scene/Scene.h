@@ -27,17 +27,14 @@ public:
     void setCamera(Camera* camera);
     Camera* getCamera() const;
 
+    // TODO replace with iterators
+    Node* getNodeHead() const;
+    Node* getNodeTail() const;
+    Model* getModelHead() const;
+    Model* getModelTail() const;
+
     // ------------------------------------------------
     // rendering
     // ------------------------------------------------
     void draw() const;
-
-private:
-    // ------------------------------------------------
-    // node data structure helpers
-    // ------------------------------------------------
-    static void insertNode(Node* node, Node* pos);
-    static void unlinkNode(Node* node);
-    static void insertModel(Model* model, Model* pos);
-    static void unlinkModel(Model* model);
 };

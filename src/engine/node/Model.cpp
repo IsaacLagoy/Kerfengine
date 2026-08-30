@@ -1,5 +1,5 @@
 #include "engine/node/Model.h"
-#include "engine/resource/ObjServer.h"
+#include "engine/resource/Mesh.h"
 #include "engine/resource/ShaderServer.h"
 #include "engine/render/material/Material.h"
 
@@ -10,7 +10,11 @@ Model::Model() : Node(NodeType::MODEL) {}
 
 Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material) : Node(pose, scale, NodeType::MODEL), mesh(mesh), material(material) {}
 
-Model::~Model() {}
+Model::~Model() 
+{
+    unlinkModel();
+    // will call Node::~Node()
+}
 
 float Model::getLayer() const
 {
@@ -74,4 +78,26 @@ void Model::draw() const
 
     // draw :)
     mesh->draw();
+}
+
+void Model::insertModel(Model* pos)
+{
+    this->nextModel = pos;
+    this->prevModel = pos->prevModel;
+    pos->prevModel->nextModel = this;
+    pos->prevModel = this;
+}
+
+void Model::unlinkModel()
+{
+    if (prevModel) {
+        prevModel->nextModel = nextModel;
+    }
+
+    if (nextModel) {
+        nextModel->prevModel = prevModel;
+    }
+    
+    nextModel = nullptr;
+    prevModel = nullptr;
 }

@@ -61,6 +61,9 @@ protected:
     Node(const glm::vec3& pose, NodeType type);
     Node(const glm::vec3& pose, const glm::vec2& scale, NodeType type);
 
+    void insertNode(Node* pos);
+    void unlinkNode();
+
 private:
     static void computeModelMatrix(glm::mat3& modelMatrix, const glm::vec3& pose, const glm::vec2& scale);
 };

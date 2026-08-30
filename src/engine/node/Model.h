@@ -42,4 +42,8 @@ public:
     void setColor(const glm::vec4& color);
 
     void draw() const;
+
+protected:
+    void insertModel(Model* pos);
+    void unlinkModel();
 };

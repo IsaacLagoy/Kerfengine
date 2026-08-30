@@ -35,20 +35,15 @@ Scene::~Scene()
 
 void Scene::addNode(Node* node)
 {
-    insertNode(node, tail);
+    node->insertNode(tail);
 
     if (node->type == NodeType::MODEL) {
-        insertModel(static_cast<Model*>(node), modelTail);
+        static_cast<Model*>(node)->insertModel(modelTail);
     }
 }
 
 void Scene::removeNode(Node* node)
 {
-    if (node->type == NodeType::MODEL) {
-        unlinkModel(static_cast<Model*>(node));
-    }
-
-    unlinkNode(node);
     delete node;
 }
 
@@ -83,40 +78,4 @@ void Scene::draw() const
     for (Model* model = modelHead->nextModel; model != modelTail; model = model->nextModel) {
         model->draw();
     }
-}
-
-// ------------------------------------------------
-// node data structure helpers
-// ------------------------------------------------
-
-void Scene::insertNode(Node* node, Node* pos)
-{
-    node->nextNode = pos;
-    node->prevNode = pos->prevNode;
-    pos->prevNode->nextNode = node;
-    pos->prevNode = node;
-}
-
-void Scene::unlinkNode(Node* node)
-{
-    node->prevNode->nextNode = node->nextNode;
-    node->nextNode->prevNode = node->prevNode;
-    node->nextNode = nullptr;
-    node->prevNode = nullptr;
-}
-
-void Scene::insertModel(Model* model, Model* pos)
-{
-    model->nextModel = pos;
-    model->prevModel = pos->prevModel;
-    pos->prevModel->nextModel = model;
-    pos->prevModel = model;
-}
-
-void Scene::unlinkModel(Model* model)
-{
-    model->prevModel->nextModel = model->nextModel;
-    model->nextModel->prevModel = model->prevModel;
-    model->nextModel = nullptr;
-    model->prevModel = nullptr;
 }

@@ -25,7 +25,10 @@ Node::Node(const glm::vec3& pose, const glm::vec2& scale, NodeType type) :
     computeModelMatrix(modelMatrix, pose, scale);
 }
 
-Node::~Node() {}
+Node::~Node() 
+{
+    unlinkNode();
+}
 
 void Node::setPose(const glm::vec3& pose)
 {
@@ -53,4 +56,26 @@ void Node::computeModelMatrix(glm::mat3& modelMatrix, const glm::vec3& pose, con
        -scale.y * s,  scale.y * c,  0.0f,
         pose.x,       pose.y,       1.0f
     );
+}
+
+void Node::insertNode(Node* pos)
+{
+    this->nextNode = pos;
+    this->prevNode = pos->prevNode;
+    pos->prevNode->nextNode = this;
+    pos->prevNode = this;
+}
+
+void Node::unlinkNode()
+{
+    if (prevNode) {
+        prevNode->nextNode = nextNode;
+    }
+
+    if (nextNode) {
+        nextNode->prevNode = prevNode;
+    }
+    
+    nextNode = nullptr;
+    prevNode = nullptr;
 }
