@@ -1,0 +1,19 @@
+# Concave 2D polygon (notched quad)
+# Vertex positions cover normalized device coordinates (-1 to 1)
+v -1.000000 -1.000000 0.000000
+v  1.000000 -1.000000 0.000000
+v  0.200000  0.000000 0.000000
+v  1.000000  1.000000 0.000000
+v -1.000000  1.000000 0.000000
+
+# Texture coordinates (UVs) mapped to 0.0 - 1.0 range
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 0.600000 0.500000
+vt 1.000000 1.000000
+vt 0.000000 1.000000
+
+# Faces mapping vertices (v) and UVs (vt)
+f 1/1 2/2 3/3
+f 1/1 3/3 5/5
+f 3/3 4/4 5/5

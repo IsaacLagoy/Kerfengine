@@ -25,6 +25,8 @@ public:
 
     void update(float dt);
 
+    const Collider2D& getCollider() const { return collider; }
+
 protected:
     void insertRigidBody(RigidBody* pos);
     void unlinkRigidBody();

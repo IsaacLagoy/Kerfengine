@@ -72,3 +72,9 @@ float Collider2D::getInertia(float density, const glm::vec2& scale) const
             return 0.0f;
     }
 }
+
+const ColliderPolygon2DMesh* Collider2D::getMesh() const
+{
+    assert(type == ColliderType::POLYGON);
+    return mesh;
+}

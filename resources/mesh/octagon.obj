@@ -1,0 +1,29 @@
+# Convex 2D regular octagon
+# Vertices are intentionally unordered to test CCW winding
+# Vertex positions cover normalized device coordinates (-1 to 1)
+v -0.414214  1.000000 0.000000
+v  0.414214 -1.000000 0.000000
+v  1.000000  0.414214 0.000000
+v -1.000000 -0.414214 0.000000
+v  1.000000 -0.414214 0.000000
+v  0.414214  1.000000 0.000000
+v -0.414214 -1.000000 0.000000
+v -1.000000  0.414214 0.000000
+
+# Texture coordinates (UVs) mapped to 0.0 - 1.0 range
+vt 0.292893 1.000000
+vt 0.707107 0.000000
+vt 1.000000 0.707107
+vt 0.000000 0.292893
+vt 1.000000 0.292893
+vt 0.707107 1.000000
+vt 0.292893 0.000000
+vt 0.000000 0.707107
+
+# Faces mapping vertices (v) and UVs (vt)
+f 3/3 6/6 1/1
+f 3/3 1/1 8/8
+f 3/3 8/8 4/4
+f 3/3 4/4 7/7
+f 3/3 7/7 2/2
+f 3/3 2/2 5/5

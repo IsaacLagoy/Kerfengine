@@ -40,4 +40,5 @@ public:
     float getArea(const glm::vec2& scale = glm::vec2(1.0f)) const;
     float getMass(float density, const glm::vec2& scale = glm::vec2(1.0f)) const;
     float getInertia(float density, const glm::vec2& scale = glm::vec2(1.0f)) const;
+    const ColliderPolygon2DMesh* getMesh() const;
 };

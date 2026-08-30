@@ -22,7 +22,7 @@ int main()
     engine.setScene(&scene);
 
     // load meshes
-    ObjServer::loadMesh("quad", "resources/mesh/quad.obj");
+    ObjServer::loadMesh("quad", "resources/mesh/octagon.obj");
     Mesh* quad = ObjServer::getMesh("quad");
 
     ColliderPolygon2DMeshServer::loadMesh("quad", quad->getVertices());
@@ -73,6 +73,9 @@ int main()
     fanModel->setLayer(1.5f);
     scene.addNode(fanModel);
 
+    // collider mesh tracking points
+    std::vector<Model*> trackingPoints;
+
     // main loop
     while (!engine.shouldClose())
     {
@@ -81,6 +84,28 @@ int main()
         fanModel->setPose(poseFan);
 
         engine.update();
+
+        // remove old tracking points
+        for (const auto& point : trackingPoints) {
+            scene.removeNode(point);
+        }
+        trackingPoints.clear();
+
+        // update collider mesh tracking points
+        int numPoints = yellow->getCollider().getMesh()->getVertices().size();
+        int i = 0;
+        for (const auto& point : yellow->getCollider().getMesh()->getVertices()) {
+            glm::vec3 pt = yellow->getModelMatrix() * glm::vec3(point, 1.0f);
+            Model* trackingPoint = new Model(pt, glm::vec2(0.01f, 0.01f), quad, &solid);
+            float alpha = (float)i / (float)numPoints;
+            trackingPoint->setColor(glm::vec4(1 - alpha, 0.0f, alpha, 1.0f));
+            trackingPoint->setLayer(2.0f);
+            scene.addNode(trackingPoint);
+            trackingPoints.push_back(trackingPoint);
+            i++;
+        }
+
+        // engine stuff
         engine.render();
     }
 
