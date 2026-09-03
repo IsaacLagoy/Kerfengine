@@ -62,7 +62,7 @@ int main()
         &solid,
         Collider2D::polygon(ColliderPolygon2DMeshServer::getMesh("quad")),
         1.0f,
-        glm::vec3(-1.0f, 0.0f, 0.0f)
+        glm::vec3(-0.1f, 0.0f, 0.0f)
     );
     yellow->setColor(glm::vec4(0.92f, 0.78f, 0.28f, 1.0f));
     yellow->setLayer(0.5f);
