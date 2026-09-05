@@ -320,8 +320,47 @@ glm::mat3 Textbox::getBaseModelMatrix() const
 
 glm::mat3 Textbox::getTextModelMatrix() const
 {
-    const glm::vec2 half = 0.5f * getEffectiveSize();
-    const glm::vec3 origin(-half.x + padding.x, half.y - padding.y, 0.0f);
+    const glm::vec2 size = getEffectiveSize();
+    const glm::vec2 half = 0.5f * size;
+    const glm::vec2 inner = size - 2.0f * padding;
+
+    // Layout is packed tight at the padded top-left. Shift the block inside
+    // the inner rect (the sized box, not maxSize).
+    glm::vec2 extra(0.0f);
+    const bool wrapOwnsX =
+        (wrap == TextLayout::Wrap::EVEN || wrap == TextLayout::Wrap::CENTER) &&
+        inner.x > 0.0f;
+    switch (alignment) {
+        case TextLayout::Alignment::TOP_LEFT:
+            break;
+        case TextLayout::Alignment::TOP_RIGHT:
+            if (!wrapOwnsX) {
+                extra.x = inner.x - layout.totalWidth;
+            }
+            break;
+        case TextLayout::Alignment::BOTTOM_LEFT:
+            extra.y = -(inner.y - layout.totalHeight);
+            break;
+        case TextLayout::Alignment::BOTTOM_RIGHT:
+            if (!wrapOwnsX) {
+                extra.x = inner.x - layout.totalWidth;
+            }
+            extra.y = -(inner.y - layout.totalHeight);
+            break;
+        case TextLayout::Alignment::CENTER:
+            if (!wrapOwnsX) {
+                extra.x = 0.5f * (inner.x - layout.totalWidth);
+            }
+            extra.y = -0.5f * (inner.y - layout.totalHeight);
+            break;
+        default:
+            break;
+    }
+
+    const glm::vec3 origin(
+        -half.x + padding.x + extra.x,
+        half.y - padding.y + extra.y,
+        0.0f);
     glm::mat3 local;
     Node::computeModelMatrix(local, origin, glm::vec2(1.0f));
     return getBaseModelMatrix() * local;

@@ -196,7 +196,7 @@ TextLayout::TextLayout(
     float maxWidth,
     float maxHeight,
     Wrap wrap,
-    Alignment alignment,
+    [[maybe_unused]] Alignment alignment,
     glm::bvec2 overflow)
 {
     if (!content.font) {
@@ -410,49 +410,15 @@ TextLayout::TextLayout(
 
     const float contentW = contentRight - contentLeft;
     const float contentH = contentTop - contentBottom;
-    // When a max dimension was given, alignment happens against that box
-    // size; otherwise (unbounded) there's nothing to align within besides
-    // the content's own size, so alignment becomes a no-op on that axis.
-    const float alignW = (maxWidth > 0.0f) ? maxWidth : contentW;
-    const float alignH = (maxHeight > 0.0f) ? maxHeight : contentH;
 
-    // Default (TOP_LEFT): slide content so its top-left corner sits at (0, 0).
-    float dx = -contentLeft;
-    float dy = -contentTop;
-    // If EVEN/CENTER wrap already positioned each line horizontally within
-    // the box, don't also apply a block-level horizontal alignment on top
-    // of that (it would double up / fight with the per-line positioning).
+    // Pack tight to the content's top-left at (0, 0). Block alignment
+    // (BOTTOM / CENTER / RIGHT) is applied later by Textbox against the
+    // *final* inner size — aligning here against maxHeight/maxWidth would
+    // leave slack in glyph positions while the box still shrinks to content.
+    // EVEN/CENTER wrap already placed each line in [0, maxWidth]; keep that.
     const bool wrapOwnsX = (wrap == Wrap::EVEN || wrap == Wrap::CENTER) && maxWidth > 0.0f;
-    switch (alignment) {
-        case Alignment::TOP_LEFT:
-            break;
-        case Alignment::TOP_RIGHT:
-            if (!wrapOwnsX) {
-                dx = alignW - contentRight; // pin content's right edge to alignW
-            }
-            break;
-        case Alignment::BOTTOM_LEFT:
-            dy = -alignH - contentBottom; // pin content's bottom edge to -alignH
-            break;
-        case Alignment::BOTTOM_RIGHT:
-            if (!wrapOwnsX) {
-                dx = alignW - contentRight;
-            }
-            dy = -alignH - contentBottom;
-            break;
-        case Alignment::CENTER:
-            if (!wrapOwnsX) {
-                dx = 0.5f * (alignW - contentW) - contentLeft;
-            }
-            dy = -0.5f * alignH - 0.5f * (contentTop + contentBottom);
-            break;
-        default:
-            break;
-    }
-
-    if (wrapOwnsX) {
-        dx = 0.0f; // per-line justify/center already placed glyphs in box space
-    }
+    const float dx = wrapOwnsX ? 0.0f : -contentLeft;
+    const float dy = -contentTop;
 
     for (LaidOutChar& ch : chars) {
         ch.xStart += dx;

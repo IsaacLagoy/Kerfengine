@@ -83,6 +83,7 @@ public:
      * @param maxHeight inner content height (Textbox: maxSize.y - 2*padding). <= 0 means unbounded.
      * @param overflow  if false, do not emit glyphs past maxWidth / maxHeight. Ignored when that max is unbounded.
      *
+     * Block alignment is applied by Textbox against the final inner size.
      * Padding, minSize, and poseAlignment stay on Textbox.
      */
     TextLayout(

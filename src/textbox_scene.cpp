@@ -16,7 +16,7 @@ int main()
     const int height = 600;
     Engine engine(width, height);
 
-    Camera camera(width, height, 1.0f);
+    Camera camera(width, height, 0.5f);
     Scene scene;
     scene.setCamera(&camera);
     engine.setScene(&scene);
@@ -30,15 +30,15 @@ int main()
         style.size = 0.1f;
         style.color = glm::vec4(0, 0, 0, 1.0f);
         Textbox* textbox = new Textbox(
-            TextContent{ font, { TextSpan{ "Hello, World! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO!", style } } },
+            TextContent{ font, { TextSpan{ "Hello, World! MY name is billy bob and I loomomve eating potatoes. What is your favorite ham sandwich? Mine is made of eggs and parsley.", style } } },
             glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec2(2.0f, 0.5f),
+            glm::vec2(2.0f, 1.5f),
             glm::vec2(2.0f, 1.0f),
             glm::vec2(0.1f, 0.1f),
             TextLayout::Wrap::EDGE,
-            TextLayout::Alignment::TOP_LEFT,
+            TextLayout::Alignment::CENTER,
             glm::bvec2(false),
-            TextLayout::Alignment::CENTER
+            TextLayout::Alignment::BOTTOM_LEFT
         );
         textbox->setColor(glm::vec4(0.5f + 0.05f * i, 1.0f, 1.0f, 1.0f));
         scene.addNode(textbox);
