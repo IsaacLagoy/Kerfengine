@@ -61,15 +61,18 @@ void Model::setColor(const glm::vec4& color)
     this->color = color;
 }
 
-void Model::draw() const
+void Model::draw(const glm::mat4& viewProjection)
 {
-    // can only draw a model with a mesh
+    // Text passes nullptr mesh and overrides draw(); skip empty sentinels too.
     if (!mesh) {
         return;
     }
 
-    // get shader for uniform locatiosn
+    // Bind here so Text can bind "text" in its override without Scene knowing.
     Shader* shader = ShaderServer::getShader("default2d");
+    shader->bind();
+
+    glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
 
     // bind model uniforms
     glm::mat3 model = getModelMatrix();

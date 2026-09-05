@@ -12,10 +12,7 @@ class FrameBuffer;
 
 class Engine {
 private:
-    int width = 800;
-    int height = 600;
     FrameBuffer* fbo = nullptr;
-
     Scene* scene = nullptr;
     Context context;
 

@@ -2,12 +2,15 @@
 
 #include "engine/node/Node.h"
 
+#include <glm/glm.hpp>
+
 // forward declarations
 class Mesh;
 class Scene;
 class Material;
 
 class Model : public Node {
+    
 friend class Scene;
 
 protected:
@@ -37,7 +40,8 @@ public:
     void setLayer(float layer);
     void setColor(const glm::vec4& color);
 
-    void draw() const;
+    // Scene does not bind a program. Each drawable binds its shader here.
+    virtual void draw(const glm::mat4& viewProjection);
 
 protected:
     // private constructor for scene sentinel nodes

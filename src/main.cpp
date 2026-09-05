@@ -1,6 +1,5 @@
 #include "engine/scene/Scene.h"
 #include "engine/resource/ObjServer.h"
-#include "engine/resource/ShaderServer.h"
 #include "engine/resource/TextureServer.h"
 #include "engine/node/RigidBody.h"
 #include "engine/physics/collision/ColliderPolygon2DMesh.h"
@@ -27,11 +26,7 @@ int main()
 
     ColliderPolygon2DMeshServer::loadMesh("quad", quad->getVertices());
 
-    // load shaders
-    ShaderServer::loadShader("default2d", "shaders/default2d.vert", "shaders/default2d.frag");
-
     // load materials
-    TextureServer::loadTexture("white", "resources/image/white.png");
     TextureServer::loadTexture("fan", "resources/image/fan.png");
     Texture* white = TextureServer::getTexture("white");
     Texture* fan = TextureServer::getTexture("fan");

@@ -2,9 +2,7 @@
 #include "engine/node/Model.h"
 #include "engine/node/RigidBody.h"
 #include "engine/render/camera/Camera.h"
-#include "engine/resource/ShaderServer.h"
-
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
 
 
 Scene::Scene()
@@ -86,20 +84,15 @@ RigidBody* Scene::getRigidBodyTail() const
 
 void Scene::draw() const
 {
-    // bind default shader
-    Shader* shader = ShaderServer::getShader("default2d");
-    shader->bind();
-
-    // set view-proj matrix
+    // Camera once per frame; each Model/Text bind()s its own shader and
+    // writes uViewProjection after that bind.
     glm::mat4 viewProjection(1.0f);
     if (camera) {
         viewProjection = camera->getProjection() * camera->getView();
     }
-    glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
 
-    // draw all models
     for (Model* model = modelHead->nextModel; model != modelTail; model = model->nextModel) {
-        model->draw();
+        model->draw(viewProjection);
     }
 }
 

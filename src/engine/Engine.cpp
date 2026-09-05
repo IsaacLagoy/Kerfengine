@@ -2,15 +2,19 @@
 #include "engine/render/buffer/FrameBuffer.h"
 #include "engine/scene/Scene.h"
 #include "engine/render/camera/Camera.h"
+#include "engine/resource/ObjServer.h"
+#include "engine/resource/ShaderServer.h"
+#include "engine/resource/TextureServer.h"
 
 
-Engine::Engine(int width, int height) :
-    width(width),
-    height(height),
-    context(width, height)
+Engine::Engine(int width, int height) : context(width, height)
 {
     context.setTitle("Mugrav Engine");
     glClearColor(0.12f, 0.12f, 0.14f, 1.0f);
+    ObjServer::loadMesh("unit", "resources/mesh/unit.obj");
+    ShaderServer::loadShader("default2d", "shaders/default2d.vert", "shaders/default2d.frag");
+    ShaderServer::loadShader("text", "shaders/text.vert", "shaders/text.frag");
+    TextureServer::loadTexture("white", "resources/image/white.png");
 }
 
 Engine::~Engine()
