@@ -8,6 +8,7 @@
 class Mesh;
 class Scene;
 class Material;
+class Shader;
 
 class Model : public Node2d {
     friend class Scene;
@@ -15,7 +16,8 @@ class Model : public Node2d {
 protected:
     Mesh* mesh = nullptr;
     Material* material = nullptr;
-
+    Shader* shader = nullptr;
+    
     Model* nextModel = nullptr;
     Model* prevModel = nullptr;
 
@@ -25,7 +27,7 @@ protected:
     glm::vec4 color = glm::vec4(1.0f);
 
 public:
-    Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material);
+    Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader);
     ~Model();
 
     // getters

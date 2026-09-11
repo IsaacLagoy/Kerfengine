@@ -38,7 +38,8 @@ int main()
             TextLayout::Wrap::EVEN,
             TextLayout::Alignment::TOP_LEFT,
             glm::bvec2(true),
-            TextLayout::Alignment::CENTER
+            TextLayout::Alignment::CENTER,
+            nullptr
         );
         textbox->setColor(glm::vec4(0.5f + 0.05f * i, 1.0f, 1.0f, 1.0f));
         scene.addNode(textbox);
@@ -47,7 +48,7 @@ int main()
     Texture* white = TextureServer::getTexture("white");
     Material solid(white);
 
-    Model* unit = new Model(glm::vec3(-0.5f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f), ObjServer::getMesh("unit"), &solid);
+    Model* unit = new Model(glm::vec3(-0.5f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f), ObjServer::getMesh("unit"), &solid, nullptr);
     scene.addNode(unit);
 
     while (!engine.shouldClose()) {

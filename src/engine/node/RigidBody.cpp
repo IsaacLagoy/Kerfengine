@@ -3,8 +3,8 @@
 
 RigidBody::RigidBody() : Model() {}
 
-RigidBody::RigidBody(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, const Collider2D& collider, float density, const glm::vec3& velocity) :
-    Model(pose, scale, mesh, material),
+RigidBody::RigidBody(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider, float density, const glm::vec3& velocity) :
+    Model(pose, scale, mesh, material, shader),
     density(density),
     velocity(velocity),
     collider(collider)

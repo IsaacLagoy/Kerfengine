@@ -7,6 +7,7 @@
 #include "engine/node/Model.h"
 #include "engine/render/camera/Camera.h"
 #include "engine/Engine.h"
+#include "engine/resource/ShaderServer.h"
 
 int main()
 {
@@ -19,6 +20,10 @@ int main()
     Scene scene;
     scene.setCamera(&camera);
     engine.setScene(&scene);
+
+    // load shaders
+    ShaderServer::loadShader("uv", "shaders/uv.vert", "shaders/uv.frag");
+    Shader* uvShader = ShaderServer::getShader("uv");
 
     // load meshes
     ObjServer::loadMesh("quad", "resources/mesh/octagon.obj");
@@ -35,17 +40,17 @@ int main()
     Material fanMaterial(fan, white);
 
     // create scene
-    Model* backdrop = new Model(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(0.7f, 0.45f), quad, &solid);
+    Model* backdrop = new Model(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(0.7f, 0.45f), quad, &solid, uvShader);
     backdrop->setColor(glm::vec4(0.22f, 0.24f, 0.32f, 1.0f));
     backdrop->setLayer(-1.0f);
     scene.addNode(backdrop);
 
-    Model* red = new Model(glm::vec3(-0.25f, 0.05f, 0.0f), glm::vec2(0.22f, 0.22f), quad, &solid);
+    Model* red = new Model(glm::vec3(-0.25f, 0.05f, 0.0f), glm::vec2(0.22f, 0.22f), quad, &solid, nullptr);
     red->setColor(glm::vec4(0.86f, 0.28f, 0.24f, 1.0f));
     red->setLayer(0.0f);
     scene.addNode(red);
 
-    Model* green = new Model(glm::vec3(-0.08f, -0.02f, 0.3f), glm::vec2(0.22f, 0.22f), quad, &solid);
+    Model* green = new Model(glm::vec3(-0.08f, -0.02f, 0.3f), glm::vec2(0.22f, 0.22f), quad, &solid, nullptr);
     green->setColor(glm::vec4(0.28f, 0.72f, 0.42f, 1.0f));
     green->setLayer(1.0f);
     scene.addNode(green);
@@ -55,6 +60,7 @@ int main()
         glm::vec2(0.18f, 0.28f),
         quad,
         &solid,
+        uvShader,
         Collider2D::polygon(ColliderPolygon2DMeshServer::getMesh("quad")),
         1.0f,
         glm::vec3(-0.1f, 0.0f, 0.0f)
@@ -63,7 +69,7 @@ int main()
     yellow->setLayer(0.5f);
     scene.addNode(yellow);
 
-    Model* fanModel = new Model(glm::vec3(0.12f, 0.28f, 0.0f), glm::vec2(0.2f, 0.2f), quad, &fanMaterial);
+    Model* fanModel = new Model(glm::vec3(0.12f, 0.28f, 0.0f), glm::vec2(0.2f, 0.2f), quad, &fanMaterial, nullptr);
     fanModel->setColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
     fanModel->setLayer(1.5f);
     scene.addNode(fanModel);
@@ -91,7 +97,7 @@ int main()
         int i = 0;
         for (const auto& point : yellow->getCollider().getMesh()->getVertices()) {
             glm::vec3 pt = yellow->getModelMatrix() * glm::vec4(point, 0.0f, 1.0f);
-            Model* trackingPoint = new Model(pt, glm::vec2(0.01f, 0.01f), quad, &solid);
+            Model* trackingPoint = new Model(pt, glm::vec2(0.01f, 0.01f), quad, &solid, nullptr);
             float alpha = (float)i / (float)numPoints;
             trackingPoint->setColor(glm::vec4(1 - alpha, 0.0f, alpha, 1.0f));
             trackingPoint->setLayer(2.0f);

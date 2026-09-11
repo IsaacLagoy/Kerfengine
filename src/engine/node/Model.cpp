@@ -8,10 +8,11 @@
 
 Model::Model() : Node2d() {}
 
-Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material) :
+Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader) :
     Node2d(pose, scale),
     mesh(mesh),
-    material(material) 
+    material(material),
+    shader(shader)
 {}
 
 Model::~Model() 
@@ -62,24 +63,45 @@ void Model::draw(const glm::mat4& viewProjection)
     }
 
     // Bind here so Text can bind "text" in its override without Scene knowing.
-    Shader* shader = ShaderServer::getShader("default2d");
+    Shader* shader = this->shader ? this->shader : ShaderServer::getShader("default2d");
     shader->bind();
 
-    glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
+    // get model matrix
+    const glm::mat4& modelMatrix = getModelMatrix();
+
+    GLint loc = shader->getUniformLocation("uViewProjection");
+    if (loc >= 0)
+    {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(viewProjection));
+    }
 
     // bind model uniforms
-    glm::mat4 model = getModelMatrix();
-    glUniformMatrix4fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniform1f(shader->getUniformLocation("uLayer"), layer);
-    glUniform4fv(shader->getUniformLocation("uColor"), 1, glm::value_ptr(color));
+    loc = shader->getUniformLocation("uModel");
+    if (loc >= 0)
+    {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    }
+
+    loc = shader->getUniformLocation("uLayer");
+    if (loc >= 0)
+    {
+        glUniform1f(loc, layer);
+    }
+
+    loc = shader->getUniformLocation("uColor");
+    if (loc >= 0)
+    {
+        glUniform4fv(loc, 1, glm::value_ptr(color));
+    }
 
     // bind material uniforms
-    if (material) {
-        if (Texture* albedo = material->getAlbedo()) {
-            glActiveTexture(GL_TEXTURE0);
-            albedo->bind();
-            glUniform1i(shader->getUniformLocation("uAlbedo"), 0);
-        }
+    loc = shader->getUniformLocation("uAlbedo");
+    Texture* albedo = material->getAlbedo();
+    if (material && loc >= 0 && albedo) 
+    {
+        glActiveTexture(GL_TEXTURE0);
+        albedo->bind();
+        glUniform1i(loc, 0);
     }
 
     // draw :)

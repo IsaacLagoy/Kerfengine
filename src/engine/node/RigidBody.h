@@ -5,6 +5,7 @@
 
 // forward declarations
 class Scene;
+class Shader;
 
 class RigidBody : public Model {
 
@@ -20,7 +21,7 @@ private:
     RigidBody* prevRigidBody = nullptr;
 
 public:
-    RigidBody(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, const Collider2D& collider, float density, const glm::vec3& velocity);
+    RigidBody(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider, float density, const glm::vec3& velocity);
     ~RigidBody();
 
     void update(float dt);

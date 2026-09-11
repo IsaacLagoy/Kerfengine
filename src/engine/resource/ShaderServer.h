@@ -18,20 +18,7 @@
  * 
  */
 class Shader {
-public:
-    enum class MissingPolicy
-    {
-        Invalid = 0,
-        Error,
-        Print,
-        Ignore,
-        Count
-    };
-
 private:
-    // Missing policy when a uniform or attribute cannot be found in the program
-    static MissingPolicy missingPolicy;
-
     // Name of the shader, same as the key in the ShaderServer map
     std::string name;
 
@@ -115,8 +102,6 @@ public:
      * 
      */
     void unbind();
-
-    static void setMissingPolicy(MissingPolicy policy) { missingPolicy = policy; }
 };
 
 // ------------------------------------------------------------

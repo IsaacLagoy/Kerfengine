@@ -50,7 +50,8 @@ public:
         TextLayout::Wrap wrap,
         TextLayout::Alignment alignment,
         const glm::bvec2& overflow,
-        TextLayout::Alignment poseAlignment
+        TextLayout::Alignment poseAlignment,
+        Shader* shader
     );
     ~Textbox() override;
 

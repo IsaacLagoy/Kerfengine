@@ -20,9 +20,10 @@ Textbox::Textbox(
     TextLayout::Wrap wrap,
     TextLayout::Alignment alignment,
     const glm::bvec2& overflow,
-    TextLayout::Alignment poseAlignment
+    TextLayout::Alignment poseAlignment,
+    Shader* shader
 ) : 
-    Model(pose, glm::vec2(1.0f), nullptr, nullptr),
+    Model(pose, glm::vec2(1.0f), nullptr, nullptr, shader),
     content(content),
     wrap(wrap),
     alignment(alignment),
@@ -144,20 +145,40 @@ void Textbox::draw(const glm::mat4& viewProjection)
     if (color.a > 0.0f)
     {
         // bind shader
-        Shader* shader = ShaderServer::getShader("default2d");
+        Shader* shader = this->shader ? this->shader : ShaderServer::getShader("default2d");
         shader->bind();
 
-        // bind uniforms
-        glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
-        glUniform1f(shader->getUniformLocation("uLayer"), layer);
-        glUniform4fv(shader->getUniformLocation("uColor"), 1, glm::value_ptr(color));
+        GLint loc = shader->getUniformLocation("uViewProjection");
+        if (loc >= 0)
+        {
+            glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(viewProjection));
+        }
 
-        glActiveTexture(GL_TEXTURE0);
-        TextureServer::getTexture("white")->bind();
-        glUniform1i(shader->getUniformLocation("uAlbedo"), 0);
+        loc = shader->getUniformLocation("uLayer");
+        if (loc >= 0)
+        {
+            glUniform1f(loc, layer);
+        }
 
-        // compute model matrix based on size and pose alignment
-        glUniformMatrix4fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(getTextboxModelMatrix()));
+        loc = shader->getUniformLocation("uColor");
+        if (loc >= 0)
+        {
+            glUniform4fv(loc, 1, glm::value_ptr(color));
+        }
+
+        loc = shader->getUniformLocation("uAlbedo");
+        if (loc >= 0)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            TextureServer::getTexture("white")->bind();
+            glUniform1i(loc, 0);
+        }
+
+        loc = shader->getUniformLocation("uModel");
+        if (loc >= 0)
+        {
+            glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(getTextboxModelMatrix()));
+        }
 
         // draw background
         ObjServer::getMesh("unit")->draw();
@@ -172,12 +193,26 @@ void Textbox::draw(const glm::mat4& viewProjection)
         }
 
         // bind shader
-        Shader* shader = ShaderServer::getShader("text");
-        shader->bind();
+        Shader* textShader = ShaderServer::getShader("text");
+        textShader->bind();
 
-        glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
-        glUniformMatrix4fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(getTextModelMatrix()));
-        glUniform1f(shader->getUniformLocation("uLayer"), getLayer());
+        GLint loc = textShader->getUniformLocation("uViewProjection");
+        if (loc >= 0)
+        {
+            glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(viewProjection));
+        }
+
+        loc = textShader->getUniformLocation("uModel");
+        if (loc >= 0)
+        {
+            glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(getTextModelMatrix()));
+        }
+
+        loc = textShader->getUniformLocation("uLayer");
+        if (loc >= 0)
+        {
+            glUniform1f(loc, getLayer());
+        }
 
         // Atlas coverage is in .r; blend with scene sprites then restore GL state.
         const GLboolean blendWasEnabled = glIsEnabled(GL_BLEND);
@@ -190,9 +225,13 @@ void Textbox::draw(const glm::mat4& viewProjection)
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glActiveTexture(GL_TEXTURE0);
-        content.font->getAtlas()->bind();
-        glUniform1i(shader->getUniformLocation("uAtlas"), 0);
+        loc = textShader->getUniformLocation("uAtlas");
+        if (loc >= 0)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            content.font->getAtlas()->bind();
+            glUniform1i(loc, 0);
+        }
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, vertCount);

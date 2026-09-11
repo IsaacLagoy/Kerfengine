@@ -11,7 +11,6 @@
 // Initialize static variables
 // ------------------------------------------------------------
 
-Shader::MissingPolicy Shader::missingPolicy = Shader::MissingPolicy::Error;
 ShaderServer::DuplicatePolicy ShaderServer::duplicatePolicy = ShaderServer::DuplicatePolicy::Print;
 std::unordered_map<std::string, std::unique_ptr<Shader>> ShaderServer::shaderMap;
 
@@ -98,58 +97,12 @@ GLuint Shader::getProgramID()
 
 GLuint Shader::getUniformLocation(const std::string& name)
 {
-    GLint loc = glGetUniformLocation(programID, name.c_str());
-
-    // location exists
-    if (loc != -1)
-    {
-        return loc;
-    }
-        
-    // location does not exist
-    switch (missingPolicy)
-    {
-        case MissingPolicy::Error:
-            throw std::runtime_error(ANSI_RED + "[Shader] " + this->name + " missing uniform " + name + ANSI_RESET);
-
-        case MissingPolicy::Print:
-            std::cerr << ANSI_YELLOW << "[Shader] " << this->name << " missing uniform " << name << ANSI_RESET << std::endl;
-            return -1;
-
-        case MissingPolicy::Ignore:
-            return -1;
-
-        default:
-            throw std::runtime_error(ANSI_RED + "[Shader] invalid missing policy!" + ANSI_RESET);
-    }
+    return glGetUniformLocation(programID, name.c_str());
 }
 
 GLuint Shader::getAttributeLocation(const std::string& name)
 {
-    GLint loc = glGetAttribLocation(programID, name.c_str());
-
-    // location exists
-    if (loc != -1)
-    {
-        return loc;
-    }
-        
-    // location does not exist
-    switch (missingPolicy)
-    {
-        case MissingPolicy::Error:
-            throw std::runtime_error(ANSI_RED + "[Shader] " + this->name + " missing attribute " + name + ANSI_RESET);
-
-        case MissingPolicy::Print:
-            std::cerr << ANSI_YELLOW << "[Shader] " << this->name << " missing attribute " << name << ANSI_RESET << std::endl;
-            return -1;
-
-        case MissingPolicy::Ignore:
-            return -1;
-
-        default:
-            throw std::runtime_error(ANSI_RED + "[Shader] invalid missing policy!" + ANSI_RESET);
-    }
+    return glGetAttribLocation(programID, name.c_str());
 }
 
 const std::string& Shader::getName() const
