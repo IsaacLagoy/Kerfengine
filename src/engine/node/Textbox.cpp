@@ -22,7 +22,7 @@ Textbox::Textbox(
     const glm::bvec2& overflow,
     TextLayout::Alignment poseAlignment
 ) : 
-    Model(pose, glm::vec2(1.0f), nullptr, nullptr, NodeType::MODEL),
+    Model(pose, glm::vec2(1.0f), nullptr, nullptr),
     content(content),
     wrap(wrap),
     alignment(alignment),
@@ -157,7 +157,7 @@ void Textbox::draw(const glm::mat4& viewProjection)
         glUniform1i(shader->getUniformLocation("uAlbedo"), 0);
 
         // compute model matrix based on size and pose alignment
-        glUniformMatrix3fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(getTextboxModelMatrix()));
+        glUniformMatrix4fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(getTextboxModelMatrix()));
 
         // draw background
         ObjServer::getMesh("unit")->draw();
@@ -176,7 +176,7 @@ void Textbox::draw(const glm::mat4& viewProjection)
         shader->bind();
 
         glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
-        glUniformMatrix3fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(getTextModelMatrix()));
+        glUniformMatrix4fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(getTextModelMatrix()));
         glUniform1f(shader->getUniformLocation("uLayer"), getLayer());
 
         // Atlas coverage is in .r; blend with scene sprites then restore GL state.
@@ -292,7 +292,7 @@ void Textbox::rebuildIfDirty()
 }
 
 // TODO cache this computation or smth
-glm::mat3 Textbox::getBaseModelMatrix() const
+glm::mat4 Textbox::getBaseModelMatrix() const
 {
     // compute effective box scale
     glm::vec2 size = getEffectiveSize();
@@ -312,13 +312,13 @@ glm::mat3 Textbox::getBaseModelMatrix() const
 
     // alignment point should be the pivot at getPose().
     // use scale 1 so this is a pure translation
-    glm::mat3 model, transModel;
+    glm::mat4 model, transModel;
     Node::computeModelMatrix(transModel, glm::vec3(boxPos.x, boxPos.y, 0.0f), glm::vec2(1.0f));
     Node::computeModelMatrix(model, getPose(), glm::vec2(1.0f));
     return model * transModel;
 }
 
-glm::mat3 Textbox::getTextModelMatrix() const
+glm::mat4 Textbox::getTextModelMatrix() const
 {
     const glm::vec2 size = getEffectiveSize();
     const glm::vec2 half = 0.5f * size;
@@ -361,15 +361,15 @@ glm::mat3 Textbox::getTextModelMatrix() const
         -half.x + padding.x + extra.x,
         half.y - padding.y + extra.y,
         0.0f);
-    glm::mat3 local;
+    glm::mat4 local;
     Node::computeModelMatrix(local, origin, glm::vec2(1.0f));
     return getBaseModelMatrix() * local;
 }
 
-glm::mat3 Textbox::getTextboxModelMatrix() const
+glm::mat4 Textbox::getTextboxModelMatrix() const
 {
     glm::vec2 size = getEffectiveSize();
-    glm::mat3 local;
+    glm::mat4 local;
     Node::computeModelMatrix(local, glm::vec3(0.0f), size);
     return getBaseModelMatrix() * local;
 }

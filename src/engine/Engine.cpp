@@ -9,7 +9,7 @@
 
 Engine::Engine(int width, int height) : context(width, height)
 {
-    context.setTitle("Mugrav Engine");
+    context.setTitle("Kerfengine");
     glClearColor(0.12f, 0.12f, 0.14f, 1.0f);
     ObjServer::loadMesh("unit", "resources/mesh/unit.obj");
     ShaderServer::loadShader("default2d", "shaders/default2d.vert", "shaders/default2d.frag");

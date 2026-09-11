@@ -22,7 +22,7 @@ int main()
     engine.setScene(&scene);
 
     // load font
-    FontServer::loadFont("ui", "resources/font/Arial.ttf",32.0f); 
+    FontServer::loadFont("ui", "resources/font/Medieval.ttf",32.0f); 
     Font* font = FontServer::getFont("ui");
 
     for (int i = 0; i < 1; i++) {
@@ -32,13 +32,13 @@ int main()
         Textbox* textbox = new Textbox(
             TextContent{ font, { TextSpan{ "Hello, World! MY name is billy bob and I loomomve eating potatoes. What is your favorite ham sandwich? Mine is made of eggs and parsley.", style } } },
             glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec2(2.0f, 1.5f),
-            glm::vec2(2.0f, 1.0f),
-            glm::vec2(0.1f, 0.1f),
-            TextLayout::Wrap::EDGE,
-            TextLayout::Alignment::CENTER,
-            glm::bvec2(false),
-            TextLayout::Alignment::BOTTOM_LEFT
+            glm::vec2(2.0f, 0.5f),
+            glm::vec2(2.0f, 0.5f),
+            glm::vec2(0.5f, 0.1f),
+            TextLayout::Wrap::EVEN,
+            TextLayout::Alignment::TOP_LEFT,
+            glm::bvec2(true),
+            TextLayout::Alignment::CENTER
         );
         textbox->setColor(glm::vec4(0.5f + 0.05f * i, 1.0f, 1.0f, 1.0f));
         scene.addNode(textbox);

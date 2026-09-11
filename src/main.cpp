@@ -90,7 +90,7 @@ int main()
         int numPoints = yellow->getCollider().getMesh()->getVertices().size();
         int i = 0;
         for (const auto& point : yellow->getCollider().getMesh()->getVertices()) {
-            glm::vec3 pt = yellow->getModelMatrix() * glm::vec3(point, 1.0f);
+            glm::vec3 pt = yellow->getModelMatrix() * glm::vec4(point, 0.0f, 1.0f);
             Model* trackingPoint = new Model(pt, glm::vec2(0.01f, 0.01f), quad, &solid);
             float alpha = (float)i / (float)numPoints;
             trackingPoint->setColor(glm::vec4(1 - alpha, 0.0f, alpha, 1.0f));

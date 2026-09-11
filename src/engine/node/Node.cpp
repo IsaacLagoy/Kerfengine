@@ -1,61 +1,34 @@
 #include "engine/node/Node.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 
-Node::Node() : Node(NodeType::NODE) {}
-
-Node::Node(const glm::vec3& pose) : Node(pose, NodeType::NODE) {}
-
-Node::Node(const glm::vec3& pose, const glm::vec2& scale) : Node(pose, scale, NodeType::NODE) {}
-
-Node::Node(NodeType type) : type(type)
-{
-    computeModelMatrix(modelMatrix, pose, scale);
-}
-
-Node::Node(const glm::vec3& pose, NodeType type) : pose(pose), type(type)
-{
-    computeModelMatrix(modelMatrix, pose, scale);
-}
-
-Node::Node(const glm::vec3& pose, const glm::vec2& scale, NodeType type) :
-    pose(pose),
-    scale(scale),
-    type(type)
-{
-    computeModelMatrix(modelMatrix, pose, scale);
-}
+Node::Node() : modelMatrix(glm::mat4(1.0f)) {}
 
 Node::~Node() 
 {
     unlinkNode();
 }
 
-void Node::setPose(const glm::vec3& pose)
-{
-    this->pose = pose;
-    computeModelMatrix(modelMatrix, pose, scale);
+glm::mat4 Node::getModelMatrix() const 
+{ 
+    return modelMatrix; 
 }
 
-void Node::setScale(const glm::vec2& scale)
+void Node::computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& pose, const glm::vec2& scale)
 {
-    this->scale = scale;
-    computeModelMatrix(modelMatrix, pose, scale);
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(pose.x, pose.y, 0.0f));
+    modelMatrix = glm::rotate(modelMatrix, pose.z, glm::vec3(0.0f, 0.0f, 1.0f));
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(scale.x, scale.y, 1.0f));
 }
 
-glm::vec3 Node::getPose() const { return pose; }
-glm::vec2 Node::getScale() const { return scale; }
-glm::mat3 Node::getModelMatrix() const { return modelMatrix; }
-
-void Node::computeModelMatrix(glm::mat3& modelMatrix, const glm::vec3& pose, const glm::vec2& scale)
+void Node::computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale)
 {
-    const float c = glm::cos(pose.z);
-    const float s = glm::sin(pose.z);
-
-    modelMatrix = glm::mat3(
-        scale.x * c,  scale.x * s,  0.0f,
-       -scale.y * s,  scale.y * c,  0.0f,
-        pose.x,       pose.y,       1.0f
-    );
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = modelMatrix * glm::mat4_cast(rotation);
+    modelMatrix = glm::scale(modelMatrix, scale);
 }
 
 void Node::insertNode(Node* pos)
@@ -78,4 +51,15 @@ void Node::unlinkNode()
     
     nextNode = nullptr;
     prevNode = nullptr;
+}
+
+void Node::draw(const glm::mat4& viewProjection)
+{
+    (void) viewProjection;
+    // no op
+}
+
+glm::mat4& Node::modelMatrixRef() 
+{ 
+    return modelMatrix; 
 }

@@ -6,7 +6,7 @@ layout(location = 1) in vec2 aUV;
 layout(location = 2) in vec4 aColor;
 
 // Same transform contract as default2d: world from Node, camera from Scene.
-uniform mat3 uModel;
+uniform mat4 uModel;
 uniform mat4 uViewProjection;
 uniform float uLayer;
 
@@ -14,8 +14,8 @@ out vec2 vUV;
 out vec4 vColor;
 
 void main() {
-    vec3 world = uModel * vec3(aPos, 1.0);
-    vec4 clip = uViewProjection * vec4(world.xy, 0.0, 1.0);
+    vec4 world = uModel * vec4(aPos, 0.0, 1.0);
+    vec4 clip = uViewProjection * world;
 
     // Manual NDC z from layer so text sorts with sprites (no depth pre-pass).
     float sigma = 1.0 / (1.0 + exp(-uLayer));

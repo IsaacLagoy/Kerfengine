@@ -1,69 +1,49 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 // TODO add inheritance
 
 // forward declarations
 class Scene;
 
-enum class NodeType {
-    INVALID,
-    NODE,
-    MODEL,
-    LIGHT,
-    RIGID_BODY,
-};
-
+/**
+ * @brief Base class for all nodes in the scene
+ *
+ * keeps the internal structure for all nodes, 2d and 3d
+ * controls the model matrix and stack of nodes
+ * 
+ */
 class Node {
-
-friend class Scene;
+    friend class Scene;
 
 private:
-    glm::mat3 modelMatrix = glm::mat3(1.0f);
-
-    // x (right), y (up), r (rads)
-    glm::vec3 pose = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec2 scale = glm::vec2(1.0f, 1.0f);
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
 
     Node* nextNode = nullptr;
     Node* prevNode = nullptr;
 
-    NodeType type = NodeType::INVALID;
-
 public:
     Node();
-    Node(const glm::vec3& pose);
-    Node(const glm::vec3& pose, const glm::vec2& scale);
     virtual ~Node();
 
+    // disable copying and moving
     Node(const Node& other) = delete;
     Node(Node&& other) = delete;
     Node& operator=(const Node& other) = delete;
     Node& operator=(Node&& other) = delete;
 
-    void setPose(const glm::vec3& pose);
+    // get the model matrix
+    glm::mat4 getModelMatrix() const;
 
-    void setX(float x) { setPose(glm::vec3(x, pose.y, pose.z)); }
-    void setY(float y) { setPose(glm::vec3(pose.x, y, pose.z)); }
-    void setR(float r) { setPose(glm::vec3(pose.x, pose.y, r)); }
-
-    void setScale(const glm::vec2& scale);
-
-    void setScaleX(float x) { setScale(glm::vec2(x, scale.y)); }
-    void setScaleY(float y) { setScale(glm::vec2(scale.x, y)); }
-
-    glm::vec3 getPose() const;
-    glm::vec2 getScale() const;
-    glm::mat3 getModelMatrix() const;
-
-    static void computeModelMatrix(glm::mat3& modelMatrix, const glm::vec3& pose, const glm::vec2& scale);
+    // compute the model matrix
+    static void computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& pose, const glm::vec2& scale);
+    static void computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
 
 protected:
-    explicit Node(NodeType type);
-    Node(const glm::vec3& pose, NodeType type);
-    Node(const glm::vec3& pose, const glm::vec2& scale, NodeType type);
-
     void insertNode(Node* pos);
     void unlinkNode();
+    virtual void draw(const glm::mat4& viewProjection);
+    glm::mat4& modelMatrixRef();    
 };

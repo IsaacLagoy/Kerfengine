@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/node/Node.h"
+#include "engine/node/Node2d.h"
 
 #include <glm/glm.hpp>
 
@@ -9,9 +9,8 @@ class Mesh;
 class Scene;
 class Material;
 
-class Model : public Node {
-    
-friend class Scene;
+class Model : public Node2d {
+    friend class Scene;
 
 protected:
     Mesh* mesh = nullptr;
@@ -40,17 +39,11 @@ public:
     void setLayer(float layer);
     void setColor(const glm::vec4& color);
 
-    // Scene does not bind a program. Each drawable binds its shader here.
-    virtual void draw(const glm::mat4& viewProjection);
-
 protected:
-    // private constructor for scene sentinel nodes
+    // protected constructor for scene sentinel nodes
     Model();
-
-protected:
-    explicit Model(NodeType type);
-    Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, NodeType type);
 
     void insertModel(Model* pos);
     void unlinkModel();
+    virtual void draw(const glm::mat4& viewProjection) override;    
 };

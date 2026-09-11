@@ -28,7 +28,8 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-    while (head->nextNode != tail) {
+    while (head->nextNode != tail) 
+    {
         removeNode(head->nextNode);
     }
 
@@ -40,24 +41,6 @@ Scene::~Scene()
     delete rigidBodyTail;
 }
 
-void Scene::addNode(Node* node)
-{
-    node->insertNode(tail);
-
-    if (node->type == NodeType::MODEL || node->type == NodeType::RIGID_BODY) {
-        static_cast<Model*>(node)->insertModel(modelTail);
-    }
-
-    if (node->type == NodeType::RIGID_BODY) {
-        static_cast<RigidBody*>(node)->insertRigidBody(rigidBodyTail);
-    }
-}
-
-void Scene::removeNode(Node* node)
-{
-    delete node;
-}
-
 void Scene::setCamera(Camera* camera)
 {
     this->camera = camera;
@@ -66,6 +49,28 @@ void Scene::setCamera(Camera* camera)
 Camera* Scene::getCamera() const
 {
     return camera;
+}
+
+// ------------------------------------------------
+// node management
+// ------------------------------------------------
+
+void Scene::addNode(Node* node)
+{
+    node->insertNode(tail);
+
+    if (auto* model = dynamic_cast<Model*>(node)) {
+        model->insertModel(modelTail);
+    }
+
+    if (auto* rigidBody = dynamic_cast<RigidBody*>(node)) {
+        rigidBody->insertRigidBody(rigidBodyTail);
+    }
+}
+
+void Scene::removeNode(Node* node)
+{
+    delete node;
 }
 
 RigidBody* Scene::getRigidBodyHead() const
@@ -87,11 +92,13 @@ void Scene::draw() const
     // Camera once per frame; each Model/Text bind()s its own shader and
     // writes uViewProjection after that bind.
     glm::mat4 viewProjection(1.0f);
-    if (camera) {
+    if (camera) 
+    {
         viewProjection = camera->getProjection() * camera->getView();
     }
 
-    for (Model* model = modelHead->nextModel; model != modelTail; model = model->nextModel) {
+    for (Model* model = modelHead->nextModel; model != modelTail; model = model->nextModel) 
+    {
         model->draw(viewProjection);
     }
 }
@@ -102,7 +109,8 @@ void Scene::draw() const
 
 void Scene::update(float dt)
 {
-    for (RigidBody* rigidBody = rigidBodyHead->nextRigidBody; rigidBody != rigidBodyTail; rigidBody = rigidBody->nextRigidBody) {
+    for (RigidBody* rigidBody = rigidBodyHead->nextRigidBody; rigidBody != rigidBodyTail; rigidBody = rigidBody->nextRigidBody) 
+    {
         rigidBody->update(dt);
     }
 }

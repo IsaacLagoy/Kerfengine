@@ -28,10 +28,13 @@ public:
     const Collider2D& getCollider() const { return collider; }
 
 protected:
+    // protected constructor for scene sentinel nodes
+    RigidBody();
+
     void insertRigidBody(RigidBody* pos);
     void unlinkRigidBody();
+    virtual void draw(const glm::mat4& viewProjection) override;
 
 private:
-    RigidBody();
     void initMass();
 };

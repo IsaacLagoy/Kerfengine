@@ -1,10 +1,10 @@
-#include "RigidBody.h"
+#include "engine/node/RigidBody.h"
 
 
-RigidBody::RigidBody() : Model(NodeType::RIGID_BODY) {}
+RigidBody::RigidBody() : Model() {}
 
 RigidBody::RigidBody(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, const Collider2D& collider, float density, const glm::vec3& velocity) :
-    Model(pose, scale, mesh, material, NodeType::RIGID_BODY),
+    Model(pose, scale, mesh, material),
     density(density),
     velocity(velocity),
     collider(collider)
@@ -15,7 +15,6 @@ RigidBody::RigidBody(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, 
 RigidBody::~RigidBody()
 {
     unlinkRigidBody();
-    // will call Model::~Model()
 }
 
 void RigidBody::initMass()
@@ -53,4 +52,9 @@ void RigidBody::unlinkRigidBody()
 
     nextRigidBody = nullptr;
     prevRigidBody = nullptr;
+}
+
+void RigidBody::draw(const glm::mat4& viewProjection)
+{
+    Model::draw(viewProjection);
 }

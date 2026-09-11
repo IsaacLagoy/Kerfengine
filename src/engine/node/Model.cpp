@@ -6,16 +6,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-Model::Model() : Model(NodeType::MODEL) {}
+Model::Model() : Node2d() {}
 
 Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material) :
-    Model(pose, scale, mesh, material, NodeType::MODEL) 
-{}
-
-Model::Model(NodeType type) : Node(type) {}
-
-Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, NodeType type) :
-    Node(pose, scale, type),
+    Node2d(pose, scale),
     mesh(mesh),
     material(material) 
 {}
@@ -23,7 +17,6 @@ Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material
 Model::~Model() 
 {
     unlinkModel();
-    // will call Node::~Node()
 }
 
 float Model::getLayer() const
@@ -75,8 +68,8 @@ void Model::draw(const glm::mat4& viewProjection)
     glUniformMatrix4fv(shader->getUniformLocation("uViewProjection"), 1, GL_FALSE, glm::value_ptr(viewProjection));
 
     // bind model uniforms
-    glm::mat3 model = getModelMatrix();
-    glUniformMatrix3fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(model));
+    glm::mat4 model = getModelMatrix();
+    glUniformMatrix4fv(shader->getUniformLocation("uModel"), 1, GL_FALSE, glm::value_ptr(model));
     glUniform1f(shader->getUniformLocation("uLayer"), layer);
     glUniform4fv(shader->getUniformLocation("uColor"), 1, glm::value_ptr(color));
 
@@ -110,7 +103,7 @@ void Model::unlinkModel()
     if (nextModel) {
         nextModel->prevModel = prevModel;
     }
-    
+
     nextModel = nullptr;
     prevModel = nullptr;
 }

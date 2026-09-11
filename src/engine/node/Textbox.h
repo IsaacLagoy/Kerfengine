@@ -81,15 +81,18 @@ public:
     const glm::vec2& getPadding() const;
     TextLayout::Alignment getPoseAlignment() const;
 
-    void draw(const glm::mat4& viewProjection) override;
+    
+
+protected:
+    virtual void draw(const glm::mat4& viewProjection) override;
 
 private:
     void initBuffers();
     void destroyBuffers();
     void rebuildIfDirty();
-    glm::mat3 getBaseModelMatrix() const;
-    glm::mat3 getTextModelMatrix() const;
-    glm::mat3 getTextboxModelMatrix() const;
+    glm::mat4 getBaseModelMatrix() const;
+    glm::mat4 getTextModelMatrix() const;
+    glm::mat4 getTextboxModelMatrix() const;
     glm::vec2 getEffectiveSize() const;
     glm::vec2 getEffectiveMaxSize() const;
 };

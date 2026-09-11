@@ -2,14 +2,16 @@
 
 class Node;
 class Model;
-class Camera;
 class RigidBody;
+class Camera;
 
 class Scene {
 private:
+
     // ------------------------------------------------
     // node handles
     // ------------------------------------------------
+
     Node* head;
     Node* tail;
 
@@ -19,17 +21,25 @@ private:
     RigidBody* rigidBodyHead;
     RigidBody* rigidBodyTail;
 
+    // ------------------------------------------------
+    // camera
+    // ------------------------------------------------
+
     Camera* camera = nullptr;
 
 public:
     Scene();
     ~Scene();
 
-    void addNode(Node* node);
-    void removeNode(Node* node);
-
     void setCamera(Camera* camera);
     Camera* getCamera() const;
+
+    // ------------------------------------------------
+    // node management
+    // ------------------------------------------------
+
+    void addNode(Node* node);
+    void removeNode(Node* node);
 
     // TODO replace with iterators
     Node* getNodeHead() const;
@@ -42,10 +52,12 @@ public:
     // ------------------------------------------------
     // rendering
     // ------------------------------------------------
+
     void draw() const;
 
     // ------------------------------------------------
     // updating
     // ------------------------------------------------
+    
     void update(float dt);
 };
