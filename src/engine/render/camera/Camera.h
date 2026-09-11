@@ -7,6 +7,8 @@ class Camera {
 private:
     float aspect;
     float zoom;
+    float near = -1000.0f;
+    float far = 1000.0f;
     glm::vec2 position = glm::vec2(0.0f);
 
     float viewportWidth = 1.0f;
@@ -23,6 +25,7 @@ public:
 
     void setAspect(float aspect);
     void setZoom(float zoom);
+    void setClipRange(float near, float far);
     void setPosition(const glm::vec2& position);
 
     glm::mat4 getProjection() const;

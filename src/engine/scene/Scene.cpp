@@ -1,5 +1,5 @@
 #include "engine/scene/Scene.h"
-#include "engine/node/Model.h"
+#include "engine/node/Node.h"
 #include "engine/node/RigidBody.h"
 #include "engine/render/camera/Camera.h"
 #include <glm/glm.hpp>
@@ -12,12 +12,6 @@ Scene::Scene()
     tail = new Node();
     head->nextNode = tail;
     tail->prevNode = head;
-
-    // create model doubly-linked list
-    modelHead = new Model();
-    modelTail = new Model();
-    modelHead->nextModel = modelTail;
-    modelTail->prevModel = modelHead;
 
     // create rigid body doubly-linked list
     rigidBodyHead = new RigidBody();
@@ -35,8 +29,6 @@ Scene::~Scene()
 
     delete head;
     delete tail;
-    delete modelHead;
-    delete modelTail;
     delete rigidBodyHead;
     delete rigidBodyTail;
 }
@@ -59,11 +51,8 @@ void Scene::addNode(Node* node)
 {
     node->insertNode(tail);
 
-    if (auto* model = dynamic_cast<Model*>(node)) {
-        model->insertModel(modelTail);
-    }
-
-    if (auto* rigidBody = dynamic_cast<RigidBody*>(node)) {
+    if (auto* rigidBody = dynamic_cast<RigidBody*>(node)) 
+    {
         rigidBody->insertRigidBody(rigidBodyTail);
     }
 }
@@ -97,9 +86,9 @@ void Scene::draw() const
         viewProjection = camera->getProjection() * camera->getView();
     }
 
-    for (Model* model = modelHead->nextModel; model != modelTail; model = model->nextModel) 
+    for (Node* node = head->nextNode; node != tail; node = node->nextNode) 
     {
-        model->draw(viewProjection);
+        node->draw(viewProjection);
     }
 }
 

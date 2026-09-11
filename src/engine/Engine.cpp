@@ -13,6 +13,7 @@ Engine::Engine(int width, int height) : context(width, height)
     glClearColor(0.12f, 0.12f, 0.14f, 1.0f);
     ObjServer::loadMesh("unit", "resources/mesh/unit.obj");
     ShaderServer::loadShader("default2d", "shaders/default2d.vert", "shaders/default2d.frag");
+    ShaderServer::loadShader("default3d", "shaders/default3d.vert", "shaders/default3d.frag");
     ShaderServer::loadShader("text", "shaders/text.vert", "shaders/text.frag");
     TextureServer::loadTexture("white", "resources/image/white.png");
 }

@@ -34,6 +34,13 @@ void Camera::setZoom(float zoom)
     updateProjection();
 }
 
+void Camera::setClipRange(float near, float far)
+{
+    this->near = near;
+    this->far = far;
+    updateProjection();
+}
+
 void Camera::setPosition(const glm::vec2& position)
 {
     this->position = position;
@@ -82,7 +89,7 @@ void Camera::updateProjection()
 {
     const float halfH = 1.0f / zoom;
     const float halfW = halfH * aspect;
-    proj = glm::ortho(-halfW, halfW, -halfH, halfH, -1.0f, 1.0f);
+    proj = glm::ortho(-halfW, halfW, -halfH, halfH, near, far);
 }
 
 void Camera::updateView()

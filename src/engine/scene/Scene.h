@@ -1,7 +1,6 @@
 #pragma once
 
 class Node;
-class Model;
 class RigidBody;
 class Camera;
 
@@ -14,9 +13,6 @@ private:
 
     Node* head;
     Node* tail;
-
-    Model* modelHead;
-    Model* modelTail;
 
     RigidBody* rigidBodyHead;
     RigidBody* rigidBodyTail;
@@ -44,8 +40,6 @@ public:
     // TODO replace with iterators
     Node* getNodeHead() const;
     Node* getNodeTail() const;
-    Model* getModelHead() const;
-    Model* getModelTail() const;
     RigidBody* getRigidBodyHead() const;
     RigidBody* getRigidBodyTail() const;
 

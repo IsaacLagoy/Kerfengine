@@ -13,10 +13,8 @@ void main() {
     vec4 world = uModel * vec4(aPos.xy, 0.0, 1.0);
     vec4 clip = uViewProjection * world;
 
-    // use sigmoid to clamp layering to NDC manually
-    float sigma = 1.0 / (1.0 + exp(-uLayer));
-    float ndcZ = 1.0 - 2.0 * sigma;
-    clip.z = ndcZ * clip.w;
+    // tiny clip-space bias for layering
+    clip.z += -uLayer * 1e-4 * clip.w;
 
     gl_Position = clip;
     vUV = aUV;

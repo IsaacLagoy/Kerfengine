@@ -17,9 +17,6 @@ protected:
     Mesh* mesh = nullptr;
     Material* material = nullptr;
     Shader* shader = nullptr;
-    
-    Model* nextModel = nullptr;
-    Model* prevModel = nullptr;
 
     float layer = 0.0f;
 
@@ -45,7 +42,5 @@ protected:
     // protected constructor for scene sentinel nodes
     Model();
 
-    void insertModel(Model* pos);
-    void unlinkModel();
     virtual void draw(const glm::mat4& viewProjection) override;    
 };

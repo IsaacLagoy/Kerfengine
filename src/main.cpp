@@ -5,6 +5,7 @@
 #include "engine/physics/collision/ColliderPolygon2DMesh.h"
 #include "engine/render/material/Material.h"
 #include "engine/node/Model.h"
+#include "engine/node/Model3d.h"
 #include "engine/render/camera/Camera.h"
 #include "engine/Engine.h"
 #include "engine/resource/ShaderServer.h"
@@ -22,12 +23,14 @@ int main()
     engine.setScene(&scene);
 
     // load shaders
-    ShaderServer::loadShader("uv", "shaders/uv.vert", "shaders/uv.frag");
+    ShaderServer::loadShader("uv", "shaders/default2d.vert", "shaders/uv.frag");
     Shader* uvShader = ShaderServer::getShader("uv");
 
     // load meshes
     ObjServer::loadMesh("quad", "resources/mesh/octagon.obj");
+    ObjServer::loadMesh("cube", "resources/mesh/cube.obj");
     Mesh* quad = ObjServer::getMesh("quad");
+    Mesh* cubeMesh = ObjServer::getMesh("cube");
 
     ColliderPolygon2DMeshServer::loadMesh("quad", quad->getVertices());
 
@@ -52,7 +55,7 @@ int main()
 
     Model* green = new Model(glm::vec3(-0.08f, -0.02f, 0.3f), glm::vec2(0.22f, 0.22f), quad, &solid, nullptr);
     green->setColor(glm::vec4(0.28f, 0.72f, 0.42f, 1.0f));
-    green->setLayer(1.0f);
+    green->setLayer(0.0f);
     scene.addNode(green);
 
     RigidBody* yellow = new RigidBody(
@@ -66,13 +69,24 @@ int main()
         glm::vec3(-0.1f, 0.0f, 0.0f)
     );
     yellow->setColor(glm::vec4(0.92f, 0.78f, 0.28f, 1.0f));
-    yellow->setLayer(0.5f);
+    yellow->setLayer(0.0f);
     scene.addNode(yellow);
 
     Model* fanModel = new Model(glm::vec3(0.12f, 0.28f, 0.0f), glm::vec2(0.2f, 0.2f), quad, &fanMaterial, nullptr);
     fanModel->setColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
     fanModel->setLayer(1.5f);
     scene.addNode(fanModel);
+
+    Model3d* cube = new Model3d(
+        glm::vec3(0.28f, 0.08f, 1.0f),
+        glm::angleAxis(glm::radians(45.0f), glm::vec3(0.5f, 0.5f, 0.0f)),
+        glm::vec3(0.12f),
+        cubeMesh,
+        &solid,
+        nullptr
+    );
+    cube->setColor(glm::vec4(0.85f, 0.55f, 0.25f, 1.0f));
+    scene.addNode(cube);
 
     // collider mesh tracking points
     std::vector<Model*> trackingPoints;
@@ -83,6 +97,10 @@ int main()
         glm::vec3 poseFan = fanModel->getPose();
         poseFan.z += 0.01f;
         fanModel->setPose(poseFan);
+
+        glm::quat rotationCube = cube->getRotation();
+        rotationCube = glm::angleAxis(glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * rotationCube;
+        cube->setRotation(rotationCube);
 
         engine.update();
 

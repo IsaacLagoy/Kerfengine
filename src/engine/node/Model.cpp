@@ -17,7 +17,7 @@ Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material
 
 Model::~Model() 
 {
-    unlinkModel();
+    // no op
 }
 
 float Model::getLayer() const
@@ -106,26 +106,4 @@ void Model::draw(const glm::mat4& viewProjection)
 
     // draw :)
     mesh->draw();
-}
-
-void Model::insertModel(Model* pos)
-{
-    this->nextModel = pos;
-    this->prevModel = pos->prevModel;
-    pos->prevModel->nextModel = this;
-    pos->prevModel = this;
-}
-
-void Model::unlinkModel()
-{
-    if (prevModel) {
-        prevModel->nextModel = nextModel;
-    }
-
-    if (nextModel) {
-        nextModel->prevModel = prevModel;
-    }
-
-    nextModel = nullptr;
-    prevModel = nullptr;
 }
