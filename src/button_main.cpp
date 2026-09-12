@@ -45,7 +45,7 @@ int main()
     Material solid(white);
 
     Button* quadButton = new Button(
-        glm::vec3(-0.45f, 0.0f, 0.0f),
+        glm::vec3(-0.45f, 0.0f, 1.0f),
         glm::vec2(0.25f, 0.25f),
         quad,
         &solid,
@@ -71,12 +71,12 @@ int main()
     scene.addNode(octagonButton);
 
     Drag* drag = new Drag(
-        glm::vec3(0.0f, 0.45f, 0.0f),
+        glm::vec3(0.0f, 0.45f, -1.0f),
         glm::vec2(0.25f, 0.25f),
         quad,
         &solid,
         nullptr,
-        Collider2D::box(2.0f, 2.0f)
+        Collider2D::box(1.0f, 1.0f)
     );
     drag->setLayer(0.0f);
     drag->setOnDownCallback([](float) { std::cout << "drag down" << std::endl; });

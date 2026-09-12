@@ -10,7 +10,7 @@ Node2d::Node2d()
     this->pose = glm::vec3(0.0f);
     this->scale = glm::vec2(1.0f);
 
-    computeModelMatrix(modelMatrixRef(), pose, scale);
+    updateModelMatrix(pose, scale);
 }
 
 Node2d::Node2d(const glm::vec3& pose)
@@ -18,7 +18,7 @@ Node2d::Node2d(const glm::vec3& pose)
     this->pose = pose;
     this->scale = glm::vec2(1.0f);
 
-    computeModelMatrix(modelMatrixRef(), pose, scale);
+    updateModelMatrix(pose, scale);
 }
 
 Node2d::Node2d(const glm::vec3& pose, const glm::vec2& scale)
@@ -26,7 +26,7 @@ Node2d::Node2d(const glm::vec3& pose, const glm::vec2& scale)
     this->pose = pose;
     this->scale = scale;
 
-    computeModelMatrix(modelMatrixRef(), pose, scale);
+    updateModelMatrix(pose, scale);
 }
 
 Node2d::~Node2d()
@@ -41,13 +41,13 @@ Node2d::~Node2d()
 void Node2d::setPose(const glm::vec3& pose)
 {
     this->pose = pose;
-    computeModelMatrix(modelMatrixRef(), pose, scale);
+    updateModelMatrix(pose, scale);
 }
 
 void Node2d::setScale(const glm::vec2& scale)
 {
     this->scale = scale;
-    computeModelMatrix(modelMatrixRef(), pose, scale);
+    updateModelMatrix(pose, scale);
 }
 
 // ------------------------------------------------------------
@@ -66,6 +66,5 @@ glm::vec2 Node2d::getScale() const
 
 void Node2d::draw(const glm::mat4& viewProjection)
 {
-    (void) viewProjection;
-    // no op
+    Node::draw(viewProjection);
 }

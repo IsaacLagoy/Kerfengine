@@ -34,6 +34,8 @@ protected:
     void insertRigidBody(RigidBody* pos);
     void unlinkRigidBody();
     virtual void draw(const glm::mat4& viewProjection) override;
+    virtual void enterScene(Scene* scene) override;
+    virtual void exitScene(Scene* scene) override;
 
 private:
     void initMass();

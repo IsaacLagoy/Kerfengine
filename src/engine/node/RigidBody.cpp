@@ -1,4 +1,5 @@
 #include "engine/node/RigidBody.h"
+#include "engine/scene/Scene.h"
 
 
 RigidBody::RigidBody() : Model() {}
@@ -34,10 +35,22 @@ void RigidBody::update(float dt)
 
 void RigidBody::insertRigidBody(RigidBody* pos)
 {
+    unlinkRigidBody();
+
     this->nextRigidBody = pos;
     this->prevRigidBody = pos->prevRigidBody;
     pos->prevRigidBody->nextRigidBody = this;
     pos->prevRigidBody = this;
+}
+
+void RigidBody::enterScene(Scene* scene)
+{
+    insertRigidBody(scene->getRigidBodyTail());
+}
+
+void RigidBody::exitScene(Scene* /*scene*/)
+{
+    unlinkRigidBody();
 }
 
 void RigidBody::unlinkRigidBody()

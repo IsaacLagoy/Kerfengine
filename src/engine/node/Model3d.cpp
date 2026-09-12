@@ -86,4 +86,7 @@ void Model3d::draw(const glm::mat4& viewProjection)
 
     // draw :)
     mesh->draw();
+
+    // draw children
+    Node::draw(viewProjection);
 }

@@ -7,14 +7,17 @@ class Button;
 class Mouse;
 
 class Scene {
+    friend class Node;
+    friend class RigidBody;
+    friend class Button;
+
 private:
 
     // ------------------------------------------------
     // node handles
     // ------------------------------------------------
 
-    Node* head;
-    Node* tail;
+    Node* root;
 
     RigidBody* rigidBodyHead;
     RigidBody* rigidBodyTail;
@@ -42,13 +45,9 @@ public:
     void addNode(Node* node);
     void removeNode(Node* node);
 
-    // TODO replace with iterators
-    Node* getNodeHead() const;
-    Node* getNodeTail() const;
-    RigidBody* getRigidBodyHead() const;
-    RigidBody* getRigidBodyTail() const;
-    Button* getButtonHead() const;
-    Button* getButtonTail() const;
+    // testing functions
+    int getRigidBodyCount() const;
+    int getButtonCount() const;
 
     // ------------------------------------------------
     // rendering
@@ -61,4 +60,11 @@ public:
     // ------------------------------------------------
     
     void update(float dt, Mouse& mouse);
+
+private:
+    Node* getRoot() const;
+    RigidBody* getRigidBodyHead() const;
+    RigidBody* getRigidBodyTail() const;
+    Button* getButtonHead() const;
+    Button* getButtonTail() const;
 };

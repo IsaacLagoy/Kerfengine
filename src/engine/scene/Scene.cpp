@@ -9,11 +9,9 @@
 
 Scene::Scene()
 {
-    // create node doubly-linked list
-    head = new Node();
-    tail = new Node();
-    head->nextNode = tail;
-    tail->prevNode = head;
+    // create root node
+    root = new Node();
+    root->scene = this;
 
     // create rigid body doubly-linked list
     rigidBodyHead = new RigidBody();
@@ -30,13 +28,7 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-    while (head->nextNode != tail) 
-    {
-        removeNode(head->nextNode);
-    }
-
-    delete head;
-    delete tail;
+    delete root;
     delete rigidBodyHead;
     delete rigidBodyTail;
     delete buttonHead;
@@ -59,22 +51,47 @@ Camera* Scene::getCamera() const
 
 void Scene::addNode(Node* node)
 {
-    node->insertNode(tail);
-
-    if (auto* rigidBody = dynamic_cast<RigidBody*>(node)) 
+    if (!node)
     {
-        rigidBody->insertRigidBody(rigidBodyTail);
+        return;
     }
 
-    if (auto* button = dynamic_cast<Button*>(node)) 
-    {
-        button->insertButton(buttonTail);
-    }
+    root->addChild(node);
 }
 
 void Scene::removeNode(Node* node)
 {
-    delete node;
+    if (!node || node == root)
+    {
+        return;
+    }
+
+    node->removeFromScene();
+}
+
+int Scene::getRigidBodyCount() const
+{
+    int count = 0;
+    for (RigidBody* rigidBody = rigidBodyHead->nextRigidBody; rigidBody != rigidBodyTail; rigidBody = rigidBody->nextRigidBody)
+    {
+        ++count;
+    }
+    return count;
+}
+
+int Scene::getButtonCount() const
+{
+    int count = 0;
+    for (Button* button = buttonHead->nextButton; button != buttonTail; button = button->nextButton)
+    {
+        ++count;
+    }
+    return count;
+}
+
+Node* Scene::getRoot() const
+{
+    return root;
 }
 
 RigidBody* Scene::getRigidBodyHead() const
@@ -111,10 +128,8 @@ void Scene::draw() const
         viewProjection = camera->getProjection() * camera->getView();
     }
 
-    for (Node* node = head->nextNode; node != tail; node = node->nextNode) 
-    {
-        node->draw(viewProjection);
-    }
+    // draw node tree
+    root->draw(viewProjection);
 }
 
 // ------------------------------------------------

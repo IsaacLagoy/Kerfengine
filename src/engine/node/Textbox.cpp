@@ -241,8 +241,10 @@ void Textbox::draw(const glm::mat4& viewProjection)
             glDisable(GL_BLEND);
         }
         glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
-        
     }
+
+    // draw children
+    Node::draw(viewProjection);
 }
 
 // TODO comment

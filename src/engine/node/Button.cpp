@@ -1,4 +1,5 @@
 #include "engine/node/Button.h"
+#include "engine/scene/Scene.h"
 
 Button::Button()
     : Model()
@@ -10,7 +11,10 @@ Button::Button(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Materi
     this->collider = collider;
 }
 
-Button::~Button() {}
+Button::~Button()
+{
+    unlinkButton();
+}
 
 void Button::update(float dt, const glm::vec2& mousePosition, bool mouseDown)
 {
@@ -106,10 +110,22 @@ void Button::onLeave(float dt)
 
 void Button::insertButton(Button* pos)
 {
+    unlinkButton();
+
     this->nextButton = pos;
     this->prevButton = pos->prevButton;
     pos->prevButton->nextButton = this;
     pos->prevButton = this;
+}
+
+void Button::enterScene(Scene* scene)
+{
+    insertButton(scene->getButtonTail());
+}
+
+void Button::exitScene(Scene* /*scene*/)
+{
+    unlinkButton();
 }
 
 void Button::unlinkButton()

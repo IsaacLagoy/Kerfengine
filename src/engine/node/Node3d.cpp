@@ -11,7 +11,7 @@ Node3d::Node3d()
     this->rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    computeModelMatrix(modelMatrixRef(), position, rotation, scale);
+    updateModelMatrix(position, rotation, scale);
 }
 
 Node3d::Node3d(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale)
@@ -20,7 +20,7 @@ Node3d::Node3d(const glm::vec3& position, const glm::quat& rotation, const glm::
     this->rotation = rotation;
     this->scale = scale;
 
-    computeModelMatrix(modelMatrixRef(), position, rotation, scale);
+    updateModelMatrix(position, rotation, scale);
 }
 
 Node3d::~Node3d()
@@ -35,19 +35,19 @@ Node3d::~Node3d()
 void Node3d::setPosition(const glm::vec3& position)
 {
     this->position = position;
-    computeModelMatrix(modelMatrixRef(), position, rotation, scale);
+    updateModelMatrix(position, rotation, scale);
 }
 
 void Node3d::setRotation(const glm::quat& rotation)
 {
     this->rotation = rotation;
-    computeModelMatrix(modelMatrixRef(), position, rotation, scale);
+    updateModelMatrix(position, rotation, scale);
 }
 
 void Node3d::setScale(const glm::vec3& scale)
 {
     this->scale = scale;
-    computeModelMatrix(modelMatrixRef(), position, rotation, scale);
+    updateModelMatrix(position, rotation, scale);
 }
 
 // ------------------------------------------------------------
@@ -71,6 +71,5 @@ glm::vec3 Node3d::getScale() const
 
 void Node3d::draw(const glm::mat4& viewProjection)
 {
-    (void) viewProjection;
-    // no op
+    Node::draw(viewProjection);
 }

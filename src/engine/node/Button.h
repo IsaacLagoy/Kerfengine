@@ -65,5 +65,7 @@ protected:
 private:
     void insertButton(Button* pos);
     void unlinkButton();
+    virtual void enterScene(Scene* scene) override;
+    virtual void exitScene(Scene* scene) override;
     
 };
