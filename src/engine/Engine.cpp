@@ -8,7 +8,10 @@
 #include "engine/resource/TextureServer.h"
 
 
-Engine::Engine(int width, int height) : context(width, height), mouse(context.getWindow())
+Engine::Engine(int width, int height) : 
+    context(width, height), 
+    mouse(context.getWindow()),
+    keyboard(context.getWindow())
 {
     context.setTitle("Kerfengine");
     glClearColor(0.12f, 0.12f, 0.14f, 1.0f);
@@ -38,6 +41,11 @@ void Engine::setFBO(FrameBuffer* fbo)
 Mouse& Engine::getMouse()
 {
     return mouse;
+}
+
+Keyboard& Engine::getKeyboard()
+{
+    return keyboard;
 }
 
 void Engine::render()
@@ -118,6 +126,7 @@ void Engine::update()
 {
     glfwPollEvents();
     mouse.update();
+    keyboard.update();
     if (scene) scene->update(0.016f); // 60 fps TODO real time
 }
 

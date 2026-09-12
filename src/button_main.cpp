@@ -8,7 +8,6 @@
 #include "engine/resource/TextureServer.h"
 #include "engine/scene/Scene.h"
 
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
 
@@ -81,17 +80,22 @@ int main()
           glm::vec4(0.65f, 0.25f, 0.15f, 1.0f) },
     };
 
-    for (const auto& style : buttons) {
+    for (const auto& style : buttons) 
+    {
         style.button->setColor(style.idle);
     }
 
     while (!engine.shouldClose())
     {
         engine.update();
-        
-        GLFWwindow* window = glfwGetCurrentContext();
+
+        const bool keyDown = engine.getKeyboard().getDown(GLFW_KEY_SPACE);
+        if (keyDown) {
+            std::cout << "space key down" << std::endl;
+        }
+
         const glm::vec2 mouse = engine.getMouse().mouseWorld(camera);
-        const bool mouseDown = engine.getMouse().getLeftDown();
+        const bool mouseDown = engine.getMouse().getLeftPressed();
         for (const auto& style : buttons)
         {
             style.button->update(0.016f, mouse, mouseDown);

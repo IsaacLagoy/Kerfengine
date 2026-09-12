@@ -5,6 +5,7 @@
 
 #include "engine/render/context/Context.h"
 #include "engine/input/Mouse.h"
+#include "engine/input/Keyboard.h"
 
 
 class Scene;
@@ -17,7 +18,8 @@ private:
     Scene* scene = nullptr;
     Context context;
     Mouse mouse;
-    
+    Keyboard keyboard;
+
 public:
     Engine(int width, int height);
     ~Engine();
@@ -31,6 +33,7 @@ public:
     void setFBO(FrameBuffer* fbo);
 
     Mouse& getMouse();
+    Keyboard& getKeyboard();
 
     /**
      * @brief Draw the scene to the current target (FBO if set, else the window).
