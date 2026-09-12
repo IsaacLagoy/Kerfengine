@@ -15,14 +15,17 @@ private:
     // location of the fbo 
     GLuint fbo = 0;
 
+    // depth/stencil storage matching the color target
+    GLuint depthRbo = 0;
+
     // texture to render to
     Texture* texture = nullptr; // does not own
 
     // texture width
-    int width;
+    int width = 0;
 
     // texture height
-    int height;
+    int height = 0;
 
 public:
     /**
@@ -52,6 +55,10 @@ public:
      * @return GLuint 
      */
     GLuint getFBO() const;
+
+    int getWidth() const;
+    int getHeight() const;
+    Texture* getTexture() const;
 
     /**
      * @brief Binds the FBO and sets the viewport to match

@@ -22,6 +22,9 @@ protected:
     int height = 0;
     int samples = 1;
 
+    GLenum minFilter = GL_LINEAR;
+    GLenum magFilter = GL_LINEAR;
+
     std::string name;
 
 public:
@@ -65,6 +68,12 @@ public:
     void bind() const;
     void unbind() const;
     void destroy();
+
+    /**
+     * @brief Sampler filters. Use GL_NEAREST on a low-res render target
+     *        if you sample it with a quad instead of blitting.
+     */
+    void setFilter(GLenum minFilter, GLenum magFilter);
 
     /**
      * @return GL_TEXTURE_2D_MULTISAMPLE if samples > 1, otherwise GL_TEXTURE_2D

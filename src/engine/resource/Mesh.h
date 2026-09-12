@@ -31,6 +31,9 @@
     
         // location of the mesh's texture buffer
         GLuint texBuf = 0;
+
+        // location of the mesh's barycentric buffer
+        GLuint baryBuf = 0;
     
         // number of vertices in the mesh
         int vertCount;

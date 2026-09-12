@@ -28,7 +28,18 @@ public:
     void setScene(Scene* scene);
     void setFBO(FrameBuffer* fbo);
 
+    /**
+     * @brief Draw the scene to the current target (FBO if set, else the window).
+     *        Does not swap when an FBO is bound; call present() after.
+     */
     void render();
+
+    /**
+     * @brief Draw the current FBO to the window (nearest upsample), then swap.
+     *        Uses a fullscreen quad so it works with an MSAA backbuffer.
+     */
+    void present();
+
     void update();
     bool shouldClose() const;
 };

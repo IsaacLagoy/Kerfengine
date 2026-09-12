@@ -45,10 +45,18 @@ void Mesh::init(const std::string& objPath)
         ));
     }
 
+    // barycentrics
+    static const float bary[3][3] = {
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, 1.0f}
+    };
+
     // load mesh buffers
     std::vector<float> positions;
     std::vector<float> normals;
     std::vector<float> textureCoords;
+    std::vector<float> barycentrics;
 
     for(size_t s = 0; s < shapes.size(); s++) 
     {
@@ -63,6 +71,12 @@ void Mesh::init(const std::string& objPath)
                 positions.push_back(attrib.vertices[3 * idx.vertex_index + 0]);
                 positions.push_back(attrib.vertices[3 * idx.vertex_index + 1]);
                 positions.push_back(attrib.vertices[3 * idx.vertex_index + 2]);
+
+                // one barycentric corner per vertex of the triangle
+                const size_t corner = v % 3;
+                barycentrics.push_back(bary[corner][0]);
+                barycentrics.push_back(bary[corner][1]);
+                barycentrics.push_back(bary[corner][2]);
 
                 // add normals if they exist
                 if(!attrib.normals.empty()) 
@@ -119,6 +133,13 @@ void Mesh::init(const std::string& objPath)
         hasTex  = true;
     }
 
+    // Barycentrics — attribute location 3
+    glGenBuffers(1, &baryBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, baryBuf);
+    glBufferData(GL_ARRAY_BUFFER, barycentrics.size() * sizeof(float), barycentrics.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+
     glBindVertexArray(0); // unbind — state is now saved inside the VAO
 }
 
@@ -136,6 +157,8 @@ void Mesh::destroy()
     {
         glDeleteBuffers(1, &texBuf);
     }
+
+    glDeleteBuffers(1, &baryBuf);
 }
 
 void Mesh::draw() const

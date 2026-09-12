@@ -9,6 +9,7 @@
 #include "engine/render/camera/Camera.h"
 #include "engine/Engine.h"
 #include "engine/resource/ShaderServer.h"
+#include "engine/render/buffer/FrameBuffer.h"
 
 int main()
 {
@@ -17,6 +18,12 @@ int main()
     const int height = 600;
     Engine engine(width, height);
 
+    Texture* tx = new Texture(width / 2, height / 2, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+    tx->setFilter(GL_NEAREST, GL_NEAREST);
+    FrameBuffer* frameBuffer = new FrameBuffer();
+    frameBuffer->setTexture(tx, tx->getWidth(), tx->getHeight());
+    engine.setFBO(frameBuffer);
+
     Camera camera(width, height, 1.0f);
     Scene scene;
     scene.setCamera(&camera);
@@ -24,7 +31,11 @@ int main()
 
     // load shaders
     ShaderServer::loadShader("uv", "shaders/default2d.vert", "shaders/uv.frag");
+    ShaderServer::loadShader("bary2d", "shaders/default2d.vert", "shaders/bary.frag");
+    ShaderServer::loadShader("bary3d", "shaders/default3d.vert", "shaders/bary.frag");
     Shader* uvShader = ShaderServer::getShader("uv");
+    Shader* bary2d = ShaderServer::getShader("bary2d");
+    Shader* bary3d = ShaderServer::getShader("bary3d");
 
     // load meshes
     ObjServer::loadMesh("quad", "resources/mesh/octagon.obj");
@@ -48,9 +59,9 @@ int main()
     backdrop->setLayer(-1.0f);
     scene.addNode(backdrop);
 
-    Model* red = new Model(glm::vec3(-0.25f, 0.05f, 0.0f), glm::vec2(0.22f, 0.22f), quad, &solid, nullptr);
+    Model* red = new Model(glm::vec3(-0.25f, 0.05f, 0.0f), glm::vec2(0.22f, 0.22f), quad, &solid, bary2d);
     red->setColor(glm::vec4(0.86f, 0.28f, 0.24f, 1.0f));
-    red->setLayer(0.0f);
+    red->setLayer(2.0f);
     scene.addNode(red);
 
     Model* green = new Model(glm::vec3(-0.08f, -0.02f, 0.3f), glm::vec2(0.22f, 0.22f), quad, &solid, nullptr);
@@ -83,7 +94,7 @@ int main()
         glm::vec3(0.12f),
         cubeMesh,
         &solid,
-        nullptr
+        bary3d
     );
     cube->setColor(glm::vec4(0.85f, 0.55f, 0.25f, 1.0f));
     scene.addNode(cube);
@@ -124,8 +135,8 @@ int main()
             i++;
         }
 
-        // engine stuff
         engine.render();
+        engine.present();
     }
 
     return 0;
