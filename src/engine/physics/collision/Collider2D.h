@@ -33,6 +33,7 @@ public:
         ColliderPolygon2DMesh* mesh;
     };
 
+public:
     static Collider2D box(float width, float height);
     static Collider2D circle(float radius);
     static Collider2D polygon(ColliderPolygon2DMesh* mesh);
@@ -41,4 +42,12 @@ public:
     float getMass(float density, const glm::vec2& scale = glm::vec2(1.0f)) const;
     float getInertia(float density, const glm::vec2& scale = glm::vec2(1.0f)) const;
     const ColliderPolygon2DMesh* getMesh() const;
+
+    bool isPointInside(const glm::vec2& point) const;
+
+private:
+    bool isPointInsidePolygon(const glm::vec2& point) const;
+    bool isPointInsideCircle(const glm::vec2& point) const;
+    bool isPointInsideBox(const glm::vec2& point) const;
+
 };

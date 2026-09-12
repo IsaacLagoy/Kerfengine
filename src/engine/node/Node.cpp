@@ -31,6 +31,16 @@ void Node::computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& position,
     modelMatrix = glm::scale(modelMatrix, scale);
 }
 
+glm::vec3 Node::pointToLocalSpace(const glm::vec3& point) const
+{
+    return glm::vec3(glm::inverse(modelMatrix) * glm::vec4(point, 1.0f));
+}
+
+glm::vec2 Node::pointToLocalSpace(const glm::vec2& point) const
+{
+    return glm::vec2(glm::inverse(modelMatrix) * glm::vec4(point, 0.0f, 1.0f));
+}
+
 void Node::insertNode(Node* pos)
 {
     this->nextNode = pos;

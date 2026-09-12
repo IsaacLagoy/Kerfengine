@@ -6,6 +6,8 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#include "shared/Structs.h"
+
 // ------------------------------------------------
 // ColliderPolygon2DMesh
 // ------------------------------------------------
@@ -13,6 +15,7 @@
 class ColliderPolygon2DMesh {
 private:
     std::vector<glm::vec2> vertices;
+    std::vector<Face> faces;
     float area = 0.0f;
 
 public:
@@ -22,6 +25,9 @@ public:
     float getInertia(float density, const glm::vec2& scale) const;
     float getArea() const { return area; }
     const std::vector<glm::vec2>& getVertices() const { return vertices; }
+    const std::vector<Face>& getFaces() const { return faces; }
+
+    bool containsPoint(const glm::vec2& point) const;
 
 private:
     void init();

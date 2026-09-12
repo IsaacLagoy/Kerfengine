@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
-
+#include <functional>
 
 /**
  * @brief Handles internal context for standalone applications
@@ -11,8 +11,9 @@
  */
 class Context {
 private:
-    // 
     GLFWwindow* window;
+
+    std::function<void(int, int)> resizeCallbackFunction;
 
 public:
     /**
@@ -66,6 +67,13 @@ public:
      */
     void setTitle(const std::string& title) const;
 
+    /**
+     * @brief Set the callback function for framebuffer size changes. Used to resize the window.
+     * 
+     * @param callback 
+     */
+    void setResizeCallback(std::function<void(int, int)> callback);
+
 private:
     /**
      * @brief Creates the context window with GLFW
@@ -81,5 +89,14 @@ private:
      * 
      */
     void initGL() const;
+
+    /**
+     * @brief Callback function for framebuffer size changes. Used to resize the window.
+     * 
+     * @param window 
+     * @param width 
+     * @param height 
+     */
+    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 };

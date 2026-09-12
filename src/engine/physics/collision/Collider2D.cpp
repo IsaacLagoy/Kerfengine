@@ -78,3 +78,34 @@ const ColliderPolygon2DMesh* Collider2D::getMesh() const
     assert(type == ColliderType::POLYGON);
     return mesh;
 }
+
+bool Collider2D::isPointInside(const glm::vec2& point) const
+{
+    switch (type)
+    {
+        case ColliderType::POLYGON:
+            return isPointInsidePolygon(point);
+        case ColliderType::CIRCLE:
+            return isPointInsideCircle(point);
+        case ColliderType::BOX:
+            return isPointInsideBox(point);
+        default:
+            throw std::runtime_error("Collider2D isPointInside: invalid collider type");
+    }
+}
+
+bool Collider2D::isPointInsidePolygon(const glm::vec2& point) const
+{
+    return mesh->containsPoint(point);
+}
+
+bool Collider2D::isPointInsideCircle(const glm::vec2& point) const
+{
+    return glm::length(point) <= radius;
+}
+
+bool Collider2D::isPointInsideBox(const glm::vec2& point) const
+{
+    return point.x >= -boxShape.width / 2.0f && point.x <= boxShape.width / 2.0f &&
+           point.y >= -boxShape.height / 2.0f && point.y <= boxShape.height / 2.0f;
+}

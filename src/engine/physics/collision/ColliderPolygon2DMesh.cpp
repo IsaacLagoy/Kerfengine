@@ -30,12 +30,38 @@ float ColliderPolygon2DMesh::getInertia(float density, const glm::vec2& scale) c
 void ColliderPolygon2DMesh::init()
 {
     bool success = monotoneChain(vertices, vertices);
-    if (!success) 
+    if (!success)
     {
         throw std::runtime_error("Failed to order vertices CCW");
     }
 
+    faces.clear();
+    const size_t n = vertices.size();
+    if (n >= 3)
+    {
+        for (size_t i = 1; i + 1 < n; ++i)
+        {
+            faces.push_back(Face{
+                vertices[0],
+                vertices[i],
+                vertices[i + 1]
+            });
+        }
+    }
+
     area = polygonArea(vertices);
+}
+
+bool ColliderPolygon2DMesh::containsPoint(const glm::vec2& point) const
+{
+    for (const auto& face : faces)
+    {
+        if (faceContainsPoint(face, point))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 // ------------------------------------------------------------

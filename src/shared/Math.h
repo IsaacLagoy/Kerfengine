@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include "Structs.h"
+
 
 inline float cross(const glm::vec2& a, const glm::vec2& b)
 {
@@ -111,4 +113,18 @@ inline float polygonInertia(const std::vector<glm::vec2>& vertices, float densit
     inertiaOrigin *= density / 12.0f;
 
     return glm::abs(inertiaOrigin - density * area * glm::dot(centroid, centroid));
+}
+
+// assumes face is ccw
+inline bool faceContainsPoint(const Face& face, const glm::vec2& point)
+{
+    const glm::vec2 a = face.v1;
+    const glm::vec2 b = face.v2;
+    const glm::vec2 c = face.v3;
+
+    const float ab = cross(b - a, point - a);
+    const float bc = cross(c - b, point - b);
+    const float ca = cross(a - c, point - c);
+
+    return ab >= 0.0f && bc >= 0.0f && ca >= 0.0f;
 }

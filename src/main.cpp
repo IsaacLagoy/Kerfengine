@@ -135,6 +135,8 @@ int main()
             i++;
         }
 
+        // std::cout << numPoints << std::endl;
+
         engine.render();
         engine.present();
     }

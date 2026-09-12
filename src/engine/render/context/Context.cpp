@@ -72,6 +72,10 @@ void Context::initWindow(int width, int height, bool resizable)
         throw std::runtime_error("Failed to open window");
     }
 
+    // set window user pointer and framebuffer size callback
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
     // set window to current context
     glfwMakeContextCurrent(window);
     glfwSetTime(0.0);
@@ -94,3 +98,10 @@ void Context::initGL() const
     std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
 
+void Context::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    auto* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
+    if (!ctx) return;
+    if (!ctx->resizeCallbackFunction) return;
+    ctx->resizeCallbackFunction(width, height);
+}

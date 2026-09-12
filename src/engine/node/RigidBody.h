@@ -8,8 +8,7 @@ class Scene;
 class Shader;
 
 class RigidBody : public Model {
-
-friend class Scene;
+    friend class Scene;
 
 private:
     float density = -1.0f;

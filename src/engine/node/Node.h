@@ -41,6 +41,9 @@ public:
     static void computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& pose, const glm::vec2& scale);
     static void computeModelMatrix(glm::mat4& modelMatrix, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
 
+    glm::vec3 pointToLocalSpace(const glm::vec3& point) const;
+    glm::vec2 pointToLocalSpace(const glm::vec2& point) const;
+
 protected:
     void insertNode(Node* pos);
     void unlinkNode();
