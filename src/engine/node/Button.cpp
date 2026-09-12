@@ -103,3 +103,27 @@ void Button::onLeave(float dt)
         onLeaveCallback(dt);
     }
 }
+
+void Button::insertButton(Button* pos)
+{
+    this->nextButton = pos;
+    this->prevButton = pos->prevButton;
+    pos->prevButton->nextButton = this;
+    pos->prevButton = this;
+}
+
+void Button::unlinkButton()
+{
+    if (prevButton)
+    {
+        prevButton->nextButton = nextButton;
+    }
+
+    if (nextButton)
+    {
+        nextButton->prevButton = prevButton;
+    }
+
+    nextButton = nullptr;
+    prevButton = nullptr;
+}

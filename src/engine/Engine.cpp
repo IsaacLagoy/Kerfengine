@@ -127,7 +127,7 @@ void Engine::update()
     glfwPollEvents();
     mouse.update();
     keyboard.update();
-    if (scene) scene->update(0.016f); // 60 fps TODO real time
+    if (scene) scene->update(0.016f, mouse); // 60 fps TODO real time
 }
 
 bool Engine::shouldClose() const

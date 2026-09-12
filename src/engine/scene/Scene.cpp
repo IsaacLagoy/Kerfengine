@@ -1,7 +1,9 @@
 #include "engine/scene/Scene.h"
 #include "engine/node/Node.h"
 #include "engine/node/RigidBody.h"
+#include "engine/node/Button.h"
 #include "engine/render/camera/Camera.h"
+#include "engine/input/Mouse.h"
 #include <glm/glm.hpp>
 
 
@@ -18,6 +20,12 @@ Scene::Scene()
     rigidBodyTail = new RigidBody();
     rigidBodyHead->nextRigidBody = rigidBodyTail;
     rigidBodyTail->prevRigidBody = rigidBodyHead;
+
+    // create button doubly-linked list
+    buttonHead = new Button();
+    buttonTail = new Button();
+    buttonHead->nextButton = buttonTail;
+    buttonTail->prevButton = buttonHead;
 }
 
 Scene::~Scene()
@@ -31,6 +39,8 @@ Scene::~Scene()
     delete tail;
     delete rigidBodyHead;
     delete rigidBodyTail;
+    delete buttonHead;
+    delete buttonTail;
 }
 
 void Scene::setCamera(Camera* camera)
@@ -55,6 +65,11 @@ void Scene::addNode(Node* node)
     {
         rigidBody->insertRigidBody(rigidBodyTail);
     }
+
+    if (auto* button = dynamic_cast<Button*>(node)) 
+    {
+        button->insertButton(buttonTail);
+    }
 }
 
 void Scene::removeNode(Node* node)
@@ -70,6 +85,16 @@ RigidBody* Scene::getRigidBodyHead() const
 RigidBody* Scene::getRigidBodyTail() const
 {
     return rigidBodyTail;
+}
+
+Button* Scene::getButtonHead() const
+{
+    return buttonHead;
+}
+
+Button* Scene::getButtonTail() const
+{
+    return buttonTail;
 }
 
 // ------------------------------------------------
@@ -96,10 +121,15 @@ void Scene::draw() const
 // updating
 // ------------------------------------------------
 
-void Scene::update(float dt)
+void Scene::update(float dt, Mouse& mouse)
 {
     for (RigidBody* rigidBody = rigidBodyHead->nextRigidBody; rigidBody != rigidBodyTail; rigidBody = rigidBody->nextRigidBody) 
     {
         rigidBody->update(dt);
+    }
+
+    for (Button* button = buttonHead->nextButton; button != buttonTail; button = button->nextButton) 
+    {
+        button->update(dt, mouse.mouseWorld(*camera), mouse.getLeftPressed());
     }
 }

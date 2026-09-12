@@ -3,6 +3,8 @@
 class Node;
 class RigidBody;
 class Camera;
+class Button;
+class Mouse;
 
 class Scene {
 private:
@@ -16,6 +18,9 @@ private:
 
     RigidBody* rigidBodyHead;
     RigidBody* rigidBodyTail;
+
+    Button* buttonHead;
+    Button* buttonTail;
 
     // ------------------------------------------------
     // camera
@@ -42,6 +47,8 @@ public:
     Node* getNodeTail() const;
     RigidBody* getRigidBodyHead() const;
     RigidBody* getRigidBodyTail() const;
+    Button* getButtonHead() const;
+    Button* getButtonTail() const;
 
     // ------------------------------------------------
     // rendering
@@ -53,5 +60,5 @@ public:
     // updating
     // ------------------------------------------------
     
-    void update(float dt);
+    void update(float dt, Mouse& mouse);
 };

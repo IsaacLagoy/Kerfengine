@@ -25,6 +25,9 @@ private:
     bool isDown = false;
     bool isHovered = false;
 
+    Button* nextButton = nullptr;
+    Button* prevButton = nullptr;
+
 public:
     Button(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider);
     ~Button();
@@ -58,5 +61,9 @@ protected:
     virtual void onReleased(float dt);
     virtual void onHover(float dt);
     virtual void onLeave(float dt);
+
+private:
+    void insertButton(Button* pos);
+    void unlinkButton();
     
 };

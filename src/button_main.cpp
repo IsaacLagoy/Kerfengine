@@ -98,7 +98,6 @@ int main()
         const bool mouseDown = engine.getMouse().getLeftPressed();
         for (const auto& style : buttons)
         {
-            style.button->update(0.016f, mouse, mouseDown);
             if (style.button->getIsDown()) {
                 style.button->setColor(style.down);
             } else if (style.button->getIsHovered()) {
