@@ -1,5 +1,6 @@
 #include "engine/Engine.h"
 #include "engine/node/Button.h"
+#include "engine/node/Drag.h"
 #include "engine/physics/collision/Collider2D.h"
 #include "engine/physics/collision/ColliderPolygon2DMesh.h"
 #include "engine/render/camera/Camera.h"
@@ -69,6 +70,19 @@ int main()
     octagonButton->setOnUpCallback([](float) { std::cout << "octagon button up" << std::endl; });
     scene.addNode(octagonButton);
 
+    Drag* drag = new Drag(
+        glm::vec3(0.0f, 0.45f, 0.0f),
+        glm::vec2(0.25f, 0.25f),
+        quad,
+        &solid,
+        nullptr,
+        Collider2D::box(2.0f, 2.0f)
+    );
+    drag->setLayer(0.0f);
+    drag->setOnDownCallback([](float) { std::cout << "drag down" << std::endl; });
+    drag->setOnUpCallback([](float) { std::cout << "drag up" << std::endl; });
+    scene.addNode(drag);
+
     std::vector<ButtonStyle> buttons = {
         { quadButton,
           glm::vec4(0.35f, 0.55f, 0.85f, 1.0f),
@@ -78,6 +92,10 @@ int main()
           glm::vec4(0.85f, 0.45f, 0.30f, 1.0f),
           glm::vec4(0.95f, 0.60f, 0.40f, 1.0f),
           glm::vec4(0.65f, 0.25f, 0.15f, 1.0f) },
+        { drag,
+          glm::vec4(0.35f, 0.75f, 0.40f, 1.0f),
+          glm::vec4(0.50f, 0.90f, 0.55f, 1.0f),
+          glm::vec4(0.20f, 0.50f, 0.25f, 1.0f) },
     };
 
     for (const auto& style : buttons) 
