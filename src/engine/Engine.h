@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "engine/render/context/Context.h"
+#include "engine/input/Mouse.h"
 
 
 class Scene;
@@ -15,7 +16,8 @@ private:
     FrameBuffer* fbo = nullptr;
     Scene* scene = nullptr;
     Context context;
-
+    Mouse mouse;
+    
 public:
     Engine(int width, int height);
     ~Engine();
@@ -27,6 +29,8 @@ public:
 
     void setScene(Scene* scene);
     void setFBO(FrameBuffer* fbo);
+
+    Mouse& getMouse();
 
     /**
      * @brief Draw the scene to the current target (FBO if set, else the window).

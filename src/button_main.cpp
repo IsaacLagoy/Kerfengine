@@ -21,37 +21,6 @@ struct ButtonStyle {
     glm::vec4 down = glm::vec4(1.0f);
 };
 
-glm::vec2 mouseWorld(GLFWwindow* window, Camera& camera)
-{
-    double mx = 0.0;
-    double my = 0.0;
-    glfwGetCursorPos(window, &mx, &my);
-
-    int winW = 0;
-    int winH = 0;
-    int fbW = 0;
-    int fbH = 0;
-    glfwGetWindowSize(window, &winW, &winH);
-    glfwGetFramebufferSize(window, &fbW, &fbH);
-
-    camera.resize(fbW, fbH);
-
-    if (winW <= 0 || winH <= 0) {
-        return glm::vec2(0.0f);
-    }
-
-    const glm::vec2 screen(
-        static_cast<float>(mx * static_cast<double>(fbW) / static_cast<double>(winW)),
-        static_cast<float>(my * static_cast<double>(fbH) / static_cast<double>(winH))
-    );
-    return camera.screenToWorld(screen);
-}
-
-bool leftMouseDown(GLFWwindow* window)
-{
-    return glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-}
-
 } // namespace
 
 int main()
@@ -89,7 +58,7 @@ int main()
     scene.addNode(quadButton);
 
     Button* octagonButton = new Button(
-        glm::vec3(0.45f, 0.0f, 0.0f),
+        glm::vec3(0.45f, 0.0f, 1.0f),
         glm::vec2(0.25f, 0.25f),
         octagon,
         &solid,
@@ -119,10 +88,10 @@ int main()
     while (!engine.shouldClose())
     {
         engine.update();
-
+        
         GLFWwindow* window = glfwGetCurrentContext();
-        const glm::vec2 mouse = mouseWorld(window, camera);
-        const bool mouseDown = leftMouseDown(window);
+        const glm::vec2 mouse = engine.getMouse().mouseWorld(camera);
+        const bool mouseDown = engine.getMouse().getLeftDown();
         for (const auto& style : buttons)
         {
             style.button->update(0.016f, mouse, mouseDown);
