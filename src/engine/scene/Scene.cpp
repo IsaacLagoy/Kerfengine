@@ -2,6 +2,7 @@
 #include "engine/node/Node.h"
 #include "engine/node/RigidBody.h"
 #include "engine/node/Button.h"
+#include "engine/node/Drag.h"
 #include "engine/render/camera/Camera.h"
 #include "engine/input/Mouse.h"
 #include <glm/glm.hpp>
@@ -24,6 +25,9 @@ Scene::Scene()
     buttonTail = new Button();
     buttonHead->nextButton = buttonTail;
     buttonTail->prevButton = buttonHead;
+
+    // create selected drag
+    selectedDrag = nullptr;
 }
 
 Scene::~Scene()
@@ -33,6 +37,8 @@ Scene::~Scene()
     delete rigidBodyTail;
     delete buttonHead;
     delete buttonTail;
+
+    selectedDrag = nullptr;
 }
 
 void Scene::setCamera(Camera* camera)
@@ -89,6 +95,16 @@ int Scene::getButtonCount() const
     return count;
 }
 
+void Scene::setSelectedDrag(Drag* drag)
+{
+    selectedDrag = drag;
+}
+
+Drag* Scene::getSelectedDrag() const
+{
+    return selectedDrag;
+}
+
 Node* Scene::getRoot() const
 {
     return root;
@@ -143,8 +159,18 @@ void Scene::update(float dt, Mouse& mouse)
         rigidBody->update(dt);
     }
 
-    for (Button* button = buttonHead->nextButton; button != buttonTail; button = button->nextButton) 
+    const glm::vec2 mousePosition = mouse.mouseWorld(*camera);
+    const bool mouseDown = mouse.getLeftDown();
+    const bool mousePressed = mouse.getLeftPressed();
+
+    for (Button* button = buttonTail->prevButton; button != buttonHead; button = button->prevButton) 
     {
-        button->update(dt, mouse.mouseWorld(*camera), mouse.getLeftPressed());
+        button->update(dt, mousePosition, mouseDown, mousePressed);
+    }
+
+    // Drops claim selectedDrag in onUp; clear only after every button has updated.
+    if (!mousePressed)
+    {
+        selectedDrag = nullptr;
     }
 }

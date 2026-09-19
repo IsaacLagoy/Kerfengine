@@ -5,6 +5,7 @@ class RigidBody;
 class Camera;
 class Button;
 class Mouse;
+class Drag;
 
 class Scene {
     friend class Node;
@@ -25,6 +26,8 @@ private:
     Button* buttonHead;
     Button* buttonTail;
 
+    Drag* selectedDrag = nullptr;
+
     // ------------------------------------------------
     // camera
     // ------------------------------------------------
@@ -34,6 +37,10 @@ private:
 public:
     Scene();
     ~Scene();
+
+    // ------------------------------------------------
+    // camera
+    // ------------------------------------------------
 
     void setCamera(Camera* camera);
     Camera* getCamera() const;
@@ -48,6 +55,9 @@ public:
     // testing functions
     int getRigidBodyCount() const;
     int getButtonCount() const;
+
+    void setSelectedDrag(Drag* drag);
+    Drag* getSelectedDrag() const;
 
     // ------------------------------------------------
     // rendering

@@ -1,20 +1,23 @@
 #include "engine/node/Drag.h"
 
+#include "engine/scene/Scene.h"
+
 Drag::Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider)
     : Button(pose, scale, mesh, material, shader, collider)
 {
     relativePosition = glm::vec2(0.0f);
     velocity = glm::vec2(0.0f);
-    isDragging = false;
 }
 
 Drag::~Drag() {}
 
-void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown)
+void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
-    Button::update(dt, mousePosition, mouseDown);
+    Button::update(dt, mousePosition, mouseDown, mousePressed);
 
-    if (!isDragging)
+    // Follow the mouse only while this drag is selected and the button is held.
+    // selectedDrag stays set until Scene::update ends so drops can claim on release.
+    if (!isDragging() || !mousePressed)
     {
         wasDragging = false;
         velocity = glm::vec2(0.0f);
@@ -36,7 +39,11 @@ void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown)
 
 void Drag::onDown(float dt)
 {
-    isDragging = true;
+    // reserve self as selected drag
+    if (getScene()->getSelectedDrag() == nullptr)
+    {
+        getScene()->setSelectedDrag(this);
+    }
 
     // preserve button onDown callback
     Button::onDown(dt);
@@ -44,8 +51,11 @@ void Drag::onDown(float dt)
 
 void Drag::onUp(float dt)
 {
-    isDragging = false;
-
-    // preserve button onUp callback
+    // Leave selectedDrag set for the rest of this frame so a Drop::onUp can claim it.
     Button::onUp(dt);
+}
+
+bool Drag::isDragging() const
+{
+    return getScene()->getSelectedDrag() == this;
 }

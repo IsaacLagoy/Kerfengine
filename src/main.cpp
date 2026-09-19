@@ -90,7 +90,7 @@ int main()
 
     Model3d* cube = new Model3d(
         glm::vec3(0.28f, 0.08f, 1.0f),
-        glm::angleAxis(glm::radians(45.0f), glm::vec3(0.5f, 0.5f, 0.0f)),
+        glm::angleAxis(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
         glm::vec3(0.12f),
         cubeMesh,
         &solid,
@@ -110,7 +110,7 @@ int main()
         fanModel->setPose(poseFan);
 
         glm::quat rotationCube = cube->getRotation();
-        rotationCube = glm::angleAxis(glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * rotationCube;
+        rotationCube = glm::angleAxis(glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * rotationCube;
         cube->setRotation(rotationCube);
 
         engine.update();

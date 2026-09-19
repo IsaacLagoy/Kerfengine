@@ -76,12 +76,25 @@ int main()
         quad,
         &solid,
         nullptr,
-        Collider2D::box(1.0f, 1.0f)
+        Collider2D::box(2.0f, 2.0f)
     );
     drag->setLayer(0.0f);
     drag->setOnDownCallback([](float) { std::cout << "drag down" << std::endl; });
     drag->setOnUpCallback([](float) { std::cout << "drag up" << std::endl; });
     scene.addNode(drag);
+
+    Drag* drag2 = new Drag(
+        glm::vec3(0.0f, -1.0f, -1.0f),
+        glm::vec2(0.25f, 0.25f),
+        quad,
+        &solid,
+        nullptr,
+        Collider2D::box(2.0f, 2.0f)
+    );
+    drag2->setLayer(0.0f);
+    drag2->setOnDownCallback([](float) { std::cout << "drag2 down" << std::endl; });
+    drag2->setOnUpCallback([](float) { std::cout << "drag2 up" << std::endl; });
+    scene.addNode(drag2);
 
     std::vector<ButtonStyle> buttons = {
         { quadButton,
@@ -93,6 +106,10 @@ int main()
           glm::vec4(0.95f, 0.60f, 0.40f, 1.0f),
           glm::vec4(0.65f, 0.25f, 0.15f, 1.0f) },
         { drag,
+          glm::vec4(0.35f, 0.75f, 0.40f, 1.0f),
+          glm::vec4(0.50f, 0.90f, 0.55f, 1.0f),
+          glm::vec4(0.20f, 0.50f, 0.25f, 1.0f) },
+        { drag2,
           glm::vec4(0.35f, 0.75f, 0.40f, 1.0f),
           glm::vec4(0.50f, 0.90f, 0.55f, 1.0f),
           glm::vec4(0.20f, 0.50f, 0.25f, 1.0f) },
