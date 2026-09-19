@@ -1,9 +1,13 @@
-#include "engine/resource/Mesh.h"
+#include <kerf/engine/resource/Mesh.h>
+
 #include "shared/Files.h"
 #include "shared/Const.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
+
+namespace kerf {
 
 // ------------------------------------
 // Mesh
@@ -172,3 +176,5 @@ const std::vector<glm::vec3>& Mesh::getVertices() const
 {
     return vertices;
 }
+
+} // namespace kerf

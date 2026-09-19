@@ -2,6 +2,7 @@
 
 #include "engine/physics/force/Force.h"
 
+namespace kerf {
 
 class Spring : public Force {
 private:
@@ -17,3 +18,5 @@ public:
     void computeConstraint(float alpha) override;
     void computeDerivatives(RigidBody* body) override;
 };
+
+} // namespace kerf

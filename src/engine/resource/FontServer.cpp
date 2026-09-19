@@ -1,11 +1,12 @@
-#include "engine/resource/FontServer.h"
-
-#include "shared/Const.h"
-
+#include <kerf/engine/resource/FontServer.h>
 #include <iostream>
 #include <stdexcept>
 
+#include "shared/Const.h"
 
+
+namespace kerf {
+    
 std::unordered_map<std::string, std::unique_ptr<Font>> FontServer::fontMap;
 FontServer::DuplicatePolicy FontServer::duplicatePolicy = FontServer::DuplicatePolicy::Print;
 
@@ -58,3 +59,5 @@ void FontServer::removeFont(const std::string& fontName)
     }
     fontMap.erase(itr);
 }
+
+} // namespace kerf

@@ -1,13 +1,6 @@
-#include "engine/Engine.h"
-#include "engine/render/camera/Camera.h"
-#include "engine/scene/Scene.h"
-#include "engine/resource/FontServer.h"
-#include "engine/node/Textbox.h"
-#include "engine/text/TextLayout.h"
-#include "engine/node/Model.h"
-#include "engine/resource/TextureServer.h"
-#include "engine/render/material/Material.h"
-#include "engine/resource/ObjServer.h"
+#include <kerf/kerf.h>
+
+using namespace kerf;
 
 int main() 
 {

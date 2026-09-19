@@ -1,10 +1,11 @@
-#include "engine/physics/collision/Collider2D.h"
-#include "engine/physics/collision/ColliderPolygon2DMesh.h"
-
+#include <kerf/engine/physics/collision/Collider2D.h>
+#include <kerf/engine/physics/collision/ColliderPolygon2DMesh.h>
 #include <stdexcept>
 #include <glm/gtc/constants.hpp>
 
 
+namespace kerf {
+    
 Collider2D Collider2D::box(float width, float height)
 {
     Collider2D collider;
@@ -109,3 +110,5 @@ bool Collider2D::isPointInsideBox(const glm::vec2& point) const
     return point.x >= -boxShape.width / 2.0f && point.x <= boxShape.width / 2.0f &&
            point.y >= -boxShape.height / 2.0f && point.y <= boxShape.height / 2.0f;
 }
+
+} // namespace kerf

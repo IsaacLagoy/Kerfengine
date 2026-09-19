@@ -1,6 +1,8 @@
-#include "engine/node/RigidBody.h"
-#include "engine/scene/Scene.h"
+#include <kerf/engine/node/RigidBody.h>
+#include <kerf/engine/scene/Scene.h>
 
+
+namespace kerf {
 
 RigidBody::RigidBody() : Model() {}
 
@@ -71,3 +73,5 @@ void RigidBody::draw(const glm::mat4& viewProjection)
 {
     Model::draw(viewProjection);
 }
+
+} // namespace kerf

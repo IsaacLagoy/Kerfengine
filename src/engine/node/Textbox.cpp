@@ -1,10 +1,11 @@
-#include "engine/node/Textbox.h"
-#include "engine/resource/ShaderServer.h"
-#include "engine/resource/TextureServer.h"
-#include "engine/resource/ObjServer.h"
-
+#include <kerf/engine/node/Textbox.h>
+#include <kerf/engine/resource/ShaderServer.h>
+#include <kerf/engine/resource/TextureServer.h>
+#include <kerf/engine/resource/ObjServer.h>
 #include <glm/gtc/type_ptr.hpp>
 
+
+namespace kerf {
 
 // Matches shaders/text.vert locations 0, 1, 2.
 struct TextVertex {
@@ -426,3 +427,5 @@ glm::vec2 Textbox::getEffectiveMaxSize() const
 {
     return maxSize - 2.0f * padding;
 }
+
+} // namespace kerf

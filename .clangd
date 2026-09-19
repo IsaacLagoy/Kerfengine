@@ -1,0 +1,6 @@
+CompilationDatabase: build
+
+If:
+  PathMatch: .*/include/kerf/.*
+CompileFlags:
+  Add: [--driver-mode=g++, -xc++, -std=c++20]

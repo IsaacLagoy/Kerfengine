@@ -1,7 +1,9 @@
-#include "engine/node/Drop.h"
-#include "engine/node/Drag.h"
-#include "engine/scene/Scene.h"
+#include <kerf/engine/node/Drop.h>
+#include <kerf/engine/node/Drag.h>
+#include <kerf/engine/scene/Scene.h>
 
+
+namespace kerf {
 
 Drop::Drop(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider)
     : Button(pose, scale, mesh, material, shader, collider)
@@ -78,3 +80,5 @@ void Drop::onUp(float dt)
 
     Button::onUp(dt);
 }
+
+} // namespace kerf

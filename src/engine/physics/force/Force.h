@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 
 
+namespace kerf {
+    
 // forward declarations
 class RigidBody;
 
@@ -41,3 +43,5 @@ public:
     virtual void computeConstraint(float alpha) = 0;
     virtual void computeDerivatives(RigidBody* body) = 0;
 };
+
+} // namespace kerf

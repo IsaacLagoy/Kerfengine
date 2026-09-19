@@ -1,6 +1,6 @@
-#include "engine/resource/Font.h"
+#include <kerf/engine/resource/Font.h>
+#include <kerf/engine/resource/Texture.h>
 
-#include "engine/resource/Texture.h"
 #include "shared/Const.h"
 #include "shared/Files.h"
 
@@ -13,6 +13,8 @@
 #include <vector>
 
 
+namespace kerf {
+    
 Font::Font(const std::string& name, const std::string& fontPath, float pixelHeight) :
     pixelHeight(pixelHeight),
     name(name)
@@ -99,3 +101,5 @@ const Glyph& Font::getGlyph(unsigned char c) const
 {
     return glyphs[c];
 }
+
+} // namespace kerf

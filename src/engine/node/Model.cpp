@@ -1,11 +1,12 @@
-#include "engine/node/Model.h"
-#include "engine/resource/Mesh.h"
-#include "engine/resource/ShaderServer.h"
-#include "engine/render/material/Material.h"
-
+#include <kerf/engine/node/Model.h>
+#include <kerf/engine/resource/Mesh.h>
+#include <kerf/engine/resource/ShaderServer.h>
+#include <kerf/engine/render/material/Material.h>
 #include <glm/gtc/type_ptr.hpp>
 
 
+namespace kerf {
+    
 Model::Model() : Node2d() {}
 
 Model::Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader) :
@@ -110,3 +111,5 @@ void Model::draw(const glm::mat4& viewProjection)
     // draw children
     Node::draw(viewProjection);
 }
+
+} // namespace kerf

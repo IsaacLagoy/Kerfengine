@@ -1,9 +1,10 @@
-#include "engine/text/TextLayout.h"
-
+#include <kerf/engine/text/TextLayout.h>
 #include <algorithm>
 #include <utility>
 #include <vector>
 
+
+namespace kerf {
 
 namespace {
 
@@ -431,3 +432,5 @@ TextLayout::TextLayout(
     totalWidth = contentW;
     totalHeight = contentH;
 }
+
+} // namespace kerf

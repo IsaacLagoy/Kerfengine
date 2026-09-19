@@ -1,18 +1,9 @@
-#include "engine/Engine.h"
-#include "engine/node/Button.h"
-#include "engine/node/Model.h"
-#include "engine/node/Node.h"
-#include "engine/node/RigidBody.h"
-#include "engine/physics/collision/Collider2D.h"
-#include "engine/render/camera/Camera.h"
-#include "engine/render/material/Material.h"
-#include "engine/resource/ObjServer.h"
-#include "engine/resource/TextureServer.h"
-#include "engine/scene/Scene.h"
+#include <kerf/kerf.h>
 
 #include <cstdlib>
 #include <iostream>
 
+using namespace kerf;
 
 #define CHECK(cond)                                                                 \
     do                                                                              \

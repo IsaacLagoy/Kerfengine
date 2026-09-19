@@ -1,48 +1,52 @@
-#pragma once
+// #pragma once // internal header
 
-#include <glad/glad.h>
+// #include <glad/glad.h>
 
 
-/**
- * @brief Simple data storage used for isolating OpenGL processes and settings
- * 
- */
-class GLState {
-private:
-    // the current frame buffer
-    GLint fbo;
+// /**
+//  * @brief Simple data storage used for isolating OpenGL processes and settings
+//  * 
+//  */
+// namespace kerf {
 
-    // the current viewport
-    GLint viewport[4];
+// class GLState {
+// private:
+//     // the current frame buffer
+//     GLint fbo;
 
-    // the current depth setting
-    GLboolean depthWasEnabled;
+//     // the current viewport
+//     GLint viewport[4];
 
-    // safety boolean to prevent loading garbage data
-    bool saved = false;
+//     // the current depth setting
+//     GLboolean depthWasEnabled;
 
-public:
-    /**
-     * @brief Construct a new GLState object
-     * 
-     */
-    GLState() = default;
+//     // safety boolean to prevent loading garbage data
+//     bool saved = false;
 
-    /**
-     * @brief Destroy the GLState object
-     * 
-     */
-    ~GLState() = default;
+// public:
+//     /**
+//      * @brief Construct a new GLState object
+//      * 
+//      */
+//     GLState() = default;
 
-    /**
-     * @brief Saves the current OpenGL context settings
-     * 
-     */
-    void save();
+//     /**
+//      * @brief Destroy the GLState object
+//      * 
+//      */
+//     ~GLState() = default;
 
-    /**
-     * @brief Sets the current OpenGL context settings to the values saved
-     * 
-     */
-    void restore() const;
-};
+//     /**
+//      * @brief Saves the current OpenGL context settings
+//      * 
+//      */
+//     void save();
+
+//     /**
+//      * @brief Sets the current OpenGL context settings to the values saved
+//      * 
+//      */
+//     void restore() const;
+// };
+
+// } // namespace kerf

@@ -1,12 +1,15 @@
-#include "engine/Engine.h"
-#include "engine/render/buffer/FrameBuffer.h"
-#include "engine/scene/Scene.h"
-#include "engine/render/camera/Camera.h"
-#include "engine/resource/ObjServer.h"
-#include "engine/resource/ShaderServer.h"
-#include "engine/resource/Texture.h"
-#include "engine/resource/TextureServer.h"
+#include <kerf/engine/Engine.h>
 
+#include <kerf/engine/render/buffer/FrameBuffer.h>
+#include <kerf/engine/scene/Scene.h>
+#include <kerf/engine/render/camera/Camera.h>
+#include <kerf/engine/resource/ObjServer.h>
+#include <kerf/engine/resource/ShaderServer.h>
+#include <kerf/engine/resource/Texture.h>
+#include <kerf/engine/resource/TextureServer.h>
+
+
+namespace kerf {
 
 Engine::Engine(int width, int height) : 
     context(width, height), 
@@ -134,3 +137,5 @@ bool Engine::shouldClose() const
 {
     return context.shouldClose();
 }
+
+} // namespace kerf

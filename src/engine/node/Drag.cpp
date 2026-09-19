@@ -1,6 +1,8 @@
-#include "engine/node/Drag.h"
+#include <kerf/engine/node/Drag.h>
+#include <kerf/engine/scene/Scene.h>
 
-#include "engine/scene/Scene.h"
+
+namespace kerf {
 
 Drag::Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider)
     : Button(pose, scale, mesh, material, shader, collider)
@@ -59,3 +61,5 @@ bool Drag::isDragging() const
 {
     return getScene()->getSelectedDrag() == this;
 }
+
+} // namespace kerf

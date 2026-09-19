@@ -1,4 +1,5 @@
-#include "engine/resource/Texture.h"
+#include <kerf/engine/resource/Texture.h>
+#include <stdexcept>
 
 #include "shared/Const.h"
 #include "shared/Files.h"
@@ -6,7 +7,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include <stdexcept>
+
+namespace kerf {
 
 static void formatsFromChannelCount(int channels, GLenum& internalFormat, GLenum& format)
 {
@@ -189,3 +191,5 @@ GLenum Texture::target() const
 {
     return samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 }
+
+} // namespace kerf

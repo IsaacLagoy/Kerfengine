@@ -1,7 +1,8 @@
-#include "engine/render/camera/Camera.h"
+#include <kerf/engine/render/camera/Camera.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-
+namespace kerf {
+    
 Camera::Camera(int viewportWidth, int viewportHeight, float zoom) : 
       zoom(zoom)
 {
@@ -96,3 +97,5 @@ void Camera::updateView()
 {
     view = glm::translate(glm::mat4(1.0f), glm::vec3(-position, 0.0f));
 }
+
+} // namespace kerf

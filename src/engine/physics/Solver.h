@@ -1,5 +1,7 @@
 #pragma once
 
+namespace kerf {
+
 // forward declarations
 class Force;
 class RigidBody;
@@ -23,3 +25,5 @@ public:
 
     void step(float dt);
 };
+
+} // namespace kerf

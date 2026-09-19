@@ -1,6 +1,9 @@
-#include "engine/node/Button.h"
-#include "engine/scene/Scene.h"
+#include <kerf/engine/node/Button.h>
+#include <kerf/engine/scene/Scene.h>
 
+
+namespace kerf {
+    
 Button::Button()
     : Model()
 {}
@@ -153,3 +156,5 @@ void Button::unlinkButton()
     nextButton = nullptr;
     prevButton = nullptr;
 }
+
+} // namespace kerf

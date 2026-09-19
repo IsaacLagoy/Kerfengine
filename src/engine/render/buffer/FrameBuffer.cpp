@@ -1,10 +1,11 @@
-#include "engine/render/buffer/FrameBuffer.h"
+#include <kerf/engine/render/buffer/FrameBuffer.h>
 
-#include "engine/resource/Texture.h"
+#include <kerf/engine/resource/Texture.h>
 #include "shared/Const.h"
 
 #include <stdexcept>
 
+namespace kerf {
 
 FrameBuffer::FrameBuffer() :
     fbo(0),
@@ -84,3 +85,5 @@ void FrameBuffer::unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+} // namespace kerf

@@ -6,6 +6,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# clangd looks next to the source tree, not in the build directory.
+file(CREATE_LINK
+    "${CMAKE_BINARY_DIR}/compile_commands.json"
+    "${CMAKE_SOURCE_DIR}/compile_commands.json"
+    SYMBOLIC
+)
+
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm REQUIRED)
@@ -29,6 +36,7 @@ add_library(common STATIC
 )
 
 target_include_directories(common PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/external
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
@@ -36,6 +44,10 @@ target_include_directories(common PUBLIC
 
 target_compile_options(common PRIVATE
     -Wall -Wextra -Wpedantic
+)
+
+target_compile_definitions(common PUBLIC
+    GLFW_INCLUDE_NONE
 )
 
 target_link_libraries(common PUBLIC

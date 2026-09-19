@@ -1,9 +1,10 @@
-#include "engine/render/context/Context.h"
+#include <kerf/engine/render/context/Context.h>
 
 #include <stdexcept>
 #include <iostream>
 
-
+namespace kerf {
+    
 Context::Context(int width, int height, bool resizable)
 {
     initWindow(width, height, resizable);
@@ -105,3 +106,5 @@ void Context::framebufferSizeCallback(GLFWwindow* window, int width, int height)
     if (!ctx->resizeCallbackFunction) return;
     ctx->resizeCallbackFunction(width, height);
 }
+
+} // namespace kerf

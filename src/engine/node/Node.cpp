@@ -1,11 +1,13 @@
-#include "engine/node/Node.h"
-#include "engine/scene/Scene.h"
+#include <kerf/engine/node/Node.h>  
+#include <kerf/engine/scene/Scene.h>
 
 #include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 
+namespace kerf {
+    
 Node::Node() : modelMatrix(glm::mat4(1.0f)) {}
 
 Node::~Node() 
@@ -253,3 +255,5 @@ void Node::updateModelMatrix(const glm::mat4& parentModelMatrix)
         child->updateModelMatrix(modelMatrix);
     }
 }
+
+} // namespace kerf

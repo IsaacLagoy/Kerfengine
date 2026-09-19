@@ -1,5 +1,8 @@
-#include "engine/input/Mouse.h"
-#include "engine/render/camera/Camera.h"
+#include <kerf/engine/input/Mouse.h>
+#include <kerf/engine/render/camera/Camera.h>
+
+
+namespace kerf {
 
 Mouse::Mouse(GLFWwindow* window) : window(window) {}
 
@@ -48,3 +51,5 @@ void Mouse::update() {
     rightMouseUp = !rightMousePressed && wasRightPressed;
     middleMouseUp = !middleMousePressed && wasMiddlePressed;
 }
+
+} // namespace kerf

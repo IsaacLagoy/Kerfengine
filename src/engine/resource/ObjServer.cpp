@@ -1,10 +1,13 @@
-#include "engine/resource/ObjServer.h"
-#include "engine/resource/Mesh.h"
-#include "shared/Const.h"
-
+#include <kerf/engine/resource/ObjServer.h>
+#include <kerf/engine/resource/Mesh.h>
 #include <memory>
 #include <iostream>
 #include <unordered_map>
+
+#include "shared/Const.h"
+
+
+namespace kerf {
 
 // ------------------------------------------------------------
 // Initialize static variables
@@ -72,3 +75,5 @@ void ObjServer::removeMesh(const std::string& meshName)
     }
     meshMap.erase(itr);
 }
+
+} // namespace kerf

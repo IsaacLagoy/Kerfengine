@@ -1,4 +1,7 @@
-#include "engine/input/Keyboard.h"
+#include <kerf/engine/input/Keyboard.h>
+
+
+namespace kerf {
 
 Keyboard::Keyboard(GLFWwindow* window) : window(window) {}
 
@@ -14,3 +17,5 @@ void Keyboard::update() {
         keysUp[i] = !keysPressed[i] && wasPressed;
     }
 }
+
+} // namespace kerf

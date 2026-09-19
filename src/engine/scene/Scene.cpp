@@ -1,12 +1,14 @@
-#include "engine/scene/Scene.h"
-#include "engine/node/Node.h"
-#include "engine/node/RigidBody.h"
-#include "engine/node/Button.h"
-#include "engine/node/Drag.h"
-#include "engine/render/camera/Camera.h"
-#include "engine/input/Mouse.h"
+#include <kerf/engine/scene/Scene.h>
+#include <kerf/engine/node/Node.h>
+#include <kerf/engine/node/RigidBody.h>
+#include <kerf/engine/node/Button.h>
+#include <kerf/engine/node/Drag.h>
+#include <kerf/engine/render/camera/Camera.h>
+#include <kerf/engine/input/Mouse.h>
 #include <glm/glm.hpp>
 
+
+namespace kerf {
 
 Scene::Scene()
 {
@@ -174,3 +176,5 @@ void Scene::update(float dt, Mouse& mouse)
         selectedDrag = nullptr;
     }
 }
+
+} // namespace kerf

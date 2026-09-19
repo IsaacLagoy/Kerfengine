@@ -1,11 +1,13 @@
-#include "ColliderPolygon2DMesh.h"
-#include "shared/Math.h"
-#include "shared/Const.h"
-
+#include <kerf/engine/physics/collision/ColliderPolygon2DMesh.h>
 #include <stdexcept>
 #include <iostream>
 
+#include "shared/Math.h"
+#include "shared/Const.h"
 
+
+namespace kerf {
+    
 ColliderPolygon2DMesh::ColliderPolygon2DMesh(const std::vector<glm::vec2>& vertices) : vertices(vertices)
 {
     init();
@@ -129,3 +131,5 @@ void ColliderPolygon2DMeshServer::removeMesh(const std::string& meshName)
     }
     meshMap.erase(itr);
 }
+
+} // namespace kerf

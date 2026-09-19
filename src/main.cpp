@@ -1,15 +1,6 @@
-#include "engine/scene/Scene.h"
-#include "engine/resource/ObjServer.h"
-#include "engine/resource/TextureServer.h"
-#include "engine/node/RigidBody.h"
-#include "engine/physics/collision/ColliderPolygon2DMesh.h"
-#include "engine/render/material/Material.h"
-#include "engine/node/Model.h"
-#include "engine/node/Model3d.h"
-#include "engine/render/camera/Camera.h"
-#include "engine/Engine.h"
-#include "engine/resource/ShaderServer.h"
-#include "engine/render/buffer/FrameBuffer.h"
+#include <kerf/kerf.h>
+
+using namespace kerf;
 
 int main()
 {

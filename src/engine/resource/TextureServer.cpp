@@ -1,10 +1,11 @@
-#include "engine/resource/TextureServer.h"
-
-#include "shared/Const.h"
-
+#include <kerf/engine/resource/TextureServer.h>
 #include <stdexcept>
 #include <iostream>
 
+#include "shared/Const.h"
+
+
+namespace kerf {
 
 std::unordered_map<std::string, std::unique_ptr<Texture>> TextureServer::textureMap;
 TextureServer::DuplicatePolicy TextureServer::duplicatePolicy = TextureServer::DuplicatePolicy::Print;
@@ -60,3 +61,5 @@ void TextureServer::removeTexture(const std::string& textureName)
     }
     textureMap.erase(itr);
 }
+
+} // namespace kerf

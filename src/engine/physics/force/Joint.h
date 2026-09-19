@@ -3,6 +3,7 @@
 #include "engine/physics/force/Force.h"
 #include "shared/Const.h"
 
+namespace kerf {
 
 class Joint : public Force {
 private:
@@ -24,3 +25,5 @@ public:
     void setTorqueArm(float torqueArm);
     void setRestAngle(float restAngle);
 };
+
+} // namespace kerf

@@ -1,6 +1,7 @@
 build/
 .cache/
 example/
+compile_commands.json
 
 TODO.md
 .DS_Store

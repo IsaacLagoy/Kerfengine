@@ -1,11 +1,12 @@
-#include "engine/resource/ShaderServer.h"
+#include <kerf/engine/resource/ShaderServer.h>
+#include <stdexcept>
+#include <iostream>
 
 #include "shared/Const.h"
 #include "shared/Files.h"
 
-#include <stdexcept>
-#include <iostream>
 
+namespace kerf {
 
 // ------------------------------------------------------------
 // Initialize static variables
@@ -179,3 +180,5 @@ void ShaderServer::removeShader(const std::string& shaderName)
     }
     shaderMap.erase(itr);
 }
+
+} // namespace kerf

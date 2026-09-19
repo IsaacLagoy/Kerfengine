@@ -1,10 +1,10 @@
-#include "engine/node/Model3d.h"
-#include "engine/resource/ShaderServer.h"
-#include "engine/resource/Mesh.h"
-#include "engine/render/material/Material.h"
-
+#include <kerf/engine/node/Model3d.h>
+#include <kerf/engine/resource/ShaderServer.h>
+#include <kerf/engine/resource/Mesh.h>
+#include <kerf/engine/render/material/Material.h>
 #include <glm/gtc/type_ptr.hpp>
 
+namespace kerf {
 
 // ------------------------------------------------------------
 // Constructors
@@ -90,3 +90,5 @@ void Model3d::draw(const glm::mat4& viewProjection)
     // draw children
     Node::draw(viewProjection);
 }
+
+} // namespace kerf

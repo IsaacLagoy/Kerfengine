@@ -1,6 +1,8 @@
-#include "engine/node/Node2d.h"
+#include <kerf/engine/node/Node2d.h>
 
 
+namespace kerf {
+    
 // ------------------------------------------------------------
 // Constructors
 // ------------------------------------------------------------
@@ -68,3 +70,5 @@ void Node2d::draw(const glm::mat4& viewProjection)
 {
     Node::draw(viewProjection);
 }
+
+} // namespace kerf

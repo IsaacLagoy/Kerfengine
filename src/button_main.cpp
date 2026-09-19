@@ -1,16 +1,8 @@
-#include "engine/Engine.h"
-#include "engine/node/Button.h"
-#include "engine/node/Drag.h"
-#include "engine/physics/collision/Collider2D.h"
-#include "engine/physics/collision/ColliderPolygon2DMesh.h"
-#include "engine/render/camera/Camera.h"
-#include "engine/render/material/Material.h"
-#include "engine/resource/ObjServer.h"
-#include "engine/resource/TextureServer.h"
-#include "engine/scene/Scene.h"
-
+#include <kerf/kerf.h>
 #include <iostream>
 #include <vector>
+
+using namespace kerf;
 
 namespace {
 
