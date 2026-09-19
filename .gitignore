@@ -1,6 +1,7 @@
 build/
 .cache/
 example/
+.vscode/
 compile_commands.json
 
 TODO.md
