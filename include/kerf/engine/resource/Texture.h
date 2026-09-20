@@ -42,6 +42,7 @@ public:
      * @param imagePath path relative to the executable, or absolute
      */
     Texture(const std::string& textureName, const std::string& imagePath);
+    Texture(const std::string& textureName, const unsigned char* data, int size);
 
     ~Texture();
 
@@ -61,6 +62,7 @@ public:
      * @brief Decode an image and upload it. Replaces size and format.
      */
     void loadFromFile(const std::string& imagePath);
+    void loadFromMemory(const unsigned char* data, int size, const char* label);
 
     GLuint getLoc() const;
     int getWidth() const;

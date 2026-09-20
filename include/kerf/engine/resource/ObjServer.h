@@ -45,6 +45,7 @@ public:
      * @param objPath 
      */
     static void loadMesh(const std::string& meshName, const std::string& objPath);
+    static void loadMeshFromSource(const std::string& meshName, const char* objSrc);
 
     /**
      * @brief Get the Mesh object

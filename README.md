@@ -1,7 +1,7 @@
 # Kerfengine
 
 ```bash 
-find ../src -type f -exec wc -l {} + 
+find ../src ../include -type f -exec wc -l {} +
 ```
 
 Notes about node transfer between scenes and between nodes

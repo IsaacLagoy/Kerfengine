@@ -7,6 +7,9 @@
 #include <kerf/engine/resource/ShaderServer.h>
 #include <kerf/engine/resource/Texture.h>
 #include <kerf/engine/resource/TextureServer.h>
+#include "EmbeddedShaders.h"
+#include "EmbeddedMeshes.h"
+#include "EmbeddedImages.h"
 
 
 namespace kerf {
@@ -18,12 +21,12 @@ Engine::Engine(int width, int height) :
 {
     context.setTitle("Kerfengine");
     glClearColor(0.12f, 0.12f, 0.14f, 1.0f);
-    ObjServer::loadMesh("unit", "resources/mesh/unit.obj");
-    ShaderServer::loadShader("default2d", "shaders/default2d.vert", "shaders/default2d.frag");
-    ShaderServer::loadShader("default3d", "shaders/default3d.vert", "shaders/default3d.frag");
-    ShaderServer::loadShader("text", "shaders/text.vert", "shaders/text.frag");
-    ShaderServer::loadShader("present", "shaders/present.vert", "shaders/present.frag");
-    TextureServer::loadTexture("white", "resources/image/white.png");
+    ObjServer::loadMeshFromSource("unit", embedded::unit_obj);
+    ShaderServer::loadShaderFromSource("default2d", embedded::default2d_vert, embedded::default2d_frag);
+    ShaderServer::loadShaderFromSource("default3d", embedded::default3d_vert, embedded::default3d_frag);
+    ShaderServer::loadShaderFromSource("text", embedded::text_vert, embedded::text_frag);
+    ShaderServer::loadShaderFromSource("present", embedded::present_vert, embedded::present_frag);
+    TextureServer::loadTextureFromMemory("white", embedded::white_png, static_cast<int>(embedded::white_png_len));
 }
 
 Engine::~Engine()

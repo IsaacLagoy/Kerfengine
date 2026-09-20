@@ -25,13 +25,13 @@ private:
     std::string name;
 
     // ID of the vertex shader
-    GLuint vShaderID;
+    GLuint vShaderID = 0;
 
     // ID of the fragment shader
-    GLuint fShaderID;
+    GLuint fShaderID = 0;
 
     // ID of the linked program
-    GLuint programID;
+    GLuint programID = 0;
 
 public:
     /**
@@ -42,6 +42,13 @@ public:
      * @param fragmentShaderPath fragment shader file path, relative to the executable
      */
     Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    Shader(
+        const std::string& name,
+        const char* vertexSrc,
+        const char* fragmentSrc,
+        const char* vertexLabel,
+        const char* fragmentLabel
+    );
     ~Shader();
 
     Shader(const Shader&) = delete;
@@ -56,6 +63,16 @@ public:
      * @param fragmentShaderPath fragment shader file path, relative to the executable
      */
     void init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+
+    /**
+     * @brief Compile and link GLSL already in memory.
+     */
+    void compile(
+        const char* vertexSrc,
+        const char* fragmentSrc,
+        const char* vertexLabel,
+        const char* fragmentLabel
+    );
 
     /**
      * @brief Destroys the OpenGL shader
@@ -151,6 +168,11 @@ public:
      * @param fragmentShaderPath fragment shader file path, relative to the executable
      */
     static void loadShader(const std::string& shaderName, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    static void loadShaderFromSource(
+        const std::string& shaderName,
+        const char* vertexSrc,
+        const char* fragmentSrc
+    );
 
     /**
      * @brief Get a shader pointer from the shader map.

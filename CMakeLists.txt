@@ -35,6 +35,77 @@ add_library(common STATIC
     ${COMMON_SOURCES}
 )
 
+# --------------------------------------------------
+# Embed shaders, meshes, and images
+# --------------------------------------------------
+# Shaders
+file(GLOB KERF_SHADER_FILES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*.vert"
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*.frag"
+)
+set(KERF_EMBEDDED_SHADER_H "${CMAKE_CURRENT_BINARY_DIR}/generated/EmbeddedShaders.h")
+set(KERF_EMBEDDED_SHADER_CPP "${CMAKE_CURRENT_BINARY_DIR}/generated/EmbeddedShaders.cpp")
+add_custom_command(
+    OUTPUT "${KERF_EMBEDDED_SHADER_H}" "${KERF_EMBEDDED_SHADER_CPP}"
+    COMMAND ${CMAKE_COMMAND}
+        -DINPUT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/shaders
+        -DEXTENSIONS=vert,frag
+        -DOUT_H=${KERF_EMBEDDED_SHADER_H}
+        -DOUT_CPP=${KERF_EMBEDDED_SHADER_CPP}
+        -DHEADER_NAME=EmbeddedShaders.h
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmbedText.cmake
+    DEPENDS ${KERF_SHADER_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmbedText.cmake
+    COMMENT "Embedding GLSL shaders"
+    VERBATIM
+)
+
+# Meshes
+file(GLOB KERF_MESH_FILES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/resources/mesh/*.obj"
+)
+set(KERF_EMBEDDED_MESH_H "${CMAKE_CURRENT_BINARY_DIR}/generated/EmbeddedMeshes.h")
+set(KERF_EMBEDDED_MESH_CPP "${CMAKE_CURRENT_BINARY_DIR}/generated/EmbeddedMeshes.cpp")
+add_custom_command(
+    OUTPUT "${KERF_EMBEDDED_MESH_H}" "${KERF_EMBEDDED_MESH_CPP}"
+    COMMAND ${CMAKE_COMMAND}
+        -DINPUT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/resources/mesh
+        -DEXTENSIONS=obj
+        -DOUT_H=${KERF_EMBEDDED_MESH_H}
+        -DOUT_CPP=${KERF_EMBEDDED_MESH_CPP}
+        -DHEADER_NAME=EmbeddedMeshes.h
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmbedText.cmake
+    DEPENDS ${KERF_MESH_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmbedText.cmake
+    COMMENT "Embedding OBJ meshes"
+    VERBATIM
+)
+
+# Images
+set(KERF_WHITE_PNG "${CMAKE_CURRENT_SOURCE_DIR}/resources/image/white.png")
+set(KERF_EMBEDDED_IMAGE_H "${CMAKE_CURRENT_BINARY_DIR}/generated/EmbeddedImages.h")
+set(KERF_EMBEDDED_IMAGE_CPP "${CMAKE_CURRENT_BINARY_DIR}/generated/EmbeddedImages.cpp")
+add_custom_command(
+    OUTPUT "${KERF_EMBEDDED_IMAGE_H}" "${KERF_EMBEDDED_IMAGE_CPP}"
+    COMMAND ${CMAKE_COMMAND}
+        -DINPUT_FILE=${KERF_WHITE_PNG}
+        -DOUT_H=${KERF_EMBEDDED_IMAGE_H}
+        -DOUT_CPP=${KERF_EMBEDDED_IMAGE_CPP}
+        -DHEADER_NAME=EmbeddedImages.h
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmbedBinary.cmake
+    DEPENDS ${KERF_WHITE_PNG} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmbedBinary.cmake
+    COMMENT "Embedding white.png"
+    VERBATIM
+)
+
+# --------------------------------------------------
+# Link common library
+# --------------------------------------------------
+target_sources(common PRIVATE
+    "${KERF_EMBEDDED_SHADER_CPP}"
+    "${KERF_EMBEDDED_MESH_CPP}"
+    "${KERF_EMBEDDED_IMAGE_CPP}"
+)
+target_include_directories(common PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 target_include_directories(common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src

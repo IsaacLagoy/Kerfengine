@@ -24,71 +24,91 @@ Shader::Shader(const std::string& name, const std::string& vertexShaderPath, con
     init(vertexShaderPath, fragmentShaderPath);
 }
 
+Shader::Shader(
+    const std::string& name,
+    const char* vertexSrc,
+    const char* fragmentSrc,
+    const char* vertexLabel,
+    const char* fragmentLabel
+) : name(name)
+{
+    compile(vertexSrc, fragmentSrc, vertexLabel, fragmentLabel);
+}
+
 Shader::~Shader()
 {
     destroy();
 }
 
-void Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+void Shader::compile(
+    const char* vertexSrc,
+    const char* fragmentSrc,
+    const char* vertexLabel,
+    const char* fragmentLabel
+)
 {
-    // create shader handles
     this->vShaderID = glCreateShader(GL_VERTEX_SHADER);
     this->fShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-    // read shader source
-    std::string vShaderSrc = Files::readTextFile(Files::resolvePath(vertexShaderPath));
-    std::string fShaderSrc = Files::readTextFile(Files::resolvePath(fragmentShaderPath));
-    const char* vShaderText = vShaderSrc.c_str();
-    const char* fShaderText = fShaderSrc.c_str();
-    glShaderSource(vShaderID, 1, &vShaderText, NULL);
-    glShaderSource(fShaderID, 1, &fShaderText, NULL);
+    glShaderSource(vShaderID, 1, &vertexSrc, nullptr);
+    glShaderSource(fShaderID, 1, &fragmentSrc, nullptr);
 
-    // compile vertex shader
-    int rc;
+    int rc = 0;
     glCompileShader(vShaderID);
     glGetShaderiv(vShaderID, GL_COMPILE_STATUS, &rc);
-
-    // failed to cmopile vertex shader
-    if (rc == GL_FALSE) 
+    if (rc == GL_FALSE)
     {
         char log[512];
         glGetShaderInfoLog(vShaderID, sizeof(log), nullptr, log);
-        throw std::runtime_error(ANSI_RED + "[Shader] vertex shader compilation failed (" + vertexShaderPath + "):\n" + ANSI_RESET + log);
+        throw std::runtime_error(ANSI_RED + "[Shader] vertex shader compilation failed (" + vertexLabel + "):\n" + ANSI_RESET + log);
     }
 
-    // compile fragment shader
     glCompileShader(fShaderID);
     glGetShaderiv(fShaderID, GL_COMPILE_STATUS, &rc);
-
-    // failed to compile fragment shader
-    if (rc == GL_FALSE) 
+    if (rc == GL_FALSE)
     {
         char log[512];
         glGetShaderInfoLog(fShaderID, sizeof(log), nullptr, log);
-        throw std::runtime_error(ANSI_RED + "[Shader] fragment shader compilation failed (" + fragmentShaderPath + "):\n" + ANSI_RESET + log);
+        throw std::runtime_error(ANSI_RED + "[Shader] fragment shader compilation failed (" + fragmentLabel + "):\n" + ANSI_RESET + log);
     }
 
-    // link shader
     this->programID = glCreateProgram();
     glAttachShader(programID, vShaderID);
     glAttachShader(programID, fShaderID);
     glLinkProgram(programID);
     glGetProgramiv(programID, GL_LINK_STATUS, &rc);
-
-    // failed to link shaders
-    if (rc == GL_FALSE) 
+    if (rc == GL_FALSE)
     {
         char log[512];
         glGetProgramInfoLog(programID, sizeof(log), nullptr, log);
-        throw std::runtime_error(ANSI_RED + "[Shader] linking failed (" + vertexShaderPath + " + " + fragmentShaderPath + "):\n" + ANSI_RESET + log);
+        throw std::runtime_error(ANSI_RED + "[Shader] linking failed (" + vertexLabel + " + " + fragmentLabel + "):\n" + ANSI_RESET + log);
     }
+}
+
+void Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+{
+    const std::string vShaderSrc = Files::readTextFile(Files::resolvePath(vertexShaderPath));
+    const std::string fShaderSrc = Files::readTextFile(Files::resolvePath(fragmentShaderPath));
+    compile(vShaderSrc.c_str(), fShaderSrc.c_str(), vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 }
 
 void Shader::destroy()
 {
-    glDeleteShader(vShaderID);
-    glDeleteShader(fShaderID);
-    glDeleteProgram(programID);
+    if (vShaderID)
+    {
+        glDeleteShader(vShaderID);
+        vShaderID = 0;
+    }
+    if (fShaderID)
+    {
+        glDeleteShader(fShaderID);
+        fShaderID = 0;
+    }
+    if (programID)
+    {
+        glDeleteProgram(programID);
+        programID = 0;
+    }
 }
 
 GLuint Shader::getProgramID()
@@ -157,6 +177,46 @@ void ShaderServer::loadShader(const std::string& shaderName, const std::string& 
 
         // should never reach
         default: 
+            throw std::runtime_error(ANSI_RED + "[ShaderServer] invalid duplicate policy!" + ANSI_RESET);
+    }
+}
+
+void ShaderServer::loadShaderFromSource(
+    const std::string& shaderName,
+    const char* vertexSrc,
+    const char* fragmentSrc
+)
+{
+    const std::string vertexLabel = shaderName + ".vert";
+    const std::string fragmentLabel = shaderName + ".frag";
+
+    if (shaderMap.find(shaderName) == shaderMap.end())
+    {
+        shaderMap[shaderName] = std::make_unique<Shader>(
+            shaderName, vertexSrc, fragmentSrc, vertexLabel.c_str(), fragmentLabel.c_str()
+        );
+        return;
+    }
+
+    switch (duplicatePolicy)
+    {
+        case ShaderServer::DuplicatePolicy::Error:
+            throw std::runtime_error(ANSI_RED + "[ShaderServer] " + shaderName + " shader already exists!" + ANSI_RESET);
+
+        case ShaderServer::DuplicatePolicy::Print:
+            std::cerr << ANSI_YELLOW << "[ShaderServer] " + shaderName + " shader already exists!" << ANSI_RESET << std::endl;
+            return;
+
+        case ShaderServer::DuplicatePolicy::Ignore:
+            return;
+
+        case ShaderServer::DuplicatePolicy::Replace:
+            shaderMap[shaderName] = std::make_unique<Shader>(
+                shaderName, vertexSrc, fragmentSrc, vertexLabel.c_str(), fragmentLabel.c_str()
+            );
+            return;
+
+        default:
             throw std::runtime_error(ANSI_RED + "[ShaderServer] invalid duplicate policy!" + ANSI_RESET);
     }
 }

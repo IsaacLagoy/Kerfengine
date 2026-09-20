@@ -59,6 +59,16 @@ Texture::Texture(const std::string& textureName, const std::string& imagePath) :
     loadFromFile(imagePath);
 }
 
+Texture::Texture(const std::string& textureName, const unsigned char* data, int size) :
+    texLoc(0),
+    type(GL_UNSIGNED_BYTE),
+    samples(1),
+    name(textureName)
+{
+    glGenTextures(1, &texLoc);
+    loadFromMemory(data, size, textureName.c_str());
+}
+
 Texture::~Texture()
 {
     destroy();
@@ -122,12 +132,11 @@ void Texture::setPixels(int w, int h, const void* data)
 
 void Texture::loadFromFile(const std::string& imagePath)
 {
+    const std::string resolved = Files::resolvePath(imagePath);
     if (samples != 1)
     {
         throw std::runtime_error(ANSI_RED + "[Texture] cannot load an image into a multisampled texture" + ANSI_RESET);
     }
-
-    const std::string resolved = Files::resolvePath(imagePath);
 
     stbi_set_flip_vertically_on_load(1);
 
@@ -138,6 +147,32 @@ void Texture::loadFromFile(const std::string& imagePath)
         const char* reason = stbi_failure_reason();
         throw std::runtime_error(
             ANSI_RED + "[Texture] failed to load " + resolved + ": " +
+            (reason ? reason : "unknown error") + ANSI_RESET
+        );
+    }
+
+    formatsFromChannelCount(channels, internalFormat, format);
+    type = GL_UNSIGNED_BYTE;
+    setPixels(width, height, pixels);
+    stbi_image_free(pixels);
+}
+
+void Texture::loadFromMemory(const unsigned char* data, int size, const char* label)
+{
+    if (samples != 1)
+    {
+        throw std::runtime_error(ANSI_RED + "[Texture] cannot load an image into a multisampled texture" + ANSI_RESET);
+    }
+
+    stbi_set_flip_vertically_on_load(1);
+
+    int channels = 0;
+    unsigned char* pixels = stbi_load_from_memory(data, size, &width, &height, &channels, 0);
+    if (!pixels)
+    {
+        const char* reason = stbi_failure_reason();
+        throw std::runtime_error(
+            ANSI_RED + "[Texture] failed to load " + label + ": " +
             (reason ? reason : "unknown error") + ANSI_RESET
         );
     }

@@ -60,6 +60,7 @@ namespace kerf {
          * @param objPath 
          */
         Mesh(const std::string& meshName, const std::string& objPath);
+        Mesh(const std::string& meshName, const char* objSrc, const char* label);
         ~Mesh();
     
         Mesh(const Mesh&) = delete;
@@ -73,6 +74,7 @@ namespace kerf {
          * @param objPath 
          */
         void init(const std::string& objPath);
+        void loadFromObjSource(const char* objSrc, const char* label);
     
         /**
          * @brief Destroys the OpenGL buffers associated with the mesh

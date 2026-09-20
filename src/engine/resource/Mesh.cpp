@@ -3,6 +3,8 @@
 #include "shared/Files.h"
 #include "shared/Const.h"
 
+#include <sstream>
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
@@ -18,6 +20,11 @@ Mesh::Mesh(const std::string& meshName, const std::string& objPath) : name(meshN
     init(objPath);
 }
 
+Mesh::Mesh(const std::string& meshName, const char* objSrc, const char* label) : name(meshName)
+{
+    loadFromObjSource(objSrc, label);
+}
+
 Mesh::~Mesh()
 {
     destroy();
@@ -25,18 +32,23 @@ Mesh::~Mesh()
 
 void Mesh::init(const std::string& objPath)
 {
-    // set up tinyobj elements
+    const std::string resolved = Files::resolvePath(objPath);
+    const std::string source = Files::readTextFile(resolved);
+    loadFromObjSource(source.c_str(), resolved.c_str());
+}
+
+void Mesh::loadFromObjSource(const char* objSrc, const char* label)
+{
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warnStr, errStr;
 
-    // load file
-    const std::string resolved = Files::resolvePath(objPath);
-    int rc = tinyobj::LoadObj(&attrib, &shapes, &materials, &warnStr, &errStr, resolved.c_str());
-    if (!rc) 
+    std::istringstream in(objSrc);
+    const int rc = tinyobj::LoadObj(&attrib, &shapes, &materials, &warnStr, &errStr, &in, nullptr);
+    if (!rc)
     {
-        throw std::runtime_error(ANSI_RED + "[ObjServer] " + resolved + " failed to load!" + errStr + ANSI_RESET);
+        throw std::runtime_error(ANSI_RED + "[ObjServer] " + label + " failed to load!" + errStr + ANSI_RESET);
     }
 
     // copy vertices to CPU storage

@@ -40,6 +40,7 @@ public:
      * @param imagePath path relative to the executable, or absolute
      */
     static void loadTexture(const std::string& textureName, const std::string& imagePath);
+    static void loadTextureFromMemory(const std::string& textureName, const unsigned char* data, int size);
 
     static Texture* getTexture(const std::string& textureName);
 
