@@ -1,8 +1,8 @@
 #include <kerf/engine/resource/Font.h>
 #include <kerf/engine/resource/Texture.h>
 
-#include "shared/Const.h"
-#include "shared/Files.h"
+#include <kerf/shared/Const.h>
+#include <kerf/shared/Files.h>
 
 // stb_truetype implementation lives in this translation unit only.
 #define STB_TRUETYPE_IMPLEMENTATION

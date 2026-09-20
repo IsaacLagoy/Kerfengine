@@ -2,8 +2,8 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "shared/Const.h"
-#include "shared/Files.h"
+#include <kerf/shared/Const.h>
+#include <kerf/shared/Files.h>
 
 
 namespace kerf {

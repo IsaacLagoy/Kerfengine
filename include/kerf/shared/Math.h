@@ -5,8 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
-#include "Structs.h"
+#include <kerf/shared/Structs.h>
 
+namespace kerf {
 
 inline float cross(const glm::vec2& a, const glm::vec2& b)
 {
@@ -128,3 +129,5 @@ inline bool faceContainsPoint(const Face& face, const glm::vec2& point)
 
     return ab >= 0.0f && bc >= 0.0f && ca >= 0.0f;
 }
+
+} // namespace kerf

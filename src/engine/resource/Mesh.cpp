@@ -1,7 +1,7 @@
 #include <kerf/engine/resource/Mesh.h>
 
-#include "shared/Files.h"
-#include "shared/Const.h"
+#include <kerf/shared/Files.h>
+#include <kerf/shared/Const.h>
 
 #include <sstream>
 

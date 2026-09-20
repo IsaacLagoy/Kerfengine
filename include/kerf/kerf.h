@@ -5,6 +5,12 @@
 
 // IWYU pragma: begin_exports
 
+// shared
+// #include <kerf/shared/Const.h>
+// #include <kerf/shared/Files.h>
+// #include <kerf/shared/Math.h>
+// #include <kerf/shared/Structs.h>
+
 // input
 #include <kerf/engine/input/Keyboard.h>
 #include <kerf/engine/input/Mouse.h>

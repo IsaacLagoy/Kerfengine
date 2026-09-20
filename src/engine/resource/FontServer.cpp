@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "shared/Const.h"
+#include <kerf/shared/Const.h>
 
 
 namespace kerf {

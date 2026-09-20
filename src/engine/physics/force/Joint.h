@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/physics/force/Force.h"
-#include "shared/Const.h"
+#include <kerf/shared/Const.h>
 
 namespace kerf {
 

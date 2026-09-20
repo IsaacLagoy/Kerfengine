@@ -1,39 +1,108 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(kerengine CXX C)
+project(kerfengine CXX C)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(KERF_IS_TOP_LEVEL ON)
+else()
+    set(KERF_IS_TOP_LEVEL OFF)
+endif()
 
-# clangd looks next to the source tree, not in the build directory.
-file(CREATE_LINK
-    "${CMAKE_BINARY_DIR}/compile_commands.json"
-    "${CMAKE_SOURCE_DIR}/compile_commands.json"
-    SYMBOLIC
-)
+option(KERF_BUILD_EXAMPLES "Build Kerfengine demo executables" ${KERF_IS_TOP_LEVEL})
+option(KERF_USE_SYSTEM_GLAD "Use a host-provided GLAD instead of vendored glad.c" OFF)
+
+if(KERF_IS_TOP_LEVEL)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    # clangd looks next to the source tree, not in the build directory.
+    file(CREATE_LINK
+        "${CMAKE_BINARY_DIR}/compile_commands.json"
+        "${CMAKE_SOURCE_DIR}/compile_commands.json"
+        SYMBOLIC
+    )
+endif()
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm REQUIRED)
 
 # --------------------------------------------------
-# Common library: nested src/ files + glad
+# Library sources (nested src/ files; top-level src/*.cpp are demos)
 # --------------------------------------------------
 
 file(GLOB TOP_LEVEL_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
-file(GLOB_RECURSE COMMON_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+set(KERF_SOURCES
+    src/engine/Engine.cpp
+    src/engine/input/Keyboard.cpp
+    src/engine/input/Mouse.cpp
+    src/engine/node/Button.cpp
+    src/engine/node/Drag.cpp
+    src/engine/node/Drop.cpp
+    src/engine/node/Model.cpp
+    src/engine/node/Model3d.cpp
+    src/engine/node/Node.cpp
+    src/engine/node/Node2d.cpp
+    src/engine/node/Node3d.cpp
+    src/engine/node/RigidBody.cpp
+    src/engine/node/Textbox.cpp
+    src/engine/physics/Solver.cpp
+    src/engine/physics/collision/Collider2D.cpp
+    src/engine/physics/collision/ColliderPolygon2DMesh.cpp
+    src/engine/render/buffer/FrameBuffer.cpp
+    src/engine/render/camera/Camera.cpp
+    src/engine/render/context/Context.cpp
+    src/engine/render/context/GLState.cpp
+    src/engine/render/material/Material.cpp
+    src/engine/resource/Font.cpp
+    src/engine/resource/FontServer.cpp
+    src/engine/resource/Mesh.cpp
+    src/engine/resource/ObjServer.cpp
+    src/engine/resource/ShaderServer.cpp
+    src/engine/resource/Texture.cpp
+    src/engine/resource/TextureServer.cpp
+    src/engine/scene/Scene.cpp
+    src/engine/text/TextLayout.cpp
 )
-list(REMOVE_ITEM COMMON_SOURCES ${TOP_LEVEL_SOURCES})
 
-add_library(common STATIC
-    external/glad/src/glad.c
-    ${COMMON_SOURCES}
-)
+add_library(kerf STATIC ${KERF_SOURCES})
+add_library(kerf::kerf ALIAS kerf)
+
+target_compile_features(kerf PUBLIC cxx_std_20)
+
+# --------------------------------------------------
+# GLAD: Kerfengine owns vendored GLAD unless KERF_USE_SYSTEM_GLAD=ON.
+# Hosts must not compile another glad.c when linking kerf::kerf / kerf::glad.
+# --------------------------------------------------
+if(KERF_USE_SYSTEM_GLAD)
+    if(TARGET glad::glad)
+        set(KERF_GLAD_TARGET glad::glad)
+    elseif(TARGET glad)
+        set(KERF_GLAD_TARGET glad)
+    else()
+        find_package(glad CONFIG REQUIRED)
+        if(TARGET glad::glad)
+            set(KERF_GLAD_TARGET glad::glad)
+        elseif(TARGET glad)
+            set(KERF_GLAD_TARGET glad)
+        else()
+            message(FATAL_ERROR "KERF_USE_SYSTEM_GLAD is ON but no glad or glad::glad target was found")
+        endif()
+    endif()
+    target_link_libraries(kerf PUBLIC ${KERF_GLAD_TARGET})
+    target_compile_definitions(kerf PUBLIC GLFW_INCLUDE_NONE)
+else()
+    add_library(kerf_glad STATIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c"
+    )
+    add_library(kerf::glad ALIAS kerf_glad)
+    target_include_directories(kerf_glad PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include"
+    )
+    target_compile_definitions(kerf_glad PUBLIC GLFW_INCLUDE_NONE)
+    target_link_libraries(kerf PUBLIC kerf_glad)
+endif()
 
 # --------------------------------------------------
 # Embed shaders, meshes, and images
@@ -96,58 +165,55 @@ add_custom_command(
     VERBATIM
 )
 
-# --------------------------------------------------
-# Link common library
-# --------------------------------------------------
-target_sources(common PRIVATE
+target_sources(kerf PRIVATE
     "${KERF_EMBEDDED_SHADER_CPP}"
     "${KERF_EMBEDDED_MESH_CPP}"
     "${KERF_EMBEDDED_IMAGE_CPP}"
 )
-target_include_directories(common PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
-target_include_directories(common PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/external
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
+target_include_directories(kerf
+    PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/external"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated"
 )
 
-target_compile_options(common PRIVATE
+target_compile_options(kerf PRIVATE
     -Wall -Wextra -Wpedantic
 )
 
-target_compile_definitions(common PUBLIC
-    GLFW_INCLUDE_NONE
-)
-
-target_link_libraries(common PUBLIC
+target_link_libraries(kerf PUBLIC
     glfw
     OpenGL::GL
     glm::glm
 )
 
 # --------------------------------------------------
-# One executable per src/*.cpp
+# Demo executables (top-level src/*.cpp)
 # --------------------------------------------------
 
-foreach(SRC_FILE ${TOP_LEVEL_SOURCES})
-    get_filename_component(EXE_NAME ${SRC_FILE} NAME_WE)
+if(KERF_BUILD_EXAMPLES)
+    set(KERF_EXAMPLE_TARGETS)
+    foreach(SRC_FILE ${TOP_LEVEL_SOURCES})
+        get_filename_component(EXE_NAME ${SRC_FILE} NAME_WE)
+        add_executable(${EXE_NAME} ${SRC_FILE})
+        target_link_libraries(${EXE_NAME} PRIVATE kerf)
+        add_custom_command(TARGET ${EXE_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+                    "$<TARGET_FILE_DIR:${EXE_NAME}>/resources"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+                    "$<TARGET_FILE_DIR:${EXE_NAME}>/shaders"
+            COMMENT "Copying resources and shaders next to ${EXE_NAME}"
+        )
+        list(APPEND KERF_EXAMPLE_TARGETS ${EXE_NAME})
+    endforeach()
 
-    add_executable(${EXE_NAME} ${SRC_FILE})
-    target_link_libraries(${EXE_NAME} PRIVATE common)
-endforeach()
-
-# --------------------------------------------------
-# Copy resources/ -> build/resources/
-# --------------------------------------------------
-
-add_custom_target(copy_resources ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/resources
-            ${CMAKE_BINARY_DIR}/resources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/shaders
-            ${CMAKE_BINARY_DIR}/shaders
-    COMMENT "Copying resources and shaders to build directory"
-)
+    add_custom_target(kerf_examples)
+    if(KERF_EXAMPLE_TARGETS)
+        add_dependencies(kerf_examples ${KERF_EXAMPLE_TARGETS})
+    endif()
+endif()

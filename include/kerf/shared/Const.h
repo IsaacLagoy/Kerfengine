@@ -1,7 +1,9 @@
 #pragma once
 
+#include <limits>
 #include <string>
 
+namespace kerf {
 
 // ANSI escape codes for colored text printing
 constexpr std::string ANSI_RESET = "\033[0m";
@@ -11,3 +13,5 @@ constexpr std::string ANSI_YELLOW = "\033[33m";
 
 // Math const
 constexpr float INFINITY_FLOAT = std::numeric_limits<float>::infinity();
+
+} // namespace kerf

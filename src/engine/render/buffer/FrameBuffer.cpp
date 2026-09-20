@@ -1,7 +1,7 @@
 #include <kerf/engine/render/buffer/FrameBuffer.h>
 
 #include <kerf/engine/resource/Texture.h>
-#include "shared/Const.h"
+#include <kerf/shared/Const.h>
 
 #include <stdexcept>
 

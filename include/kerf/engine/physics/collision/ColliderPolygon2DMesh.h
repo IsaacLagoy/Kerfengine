@@ -6,7 +6,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "shared/Structs.h"
+#include <kerf/shared/Structs.h>
 
 
 namespace kerf {

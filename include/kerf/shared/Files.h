@@ -16,7 +16,7 @@
 #include <windows.h>
 #endif
 
-
+namespace kerf {
 namespace Files {
 
 inline std::filesystem::path executableDirectory()
@@ -69,3 +69,4 @@ inline std::string readTextFile(const std::string& filename)
 }
 
 } // namespace Files
+} // namespace kerf
