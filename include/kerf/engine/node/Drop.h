@@ -12,18 +12,29 @@ class Drop : public Button {
 private:
     Drag* drag = nullptr;
 
+    std::function<void(float)> onDropCallback;
+    std::function<void(float)> onPickupCallback;
+
 public:
     Drop(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider);
     ~Drop();
 
     virtual void update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed) override;
 
-    void setDrag(Drag* drag);
+    // getters
     Drag* getDrag() const;
+
+    // setters
+    void setDrag(Drag* drag);
+    void setOnDropCallback(const std::function<void(float)>& callback);
+    void setOnPickupCallback(const std::function<void(float)>& callback);
 
 protected:
     virtual void onDown(float dt) override;
     virtual void onUp(float dt) override;
+    virtual void onDrop(float dt);
+    virtual void onPickup(float dt);
+
     virtual bool shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool mousePressed) const override;
 };
 

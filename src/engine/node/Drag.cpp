@@ -39,12 +39,23 @@ void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
     wasDragging = true;
 }
 
+void Drag::setOnDropCallback(const std::function<void(float)>& callback)
+{
+    onDropCallback = callback;
+}
+
+void Drag::setOnPickupCallback(const std::function<void(float)>& callback)
+{
+    onPickupCallback = callback;
+}
+
 void Drag::onDown(float dt)
 {
     // reserve self as selected drag
     if (getScene()->getSelectedDrag() == nullptr)
     {
         getScene()->setSelectedDrag(this);
+        onPickup(dt);
     }
 
     // preserve button onDown callback
@@ -54,7 +65,26 @@ void Drag::onDown(float dt)
 void Drag::onUp(float dt)
 {
     // Leave selectedDrag set for the rest of this frame so a Drop::onUp can claim it.
+    if (isDragging())
+    {
+        onDrop(dt);
+    }
     Button::onUp(dt);
+}
+
+void Drag::onDrop(float dt)
+{
+    if (onDropCallback)
+    {
+        onDropCallback(dt);
+    }
+}
+void Drag::onPickup(float dt)
+{
+    if (onPickupCallback)
+    {
+        onPickupCallback(dt);
+    }
 }
 
 bool Drag::isDragging() const

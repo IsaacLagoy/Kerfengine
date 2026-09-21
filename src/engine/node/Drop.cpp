@@ -28,6 +28,7 @@ void Drop::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
             drag->parkedDrop = nullptr;
         }
         drag = nullptr;
+        onPickup(dt);
         return;
     }
 
@@ -35,14 +36,24 @@ void Drop::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
     drag->setPose(glm::vec3(dropPose.x, dropPose.y, drag->getPose().z));
 }
 
+Drag* Drop::getDrag() const
+{
+    return drag;
+}
+
 void Drop::setDrag(Drag* drag)
 {
     this->drag = drag;
 }
 
-Drag* Drop::getDrag() const
+void Drop::setOnDropCallback(const std::function<void(float)>& callback)
 {
-    return drag;
+    onDropCallback = callback;
+}
+
+void Drop::setOnPickupCallback(const std::function<void(float)>& callback)
+{
+    onPickupCallback = callback;
 }
 
 bool Drop::shouldBeDown(bool /*wasDown*/, bool isHovered, bool mouseDown, bool mousePressed) const
@@ -62,6 +73,22 @@ void Drop::onDown(float dt)
     Button::onDown(dt);
 }
 
+void Drop::onDrop(float dt)
+{
+    if (onDropCallback)
+    {
+        onDropCallback(dt);
+    }
+}
+
+void Drop::onPickup(float dt)
+{
+    if (onPickupCallback)
+    {
+        onPickupCallback(dt);
+    }
+}
+
 void Drop::onUp(float dt)
 {
     if (drag == nullptr && getIsHovered())
@@ -72,9 +99,11 @@ void Drop::onUp(float dt)
             if (selected->parkedDrop && selected->parkedDrop != this)
             {
                 selected->parkedDrop->drag = nullptr;
+                selected->parkedDrop->onPickup(dt);
             }
             drag = selected;
             selected->parkedDrop = this;
+            onDrop(dt);
         }
     }
 
