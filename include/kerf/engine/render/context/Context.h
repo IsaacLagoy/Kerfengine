@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <string>
 #include <functional>
 
@@ -75,6 +76,8 @@ public:
      * @param callback 
      */
     void setResizeCallback(std::function<void(int, int)> callback);
+
+    void setClearColor(const glm::vec4& color) const;
 
 private:
     /**

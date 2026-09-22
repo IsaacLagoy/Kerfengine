@@ -107,4 +107,9 @@ void Context::framebufferSizeCallback(GLFWwindow* window, int width, int height)
     ctx->resizeCallbackFunction(width, height);
 }
 
+void Context::setClearColor(const glm::vec4& color) const
+{
+    glClearColor(color.r, color.g, color.b, color.a);
+}
+
 } // namespace kerf

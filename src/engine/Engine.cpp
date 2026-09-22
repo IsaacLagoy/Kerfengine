@@ -20,7 +20,7 @@ Engine::Engine(int width, int height) :
     keyboard(context.getWindow())
 {
     context.setTitle("Kerfengine");
-    glClearColor(0.12f, 0.12f, 0.14f, 1.0f);
+    context.setClearColor(glm::vec4(0.12f, 0.12f, 0.14f, 1.0f));
     ObjServer::loadMeshFromSource("unit", embedded::unit_obj);
     ShaderServer::loadShaderFromSource("default2d", embedded::default2d_vert, embedded::default2d_frag);
     ShaderServer::loadShaderFromSource("default3d", embedded::default3d_vert, embedded::default3d_frag);
@@ -42,6 +42,16 @@ void Engine::setScene(Scene* scene)
 void Engine::setFBO(FrameBuffer* fbo)
 {
     this->fbo = fbo;
+}
+
+void Engine::setClearColor(const glm::vec4& color)
+{
+    context.setClearColor(color);
+}
+
+void Engine::setTitle(const std::string& title)
+{
+    context.setTitle(title);
 }
 
 Mouse& Engine::getMouse()

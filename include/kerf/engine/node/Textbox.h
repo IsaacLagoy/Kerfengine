@@ -10,9 +10,6 @@ namespace kerf {
     
 
 class Textbox : public Model {
-public:
-    
-
 private:
     TextContent content;
 

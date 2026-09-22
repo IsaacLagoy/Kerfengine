@@ -36,6 +36,8 @@ public:
 
     void setScene(Scene* scene);
     void setFBO(FrameBuffer* fbo);
+    void setClearColor(const glm::vec4& color);
+    void setTitle(const std::string& title);
 
     Mouse& getMouse();
     Keyboard& getKeyboard();
