@@ -9,11 +9,11 @@ int main()
     const int height = 600;
     Engine engine(width, height);
 
-    Texture* tx = new Texture(width / 2, height / 2, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-    tx->setFilter(GL_NEAREST, GL_NEAREST);
-    FrameBuffer* frameBuffer = new FrameBuffer();
-    frameBuffer->setTexture(tx, tx->getWidth(), tx->getHeight());
-    engine.setFBO(frameBuffer);
+    Pipeline pipeline;
+    pipeline.addTarget("scene", TargetDesc{ .scale = 0.5f, .filter = Filter::Nearest });
+    pipeline.add(ScenePass("scene"));
+    pipeline.add(PresentPass("scene"));
+    engine.setPipeline(&pipeline);
 
     Camera camera(width, height, 1.0f);
     Scene scene;
@@ -129,7 +129,6 @@ int main()
         // std::cout << numPoints << std::endl;
 
         engine.render();
-        engine.present();
     }
 
     return 0;

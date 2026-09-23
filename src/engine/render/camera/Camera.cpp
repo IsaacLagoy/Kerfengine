@@ -63,6 +63,16 @@ glm::vec2 Camera::getPosition() const
     return position;
 }
 
+float Camera::getNear() const
+{
+    return near;
+}
+
+float Camera::getFar() const
+{
+    return far;
+}
+
 glm::vec2 Camera::screenToWorld(const glm::vec2& screen) const
 {
     // GLFW / window pixels: origin top-left, Y down

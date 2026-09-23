@@ -33,6 +33,8 @@ public:
     glm::mat4 getProjection() const;
     glm::mat4 getView() const;
     glm::vec2 getPosition() const;
+    float getNear() const;
+    float getFar() const;
 
     glm::vec2 screenToWorld(const glm::vec2& screen) const;
     glm::vec2 worldToScreen(const glm::vec2& world) const;
