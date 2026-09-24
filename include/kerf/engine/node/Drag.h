@@ -24,6 +24,8 @@ private:
     std::function<void(float)> onDropCallback;
     std::function<void(float)> onPickupCallback;
 
+    bool locked = false;
+
 public:
     Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider);
     ~Drag();
@@ -37,6 +39,8 @@ public:
     // setters
     void setOnDropCallback(const std::function<void(float)>& callback);
     void setOnPickupCallback(const std::function<void(float)>& callback);
+
+    void setLocked(bool locked) { this->locked = locked; }
 
 protected:
     virtual void onDown(float dt) override;

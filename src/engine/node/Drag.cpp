@@ -17,6 +17,13 @@ void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
 {
     Button::update(dt, mousePosition, mouseDown, mousePressed);
 
+    if (locked)
+    {
+        wasDragging = false;
+        getScene()->setSelectedDrag(nullptr);
+        return;
+    }
+
     // Follow the mouse only while this drag is selected and the button is held.
     // selectedDrag stays set until Scene::update ends so drops can claim on release.
     if (!isDragging() || !mousePressed)
