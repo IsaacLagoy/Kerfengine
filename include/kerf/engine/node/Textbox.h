@@ -81,6 +81,10 @@ public:
     const glm::vec2& getPadding() const;
     TextLayout::Alignment getPoseAlignment() const;
 
+    // Local size of the background mesh at scale (1, 1).
+    // Rebuilds layout when content or constraints have changed.
+    glm::vec2 getSize();
+
     
 
 protected:

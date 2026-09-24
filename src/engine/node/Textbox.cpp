@@ -140,8 +140,16 @@ TextLayout::Alignment Textbox::getPoseAlignment() const
     return poseAlignment;
 }
 
+glm::vec2 Textbox::getSize()
+{
+    rebuildIfDirty();
+    return getEffectiveSize();
+}
+
 void Textbox::draw(const glm::mat4& viewProjection)
 {
+    rebuildIfDirty();
+
     // draw background div
     if (color.a > 0.0f)
     {
@@ -186,12 +194,8 @@ void Textbox::draw(const glm::mat4& viewProjection)
     }
 
     // draw text TODO comment
-    if (content.spans.size() > 0)
+    if (vertCount > 0)
     {
-        rebuildIfDirty();
-        if (vertCount == 0) {
-            return;
-        }
 
         // bind shader
         Shader* textShader = ShaderServer::getShader("text");
@@ -419,7 +423,13 @@ glm::mat4 Textbox::getTextboxModelMatrix() const
 glm::vec2 Textbox::getEffectiveSize() const
 {
     glm::vec2 size = glm::max(minSize, glm::vec2(layout.totalWidth + 2.0f * padding.x, layout.totalHeight + 2.0f * padding.y));
-    size = glm::min(size, glm::max(maxSize, glm::vec2(0.0f)));
+    // A non-positive max on an axis means that axis is unbounded.
+    if (maxSize.x > 0.0f) {
+        size.x = glm::min(size.x, maxSize.x);
+    }
+    if (maxSize.y > 0.0f) {
+        size.y = glm::min(size.y, maxSize.y);
+    }
     return size;
 }
 
