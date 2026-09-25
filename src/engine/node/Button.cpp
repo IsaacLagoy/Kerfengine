@@ -19,7 +19,7 @@ Button::~Button()
     unlinkButton();
 }
 
-void Button::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void Button::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
     bool wasDown = isDown;
     bool wasHovered = isHovered;

@@ -11,9 +11,9 @@ Drop::Drop(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
 
 Drop::~Drop() {}
 
-void Drop::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
-    Button::update(dt, mousePosition, mouseDown, mousePressed);
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
     if (!drag)
     {

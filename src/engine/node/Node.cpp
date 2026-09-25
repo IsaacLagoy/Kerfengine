@@ -156,6 +156,14 @@ glm::vec2 Node::pointToLocalSpace(const glm::vec2& point) const
     return glm::vec2(glm::inverse(modelMatrix) * glm::vec4(point, 0.0f, 1.0f));
 }
 
+void Node::update(float dt)
+{
+    for (Node* child : childNodes)
+    {
+        child->update(dt);
+    }
+}
+
 void Node::draw(const glm::mat4& viewProjection)
 {    
     for (Node* child : childNodes)

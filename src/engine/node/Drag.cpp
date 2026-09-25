@@ -13,9 +13,9 @@ Drag::Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
 
 Drag::~Drag() {}
 
-void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
-    Button::update(dt, mousePosition, mouseDown, mousePressed);
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
     if (locked)
     {
