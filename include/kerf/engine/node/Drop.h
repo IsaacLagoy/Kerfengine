@@ -9,6 +9,8 @@ namespace kerf {
 class Drag;
 
 class Drop : public Button {
+    friend class Drag;
+
 private:
     Drag* drag = nullptr;
 
@@ -25,7 +27,7 @@ public:
     Drag* getDrag() const;
 
     // setters
-    void setDrag(Drag* drag);
+    virtual void setDrag(Drag* drag);
     void setOnDropCallback(const std::function<void(float)>& callback);
     void setOnPickupCallback(const std::function<void(float)>& callback);
 
@@ -34,6 +36,9 @@ protected:
     virtual void onUp(float dt) override;
     virtual void onDrop(float dt);
     virtual void onPickup(float dt);
+
+    void assignParkedDrop(Drag* drag);
+    virtual void forgetDrag(Drag* leaving);
 
     virtual bool shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool mousePressed) const override;
 };

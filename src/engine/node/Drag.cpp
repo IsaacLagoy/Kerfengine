@@ -1,4 +1,5 @@
 #include <kerf/engine/node/Drag.h>
+#include <kerf/engine/node/Drop.h>
 #include <kerf/engine/scene/Scene.h>
 
 
@@ -11,18 +12,26 @@ Drag::Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
     velocity = glm::vec2(0.0f);
 }
 
-Drag::~Drag() {}
+Drag::~Drag()
+{
+    Drop* parked = parkedDrop;
+    parkedDrop = nullptr;
+    if (parked)
+    {
+        parked->forgetDrag(this);
+    }
+}
 
 void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
-    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
-
     if (locked)
     {
         wasDragging = false;
         getScene()->setSelectedDrag(nullptr);
         return;
     }
+
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
     // Follow the mouse only while this drag is selected and the button is held.
     // selectedDrag stays set until Scene::update ends so drops can claim on release.

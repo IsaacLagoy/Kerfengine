@@ -40,6 +40,7 @@ set(KERF_SOURCES
     src/engine/node/Button.cpp
     src/engine/node/Drag.cpp
     src/engine/node/Drop.cpp
+    src/engine/node/StickyDrop.cpp
     src/engine/node/Model.cpp
     src/engine/node/Model3d.cpp
     src/engine/node/Node.cpp

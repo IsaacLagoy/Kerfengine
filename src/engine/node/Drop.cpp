@@ -9,7 +9,27 @@ Drop::Drop(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
     : Button(pose, scale, mesh, material, shader, collider)
 {}
 
-Drop::~Drop() {}
+Drop::~Drop()
+{
+    if (!drag)
+    {
+        return;
+    }
+
+    if (drag->parkedDrop == this)
+    {
+        drag->parkedDrop = nullptr;
+    }
+    drag = nullptr;
+}
+
+void Drop::forgetDrag(Drag* leaving)
+{
+    if (drag == leaving)
+    {
+        drag = nullptr;
+    }
+}
 
 void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
@@ -44,6 +64,22 @@ Drag* Drop::getDrag() const
 void Drop::setDrag(Drag* drag)
 {
     this->drag = drag;
+}
+
+// park next here and keep Drag::parkedDrop in sync
+// clears the previous drag's back-pointer when it still names this drop.
+void Drop::assignParkedDrop(Drag* next)
+{
+
+    if (drag && drag != next && drag->parkedDrop == this)
+    {
+        drag->parkedDrop = nullptr;
+    }
+    drag = next;
+    if (next)
+    {
+        next->parkedDrop = this;
+    }
 }
 
 void Drop::setOnDropCallback(const std::function<void(float)>& callback)
@@ -96,6 +132,11 @@ void Drop::onUp(float dt)
         Drag* selected = getScene()->getSelectedDrag();
         if (selected != nullptr)
         {
+            if (selected->locked)
+            {
+                Button::onUp(dt);
+                return;
+            }
             if (selected->parkedDrop && selected->parkedDrop != this)
             {
                 selected->parkedDrop->drag = nullptr;

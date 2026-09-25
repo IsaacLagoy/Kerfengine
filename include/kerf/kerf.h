@@ -19,6 +19,7 @@
 #include <kerf/engine/node/Button.h>
 #include <kerf/engine/node/Drag.h>
 #include <kerf/engine/node/Drop.h>
+#include <kerf/engine/node/StickyDrop.h>
 #include <kerf/engine/node/Model.h>
 #include <kerf/engine/node/Model3d.h>
 #include <kerf/engine/node/Node.h>
