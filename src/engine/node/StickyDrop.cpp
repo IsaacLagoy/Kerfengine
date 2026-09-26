@@ -192,4 +192,9 @@ bool StickyDrop::shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool
     return Drop::shouldBeDown(wasDown, isHovered, mouseDown, mousePressed);
 }
 
+void StickyDrop::setLifted(bool lifted)
+{
+    this->lifted = lifted;
+}
+
 } // namespace kerf

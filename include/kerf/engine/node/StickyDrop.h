@@ -41,6 +41,9 @@ public:
     void setPullTime(float pullTime);
     void setDrag(Drag* drag) override;
 
+    // can be set to true to induce returning animation
+    void setLifted(bool lifted);
+
 protected:
     void onDrop(float dt) override;
     void onPickup(float dt) override;
