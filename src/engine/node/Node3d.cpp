@@ -71,6 +71,31 @@ glm::vec3 Node3d::getScale() const
     return scale;
 }
 
+glm::vec3 Node3d::getWorldPosition() const
+{
+    return glm::vec3(getModelMatrix()[3]);
+}
+
+glm::quat Node3d::getWorldRotation() const
+{
+    const glm::mat4 model = getModelMatrix();
+    return glm::quat_cast(glm::mat3(
+        glm::normalize(glm::vec3(model[0])),
+        glm::normalize(glm::vec3(model[1])),
+        glm::normalize(glm::vec3(model[2]))
+    ));
+}
+
+glm::vec3 Node3d::getWorldScale() const
+{
+    const glm::mat4 model = getModelMatrix();
+    return glm::vec3(
+        glm::length(glm::vec3(model[0])),
+        glm::length(glm::vec3(model[1])),
+        glm::length(glm::vec3(model[2]))
+    );
+}
+
 void Node3d::draw(const glm::mat4& viewProjection)
 {
     Node::draw(viewProjection);

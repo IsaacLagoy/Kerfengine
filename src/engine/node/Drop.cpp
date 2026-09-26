@@ -52,8 +52,8 @@ void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown
         return;
     }
 
-    const glm::vec3 dropPose = getPose();
-    drag->setPose(glm::vec3(dropPose.x, dropPose.y, drag->getPose().z));
+    const glm::vec3 dropPose = getWorldPose();
+    drag->setPose(glm::vec3(dropPose.x, dropPose.y, drag->getWorldPose().z));
 }
 
 Drag* Drop::getDrag() const

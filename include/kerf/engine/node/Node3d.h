@@ -33,6 +33,10 @@ public:
     glm::quat getRotation() const;
     glm::vec3 getScale() const;
 
+    glm::vec3 getWorldPosition() const;
+    glm::quat getWorldRotation() const;
+    glm::vec3 getWorldScale() const;
+
 protected:
     virtual void draw(const glm::mat4& viewProjection) override;
 };

@@ -42,7 +42,7 @@ void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown
         return;
     }
 
-    const glm::vec2 pose2 = glm::vec2(getPose());
+    const glm::vec2 pose2 = glm::vec2(getWorldPose());
     if (!wasDragging)
     {
         // grab offset in world space, first frame has no previous mouse sample
@@ -51,7 +51,7 @@ void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown
 
     const glm::vec2 target = mousePosition - relativePosition;
     velocity = target - pose2;
-    setPose(glm::vec3(target, getPose().z));
+    setPose(glm::vec3(target, getWorldPose().z));
     wasDragging = true;
 }
 

@@ -31,6 +31,9 @@ public:
     glm::vec3 getPose() const;
     glm::vec2 getScale() const;
 
+    glm::vec3 getWorldPose() const;
+    glm::vec2 getWorldScale() const;
+
 protected:
     virtual void draw(const glm::mat4& viewProjection) override;
 };

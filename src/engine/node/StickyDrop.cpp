@@ -76,7 +76,7 @@ void StickyDrop::update(float dt)
     {
         returning = true;
         pullElapsed = 0.0f;
-        pullFrom = glm::vec2(piece->getPose());
+        pullFrom = glm::vec2(piece->getWorldPose());
         piece->setLocked(true);
     }
 
@@ -85,9 +85,9 @@ void StickyDrop::update(float dt)
     float t = glm::clamp(pullElapsed / pullTime, 0.0f, 1.0f);
     t = t * t * (3.0f - 2.0f * t);
 
-    const glm::vec2 target(getPose());
+    const glm::vec2 target(getWorldPose());
     const glm::vec2 pos = glm::mix(pullFrom, target, t);
-    piece->setPose(glm::vec3(pos, piece->getPose().z));
+    piece->setPose(glm::vec3(pos, piece->getWorldPose().z));
 
     // done returning
     if (pullElapsed >= pullTime)
@@ -95,8 +95,8 @@ void StickyDrop::update(float dt)
         lifted = false;
         returning = false;
         piece->setLocked(false);
-        const glm::vec3 dropPose = getPose();
-        piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getPose().z));
+        const glm::vec3 dropPose = getWorldPose();
+        piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getWorldPose().z));
     }
 }
 
@@ -125,8 +125,8 @@ void StickyDrop::updateButton(float dt, const glm::vec2& mousePosition, bool mou
     }
 
     // recenter drag to here
-    const glm::vec3 dropPose = getPose();
-    piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getPose().z));
+    const glm::vec3 dropPose = getWorldPose();
+    piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getWorldPose().z));
 }
 
 float StickyDrop::getPullTime() const
