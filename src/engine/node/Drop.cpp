@@ -43,6 +43,10 @@ void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown
     // Piece was picked up from this slot.
     if (drag->isDragging() && mousePressed)
     {
+        if (locked)
+        {
+            return;
+        }
         if (drag->parkedDrop == this)
         {
             drag->parkedDrop = nullptr;
@@ -63,13 +67,31 @@ Drag* Drop::getDrag() const
 
 void Drop::setDrag(Drag* drag)
 {
+    if (locked)
+    {
+        return;
+    }
     this->drag = drag;
+}
+
+bool Drop::isLocked() const
+{
+    return locked;
+}
+
+void Drop::setLocked(bool locked)
+{
+    this->locked = locked;
 }
 
 // park next here and keep Drag::parkedDrop in sync
 // clears the previous drag's back-pointer when it still names this drop.
 void Drop::assignParkedDrop(Drag* next)
 {
+    if (locked)
+    {
+        return;
+    }
 
     if (drag && drag != next && drag->parkedDrop == this)
     {
@@ -132,13 +154,18 @@ void Drop::onUp(float dt)
         Drag* selected = getScene()->getSelectedDrag();
         if (selected != nullptr)
         {
-            if (selected->locked)
+            if (locked || selected->locked)
             {
                 Button::onUp(dt);
                 return;
             }
             if (selected->parkedDrop && selected->parkedDrop != this)
             {
+                if (selected->parkedDrop->locked)
+                {
+                    Button::onUp(dt);
+                    return;
+                }
                 selected->parkedDrop->drag = nullptr;
                 selected->parkedDrop->onPickup(dt);
             }

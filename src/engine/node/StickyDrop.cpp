@@ -142,6 +142,11 @@ void StickyDrop::setPullTime(float pullTime)
 
 void StickyDrop::setDrag(Drag* next)
 {
+    if (isLocked())
+    {
+        return;
+    }
+
     // unlock previous drag
     Drag* previous = getDrag();
     if (previous && previous != next)

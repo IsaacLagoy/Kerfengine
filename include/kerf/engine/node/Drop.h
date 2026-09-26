@@ -13,6 +13,7 @@ class Drop : public Button {
 
 private:
     Drag* drag = nullptr;
+    bool locked = false;
 
     std::function<void(float)> onDropCallback;
     std::function<void(float)> onPickupCallback;
@@ -25,9 +26,11 @@ public:
 
     // getters
     Drag* getDrag() const;
+    bool isLocked() const;
 
     // setters
     virtual void setDrag(Drag* drag);
+    void setLocked(bool locked);
     void setOnDropCallback(const std::function<void(float)>& callback);
     void setOnPickupCallback(const std::function<void(float)>& callback);
 
