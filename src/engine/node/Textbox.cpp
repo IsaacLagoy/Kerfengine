@@ -356,11 +356,11 @@ glm::mat4 Textbox::getBaseModelMatrix() const
         default: throw std::invalid_argument("Invalid pose alignment");
     }
 
-    // alignment point should be the pivot at getPose().
-    // use scale 1 so this is a pure translation
+    // Pivot is the world pose, so a parent transform moves and scales the text.
+    // Textbox's own scale is 1; getWorldScale() is the composed parent scale.
     glm::mat4 model, transModel;
     Node::computeModelMatrix(transModel, glm::vec3(boxPos.x, boxPos.y, 0.0f), glm::vec2(1.0f));
-    Node::computeModelMatrix(model, getPose(), glm::vec2(1.0f));
+    Node::computeModelMatrix(model, getWorldPose(), getWorldScale());
     return model * transModel;
 }
 

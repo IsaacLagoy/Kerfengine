@@ -85,8 +85,6 @@ public:
     // Rebuilds layout when content or constraints have changed.
     glm::vec2 getSize();
 
-    
-
 protected:
     virtual void draw(const glm::mat4& viewProjection) override;
 

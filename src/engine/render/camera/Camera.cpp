@@ -98,8 +98,8 @@ glm::vec2 Camera::worldToScreen(const glm::vec2& world) const
 
 void Camera::updateProjection()
 {
-    const float halfH = 1.0f / zoom;
-    const float halfW = halfH * aspect;
+    const float halfW = 1.0f / zoom;
+    const float halfH = halfW / aspect;
     proj = glm::ortho(-halfW, halfW, -halfH, halfH, near, far);
 }
 

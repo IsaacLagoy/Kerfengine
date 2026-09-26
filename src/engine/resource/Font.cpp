@@ -40,20 +40,38 @@ Font::Font(const std::string& name, const std::string& fontPath, float pixelHeig
     }
 
     // ------------------------------------------------
-    // 2. Rasterize printable ASCII into one atlas bitmap
+    // 2. Rasterize Unicode codepoints 0..255 into one atlas bitmap.
+    //    That is Latin-1, so ¢ (U+00A2) is included. Text stores one byte
+    //    per character, and that byte is the index into glyphs[].
     //    Oversampling = extra samples per pixel for sharper small text.
     // ------------------------------------------------
-    atlasW = 512; // TODO remove hardcoded value
-    atlasH = 512;
-    std::vector<unsigned char> atlasBitmap(static_cast<size_t>(atlasW * atlasH), 0);
+    stbtt_packedchar packedChars[256];
+    std::vector<unsigned char> atlasBitmap;
+    bool packed = false;
+    for (int dim : {512, 1024, 2048}) {
+        atlasW = dim; // TODO remove hardcoded value
+        atlasH = dim;
+        atlasBitmap.assign(static_cast<size_t>(atlasW) * static_cast<size_t>(atlasH), 0);
 
-    stbtt_pack_context packCtx;
-    stbtt_PackBegin(&packCtx, atlasBitmap.data(), atlasW, atlasH, 0, 1, nullptr);
-    stbtt_PackSetOversampling(&packCtx, 2, 2);
+        stbtt_pack_context packCtx;
+        if (!stbtt_PackBegin(&packCtx, atlasBitmap.data(), atlasW, atlasH, 0, 1, nullptr)) {
+            continue;
+        }
+        stbtt_PackSetOversampling(&packCtx, 2, 2);
 
-    stbtt_packedchar packedChars[95]; // glyphs 32..126
-    stbtt_PackFontRange(&packCtx, ttfBuffer.data(), 0, pixelHeight, 32, 95, packedChars);
-    stbtt_PackEnd(&packCtx);
+        const int packedOk = stbtt_PackFontRange(
+            &packCtx, ttfBuffer.data(), 0, pixelHeight, 0, 256, packedChars);
+        stbtt_PackEnd(&packCtx);
+
+        if (packedOk) {
+            packed = true;
+            break;
+        }
+    }
+    if (!packed) {
+        throw std::runtime_error(
+            ANSI_RED + "[Font] atlas pack failed for " + resolved + ANSI_RESET);
+    }
 
     // ------------------------------------------------
     // 3. Font-wide vertical metrics, converted from font units to atlas pixels
@@ -69,10 +87,16 @@ Font::Font(const std::string& name, const std::string& fontPath, float pixelHeig
     // 4. Per-glyph quads + UVs. stb y grows down from the pen;
     //    negate Y so layout/draw match the engine's y-up pose.
     // ------------------------------------------------
-    for (int c = 32; c < 127; ++c) {
+    for (int c = 0; c < 256; ++c) {
+        // Missing codepoints share the font's .notdef; leave them unpacked
+        // so layout skips the byte instead of drawing a box.
+        if (stbtt_FindGlyphIndex(&info, c) == 0) {
+            continue;
+        }
+
         stbtt_aligned_quad q;
         float dummyX = 0.0f, dummyY = 0.0f;
-        stbtt_GetPackedQuad(packedChars, atlasW, atlasH, c - 32, &dummyX, &dummyY, &q, 0);
+        stbtt_GetPackedQuad(packedChars, atlasW, atlasH, c, &dummyX, &dummyY, &q, 0);
 
         Glyph& g = glyphs[c];
         g.x0 = q.x0;
@@ -83,7 +107,8 @@ Font::Font(const std::string& name, const std::string& fontPath, float pixelHeig
         g.v0 = q.t0;
         g.u1 = q.s1;
         g.v1 = q.t1;
-        g.advance = packedChars[c - 32].xadvance;
+        g.advance = packedChars[c].xadvance;
+        glyphPacked[c] = true;
     }
 
     // Coverage only: fragment shader reads .r as alpha.
@@ -100,6 +125,11 @@ Font::~Font()
 const Glyph& Font::getGlyph(unsigned char c) const
 {
     return glyphs[c];
+}
+
+bool Font::hasGlyph(unsigned char c) const
+{
+    return glyphPacked[c];
 }
 
 } // namespace kerf
