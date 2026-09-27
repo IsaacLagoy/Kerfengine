@@ -121,8 +121,6 @@ int main()
             std::cout << "space key down" << std::endl;
         }
 
-        const glm::vec2 mouse = engine.getMouse().mouseWorld(camera);
-        const bool mouseDown = engine.getMouse().getLeftPressed();
         for (const auto& style : buttons)
         {
             if (style.button->getIsDown()) {

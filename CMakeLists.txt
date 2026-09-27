@@ -10,6 +10,55 @@ endif()
 
 option(KERF_BUILD_EXAMPLES "Build Kerfengine demo executables" ${KERF_IS_TOP_LEVEL})
 option(KERF_USE_SYSTEM_GLAD "Use a host-provided GLAD instead of vendored glad.c" OFF)
+option(KERF_ENABLE_SANITIZERS
+    "Instrument with AddressSanitizer and UndefinedBehaviorSanitizer (runtime leaks and UB)"
+    OFF
+)
+
+if(KERF_IS_TOP_LEVEL AND NOT CMAKE_CONFIGURATION_TYPES)
+    if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
+    endif()
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+        Debug Release RelWithDebInfo MinSizeRel
+    )
+endif()
+
+if(KERF_ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(WARNING
+        "KERF_ENABLE_SANITIZERS with CMAKE_BUILD_TYPE=Release is slower and can hide bugs; prefer Debug or RelWithDebInfo"
+    )
+endif()
+
+function(kerf_apply_warning_flags target_name)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+        target_compile_options(${target_name} PRIVATE
+            -Wall
+            -Wextra
+            -Wpedantic
+            -Wnull-dereference
+        )
+    endif()
+endfunction()
+
+function(kerf_apply_sanitizer_flags target_name)
+    if(NOT KERF_ENABLE_SANITIZERS)
+        return()
+    endif()
+    if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+        message(FATAL_ERROR "KERF_ENABLE_SANITIZERS requires Clang or GCC")
+    endif()
+    set(_visibility PRIVATE)
+    if(ARGC GREATER 1)
+        set(_visibility ${ARGV1})
+    endif()
+    set(_kerf_sanitizer_flags
+        -fsanitize=address,undefined
+        -fno-omit-frame-pointer
+    )
+    target_compile_options(${target_name} ${_visibility} ${_kerf_sanitizer_flags})
+    target_link_options(${target_name} ${_visibility} ${_kerf_sanitizer_flags})
+endfunction()
 
 if(KERF_IS_TOP_LEVEL)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -180,9 +229,12 @@ target_include_directories(kerf
         "${CMAKE_CURRENT_BINARY_DIR}/generated"
 )
 
-target_compile_options(kerf PRIVATE
-    -Wall -Wextra -Wpedantic
-)
+kerf_apply_warning_flags(kerf)
+# PUBLIC so executables that link kerf inherit ASan/UBSan compile and link flags.
+kerf_apply_sanitizer_flags(kerf PUBLIC)
+if(TARGET kerf_glad)
+    kerf_apply_sanitizer_flags(kerf_glad PRIVATE)
+endif()
 
 target_link_libraries(kerf PUBLIC
     glfw
@@ -200,6 +252,7 @@ if(KERF_BUILD_EXAMPLES)
         get_filename_component(EXE_NAME ${SRC_FILE} NAME_WE)
         add_executable(${EXE_NAME} ${SRC_FILE})
         target_link_libraries(${EXE_NAME} PRIVATE kerf)
+        kerf_apply_warning_flags(${EXE_NAME})
         add_custom_command(TARGET ${EXE_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
                     "${CMAKE_CURRENT_SOURCE_DIR}/resources"

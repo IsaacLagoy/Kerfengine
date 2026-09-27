@@ -36,7 +36,43 @@ cmake -S . -B build
 cmake --build build
 ```
 
-That builds the `kerf` library, vendored `kerf_glad`, and every demo under `src/*.cpp`. After each demo links, `resources/` and `shaders/` are copied next to that binary. clangd gets a `compile_commands.json` symlink next to this source tree (top-level configures only).
+A top-level configure with no `CMAKE_BUILD_TYPE` defaults to **RelWithDebInfo**. That builds the `kerf` library, vendored `kerf_glad`, and every demo under `src/*.cpp`. After each demo links, `resources/` and `shaders/` are copied next to that binary. clangd gets a `compile_commands.json` symlink next to this source tree (top-level configures only).
+
+### Build types
+
+Pass `-DCMAKE_BUILD_TYPE=...` on single-config generators (Ninja, Unix Makefiles). Clang/GCC map these roughly as:
+
+| Type | Typical flags | Use for |
+| --- | --- | --- |
+| `Debug` | `-g`, no optimization | Stepping in a debugger |
+| `RelWithDebInfo` | `-O2 -g -DNDEBUG` | Default here: fast enough with symbols |
+| `Release` | `-O3 -DNDEBUG` | Shipping / timing (no sanitizers) |
+| `MinSizeRel` | `-Os -DNDEBUG` | Size-constrained builds |
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=MinSizeRel
+```
+
+On Xcode or Visual Studio, pick the configuration in the IDE or with `--config` instead of `CMAKE_BUILD_TYPE`.
+
+Library and demo sources compile with `-Wall -Wextra -Wpedantic -Wnull-dereference`. Vendored GLAD is not built with those warning flags. `-Werror`, `-Wshadow`, `-Wconversion`, and `-Wsign-conversion` are not enabled yet; they currently fail on existing engine code.
+
+### Sanitizers (leaks and undefined behavior)
+
+These are **runtime** checks, not a compile-time proof of “no leaks.” Enable AddressSanitizer and UndefinedBehaviorSanitizer:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DKERF_ENABLE_SANITIZERS=ON
+cmake --build build
+ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 ./build/main
+```
+
+Prefer `Debug` or `RelWithDebInfo` with sanitizers. `Release` plus sanitizers is allowed but slower and easier to miss bugs. Requires Clang or GCC. On Apple Clang, leak reports can be incomplete; Linux Clang/GCC (or Homebrew LLVM) is stricter. LeakSanitizer reports when the process **exits**, so you must run the instrumented binary.
+
+`KERF_ENABLE_SANITIZERS` is **OFF** by default so hosts that `add_subdirectory` Kerfengine are not forced onto ASan.
 
 Useful targets and options:
 
@@ -46,6 +82,7 @@ cmake --build build --target kerf_examples   # all demos
 cmake --build build --target kerf_glad       # vendored GLAD
 
 cmake -S . -B build -DKERF_BUILD_EXAMPLES=OFF
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DKERF_ENABLE_SANITIZERS=ON
 ```
 
 `KERF_BUILD_EXAMPLES` defaults **ON** when this repo is the CMake source root and **OFF** when it is `add_subdirectory`. The compile-commands symlink is top-level only; example asset copies run whenever examples are built.

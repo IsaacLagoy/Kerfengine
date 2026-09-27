@@ -11,9 +11,9 @@ class Keyboard {
 private:
     GLFWwindow* window;
 
-    std::array<bool, GLFW_KEY_LAST + 1> keysPressed;
-    std::array<bool, GLFW_KEY_LAST + 1> keysDown;
-    std::array<bool, GLFW_KEY_LAST + 1> keysUp;
+    std::array<bool, GLFW_KEY_LAST + 1> keysPressed{};
+    std::array<bool, GLFW_KEY_LAST + 1> keysDown{};
+    std::array<bool, GLFW_KEY_LAST + 1> keysUp{};
 
 public:
     Keyboard(GLFWwindow* window);
