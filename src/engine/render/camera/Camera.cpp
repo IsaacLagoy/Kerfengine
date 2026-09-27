@@ -85,6 +85,16 @@ glm::vec2 Camera::screenToWorld(const glm::vec2& screen) const
     return glm::vec2(world);
 }
 
+std::map<std::string, glm::vec2> Camera::getWindowCorners() const
+{
+    return {
+        { "topLeft", screenToWorld(glm::vec2(0.0f, 0.0f)) },
+        { "topRight", screenToWorld(glm::vec2(viewportWidth, 0.0f)) },
+        { "bottomLeft", screenToWorld(glm::vec2(0.0f, viewportHeight)) },
+        { "bottomRight", screenToWorld(glm::vec2(viewportWidth, viewportHeight)) },
+    };
+}
+
 glm::vec2 Camera::worldToScreen(const glm::vec2& world) const
 {
     const glm::vec4 clip = (proj * view) * glm::vec4(world, 0.0f, 1.0f);

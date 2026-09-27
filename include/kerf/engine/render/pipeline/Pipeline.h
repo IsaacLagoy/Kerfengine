@@ -23,6 +23,9 @@ struct AttachmentDesc {
 };
 
 struct TargetDesc {
+    // Horizontal size in pixels. Height follows the framebuffer aspect ratio.
+    // Leave at 0 and set scale to size both axes as a fraction of the framebuffer.
+    int width = 0;
     float scale = 1.0f;
     Filter filter = Filter::Linear;
     std::vector<AttachmentDesc> attachments;

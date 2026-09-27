@@ -2,6 +2,9 @@
 
 #include <glm/glm.hpp>
 
+#include <map>
+#include <string>
+
 
 namespace kerf {
 
@@ -38,6 +41,9 @@ public:
 
     glm::vec2 screenToWorld(const glm::vec2& screen) const;
     glm::vec2 worldToScreen(const glm::vec2& world) const;
+
+    // Window corners in world space, keyed "topLeft", "topRight", "bottomLeft", "bottomRight".
+    std::map<std::string, glm::vec2> getWindowCorners() const;
 
 private:
     void updateProjection();

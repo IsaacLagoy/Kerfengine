@@ -176,6 +176,12 @@ void Pipeline::addTarget(const std::string& name, const TargetDesc& desc)
     {
         throw std::runtime_error(ANSI_RED + "[Pipeline] target '" + name + "' scale must be positive" + ANSI_RESET);
     }
+    if (desc.width < 0 || (desc.width > 0 && desc.scale != 1.0f))
+    {
+        throw std::runtime_error(
+            ANSI_RED + "[Pipeline] target '" + name + "' needs a positive width or a positive scale, not both" + ANSI_RESET
+        );
+    }
 
     const std::vector<AttachmentDesc> resolved = resolvedAttachments(desc);
     bool seenColor = false;
@@ -245,8 +251,22 @@ void Pipeline::ensureResources(int framebufferWidth, int framebufferHeight)
 
     for (auto& [name, rt] : targets)
     {
-        const int width = std::max(1, static_cast<int>(framebufferWidth * rt.desc.scale));
-        const int height = std::max(1, static_cast<int>(framebufferHeight * rt.desc.scale));
+        const int fbW = std::max(framebufferWidth, 1);
+        const int fbH = std::max(framebufferHeight, 1);
+        int width = 0;
+        int height = 0;
+        if (rt.desc.width > 0)
+        {
+            width = rt.desc.width;
+            height = std::max(1, static_cast<int>(
+                (static_cast<long long>(width) * fbH + fbW / 2) / fbW
+            ));
+        }
+        else
+        {
+            width = std::max(1, static_cast<int>(framebufferWidth * rt.desc.scale));
+            height = std::max(1, static_cast<int>(framebufferHeight * rt.desc.scale));
+        }
         const std::vector<AttachmentDesc>& specs = rt.desc.attachments;
 
         if (!rt.fbo)
