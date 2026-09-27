@@ -33,6 +33,8 @@ void RigidBody::initMass()
 void RigidBody::update(float dt)
 {
     setPose(getPose() + velocity * dt);
+
+    Model::update(dt);
 }
 
 void RigidBody::insertRigidBody(RigidBody* pos)
