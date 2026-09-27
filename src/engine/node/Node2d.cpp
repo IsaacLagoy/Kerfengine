@@ -66,6 +66,22 @@ glm::vec2 Node2d::getScale() const
     return scale;
 }
 
+glm::vec3 Node2d::getWorldPose() const
+{
+    const glm::mat4 model = getModelMatrix();
+    const glm::vec2 x(model[0]);
+    return glm::vec3(model[3].x, model[3].y, glm::atan(x.y, x.x));
+}
+
+glm::vec2 Node2d::getWorldScale() const
+{
+    const glm::mat4 model = getModelMatrix();
+    return glm::vec2(
+        glm::length(glm::vec2(model[0])),
+        glm::length(glm::vec2(model[1]))
+    );
+}
+
 void Node2d::draw(const glm::mat4& viewProjection)
 {
     Node::draw(viewProjection);

@@ -67,6 +67,9 @@ public:
     glm::vec3 pointToLocalSpace(const glm::vec3& point) const;
     glm::vec2 pointToLocalSpace(const glm::vec2& point) const;
 
+    // live
+    virtual void update(float dt);
+
 protected:
     virtual void draw(const glm::mat4& viewProjection);
     virtual void enterScene(Scene* scene);

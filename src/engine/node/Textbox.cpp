@@ -140,8 +140,16 @@ TextLayout::Alignment Textbox::getPoseAlignment() const
     return poseAlignment;
 }
 
+glm::vec2 Textbox::getSize()
+{
+    rebuildIfDirty();
+    return getEffectiveSize();
+}
+
 void Textbox::draw(const glm::mat4& viewProjection)
 {
+    rebuildIfDirty();
+
     // draw background div
     if (color.a > 0.0f)
     {
@@ -186,12 +194,8 @@ void Textbox::draw(const glm::mat4& viewProjection)
     }
 
     // draw text TODO comment
-    if (content.spans.size() > 0)
+    if (vertCount > 0)
     {
-        rebuildIfDirty();
-        if (vertCount == 0) {
-            return;
-        }
 
         // bind shader
         Shader* textShader = ShaderServer::getShader("text");
@@ -352,11 +356,11 @@ glm::mat4 Textbox::getBaseModelMatrix() const
         default: throw std::invalid_argument("Invalid pose alignment");
     }
 
-    // alignment point should be the pivot at getPose().
-    // use scale 1 so this is a pure translation
+    // Pivot is the world pose, so a parent transform moves and scales the text.
+    // Textbox's own scale is 1; getWorldScale() is the composed parent scale.
     glm::mat4 model, transModel;
     Node::computeModelMatrix(transModel, glm::vec3(boxPos.x, boxPos.y, 0.0f), glm::vec2(1.0f));
-    Node::computeModelMatrix(model, getPose(), glm::vec2(1.0f));
+    Node::computeModelMatrix(model, getWorldPose(), getWorldScale());
     return model * transModel;
 }
 
@@ -419,7 +423,13 @@ glm::mat4 Textbox::getTextboxModelMatrix() const
 glm::vec2 Textbox::getEffectiveSize() const
 {
     glm::vec2 size = glm::max(minSize, glm::vec2(layout.totalWidth + 2.0f * padding.x, layout.totalHeight + 2.0f * padding.y));
-    size = glm::min(size, glm::max(maxSize, glm::vec2(0.0f)));
+    // A non-positive max on an axis means that axis is unbounded.
+    if (maxSize.x > 0.0f) {
+        size.x = glm::min(size.x, maxSize.x);
+    }
+    if (maxSize.y > 0.0f) {
+        size.y = glm::min(size.y, maxSize.y);
+    }
     return size;
 }
 

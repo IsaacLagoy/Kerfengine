@@ -301,8 +301,8 @@ TextLayout::TextLayout(
                 continue;
             }
             const unsigned char uc = static_cast<unsigned char>(c);
-            if (uc < 32 || uc >= 127) {
-                continue; // skip non-printable / non-ASCII characters entirely
+            if (!font->hasGlyph(uc)) {
+                continue;
             }
 
             auto pen = [&]() { return line.chars.empty() ? 0.0f : line.chars.back().xEnd; };

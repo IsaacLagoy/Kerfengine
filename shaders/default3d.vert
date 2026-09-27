@@ -15,6 +15,6 @@ void main() {
     vec4 world = uModel * vec4(aPos, 1.0);
     gl_Position = uViewProjection * world;
     vUV = aUV;
-    vNormal = mat3(uModel) * aNormal;
+    vNormal = mat3(transpose(inverse(uModel))) * aNormal;
     vBary = aBary;
 }

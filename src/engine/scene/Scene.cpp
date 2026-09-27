@@ -156,18 +156,17 @@ void Scene::draw() const
 
 void Scene::update(float dt, Mouse& mouse)
 {
-    for (RigidBody* rigidBody = rigidBodyHead->nextRigidBody; rigidBody != rigidBodyTail; rigidBody = rigidBody->nextRigidBody) 
-    {
-        rigidBody->update(dt);
-    }
+    // update node tree
+    root->update(dt);
 
+    // update buttons
     const glm::vec2 mousePosition = mouse.mouseWorld(*camera);
     const bool mouseDown = mouse.getLeftDown();
     const bool mousePressed = mouse.getLeftPressed();
 
     for (Button* button = buttonTail->prevButton; button != buttonHead; button = button->prevButton) 
     {
-        button->update(dt, mousePosition, mouseDown, mousePressed);
+        button->updateButton(dt, mousePosition, mouseDown, mousePressed);
     }
 
     // Drops claim selectedDrag in onUp; clear only after every button has updated.

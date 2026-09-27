@@ -5,25 +5,22 @@
 #include <kerf/engine/render/context/Context.h>
 #include <kerf/engine/input/Mouse.h>
 #include <kerf/engine/input/Keyboard.h>
+#include <memory>
 
 
 namespace kerf {
 
-// forward declarations
 class Scene;
-class FrameBuffer;
-
-// ------------------------------------------------
-// Engine
-// ------------------------------------------------
+class Pipeline;
 
 class Engine {
 private:
-    FrameBuffer* fbo = nullptr;
-    Scene* scene = nullptr;
     Context context;
     Mouse mouse;
     Keyboard keyboard;
+    std::unique_ptr<Pipeline> defaultPipeline;
+    Pipeline* pipeline = nullptr;
+    Scene* scene = nullptr;
 
 public:
     Engine(int width, int height);
@@ -35,7 +32,7 @@ public:
     Engine& operator=(Engine&&) = delete;
 
     void setScene(Scene* scene);
-    void setFBO(FrameBuffer* fbo);
+    void setPipeline(Pipeline* pipeline);
     void setClearColor(const glm::vec4& color);
     void setTitle(const std::string& title);
 
@@ -43,16 +40,9 @@ public:
     Keyboard& getKeyboard();
 
     /**
-     * @brief Draw the scene to the current target (FBO if set, else the window).
-     *        Does not swap when an FBO is bound; call present() after.
+     * @brief Execute the current pipeline (default: scene → present) and swap.
      */
     void render();
-
-    /**
-     * @brief Draw the current FBO to the window (nearest upsample), then swap.
-     *        Uses a fullscreen quad so it works with an MSAA backbuffer.
-     */
-    void present();
 
     void update();
     bool shouldClose() const;

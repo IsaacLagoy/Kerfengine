@@ -50,8 +50,9 @@ private:
     float descent = 0.0f;
     float lineGap = 0.0f;
 
-    // ASCII 0-127; entries below 32 are unused. Extend later for Unicode.
-    Glyph glyphs[128] {};
+    // Indexed by the byte stored in text. Codepoints 0..255 are baked when the font has them.
+    Glyph glyphs[256] {};
+    bool glyphPacked[256] {};
     std::string name;
 
 public:
@@ -69,6 +70,7 @@ public:
     Font& operator=(Font&&) = delete;
 
     const Glyph& getGlyph(unsigned char c) const;
+    bool hasGlyph(unsigned char c) const;
     Texture* getAtlas() const { return atlas; }
     float getPixelHeight() const { return pixelHeight; }
     float getAscent() const { return ascent; }

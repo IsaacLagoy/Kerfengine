@@ -89,6 +89,7 @@ set(KERF_SOURCES
     src/engine/node/Button.cpp
     src/engine/node/Drag.cpp
     src/engine/node/Drop.cpp
+    src/engine/node/StickyDrop.cpp
     src/engine/node/Model.cpp
     src/engine/node/Model3d.cpp
     src/engine/node/Node.cpp
@@ -100,6 +101,7 @@ set(KERF_SOURCES
     src/engine/physics/collision/Collider2D.cpp
     src/engine/physics/collision/ColliderPolygon2DMesh.cpp
     src/engine/render/buffer/FrameBuffer.cpp
+    src/engine/render/pipeline/Pipeline.cpp
     src/engine/render/camera/Camera.cpp
     src/engine/render/context/Context.cpp
     src/engine/render/context/GLState.cpp

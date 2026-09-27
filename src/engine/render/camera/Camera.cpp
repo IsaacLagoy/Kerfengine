@@ -63,6 +63,16 @@ glm::vec2 Camera::getPosition() const
     return position;
 }
 
+float Camera::getNear() const
+{
+    return near;
+}
+
+float Camera::getFar() const
+{
+    return far;
+}
+
 glm::vec2 Camera::screenToWorld(const glm::vec2& screen) const
 {
     // GLFW / window pixels: origin top-left, Y down
@@ -73,6 +83,16 @@ glm::vec2 Camera::screenToWorld(const glm::vec2& screen) const
 
     const glm::vec4 world = glm::inverse(proj * view) * glm::vec4(ndc, 0.0f, 1.0f);
     return glm::vec2(world);
+}
+
+std::map<std::string, glm::vec2> Camera::getWindowCorners() const
+{
+    return {
+        { "topLeft", screenToWorld(glm::vec2(0.0f, 0.0f)) },
+        { "topRight", screenToWorld(glm::vec2(viewportWidth, 0.0f)) },
+        { "bottomLeft", screenToWorld(glm::vec2(0.0f, viewportHeight)) },
+        { "bottomRight", screenToWorld(glm::vec2(viewportWidth, viewportHeight)) },
+    };
 }
 
 glm::vec2 Camera::worldToScreen(const glm::vec2& world) const
@@ -88,8 +108,8 @@ glm::vec2 Camera::worldToScreen(const glm::vec2& world) const
 
 void Camera::updateProjection()
 {
-    const float halfH = 1.0f / zoom;
-    const float halfW = halfH * aspect;
+    const float halfW = 1.0f / zoom;
+    const float halfH = halfW / aspect;
     proj = glm::ortho(-halfW, halfW, -halfH, halfH, near, far);
 }
 

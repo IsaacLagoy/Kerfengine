@@ -19,6 +19,7 @@
 #include <kerf/engine/node/Button.h>
 #include <kerf/engine/node/Drag.h>
 #include <kerf/engine/node/Drop.h>
+#include <kerf/engine/node/StickyDrop.h>
 #include <kerf/engine/node/Model.h>
 #include <kerf/engine/node/Model3d.h>
 #include <kerf/engine/node/Node.h>
@@ -36,6 +37,8 @@
 #include <kerf/engine/render/camera/Camera.h>
 // don't add context
 #include <kerf/engine/render/material/Material.h>
+#include <kerf/engine/render/pipeline/Format.h>
+#include <kerf/engine/render/pipeline/Pipeline.h>
 
 // resources
 #include <kerf/engine/resource/Font.h>

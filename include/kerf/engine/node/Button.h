@@ -37,7 +37,7 @@ public:
     Button(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider);
     ~Button();
 
-    virtual void update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed);
+    virtual void updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed);
 
     const Collider2D& getCollider() const { return collider; }
     bool getIsDown() const { return isDown; }

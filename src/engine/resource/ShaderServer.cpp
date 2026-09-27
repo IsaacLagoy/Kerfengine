@@ -75,6 +75,8 @@ void Shader::compile(
     this->programID = glCreateProgram();
     glAttachShader(programID, vShaderID);
     glAttachShader(programID, fShaderID);
+    glBindFragDataLocation(programID, 0, "oColor");
+    glBindFragDataLocation(programID, 1, "oNormal");
     glLinkProgram(programID);
     glGetProgramiv(programID, GL_LINK_STATUS, &rc);
     if (rc == GL_FALSE)

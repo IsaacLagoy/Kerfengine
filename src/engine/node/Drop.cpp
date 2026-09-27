@@ -9,11 +9,31 @@ Drop::Drop(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
     : Button(pose, scale, mesh, material, shader, collider)
 {}
 
-Drop::~Drop() {}
-
-void Drop::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+Drop::~Drop()
 {
-    Button::update(dt, mousePosition, mouseDown, mousePressed);
+    if (!drag)
+    {
+        return;
+    }
+
+    if (drag->parkedDrop == this)
+    {
+        drag->parkedDrop = nullptr;
+    }
+    drag = nullptr;
+}
+
+void Drop::forgetDrag(Drag* leaving)
+{
+    if (drag == leaving)
+    {
+        drag = nullptr;
+    }
+}
+
+void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+{
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
     if (!drag)
     {
@@ -23,6 +43,10 @@ void Drop::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
     // Piece was picked up from this slot.
     if (drag->isDragging() && mousePressed)
     {
+        if (locked)
+        {
+            return;
+        }
         if (drag->parkedDrop == this)
         {
             drag->parkedDrop = nullptr;
@@ -32,8 +56,8 @@ void Drop::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
         return;
     }
 
-    const glm::vec3 dropPose = getPose();
-    drag->setPose(glm::vec3(dropPose.x, dropPose.y, drag->getPose().z));
+    const glm::vec3 dropPose = getWorldPose();
+    drag->setPose(glm::vec3(dropPose.x, dropPose.y, drag->getWorldPose().z));
 }
 
 Drag* Drop::getDrag() const
@@ -43,7 +67,41 @@ Drag* Drop::getDrag() const
 
 void Drop::setDrag(Drag* drag)
 {
+    if (locked)
+    {
+        return;
+    }
     this->drag = drag;
+}
+
+bool Drop::isLocked() const
+{
+    return locked;
+}
+
+void Drop::setLocked(bool locked)
+{
+    this->locked = locked;
+}
+
+// park next here and keep Drag::parkedDrop in sync
+// clears the previous drag's back-pointer when it still names this drop.
+void Drop::assignParkedDrop(Drag* next)
+{
+    if (locked)
+    {
+        return;
+    }
+
+    if (drag && drag != next && drag->parkedDrop == this)
+    {
+        drag->parkedDrop = nullptr;
+    }
+    drag = next;
+    if (next)
+    {
+        next->parkedDrop = this;
+    }
 }
 
 void Drop::setOnDropCallback(const std::function<void(float)>& callback)
@@ -96,8 +154,18 @@ void Drop::onUp(float dt)
         Drag* selected = getScene()->getSelectedDrag();
         if (selected != nullptr)
         {
+            if (locked || selected->locked)
+            {
+                Button::onUp(dt);
+                return;
+            }
             if (selected->parkedDrop && selected->parkedDrop != this)
             {
+                if (selected->parkedDrop->locked)
+                {
+                    Button::onUp(dt);
+                    return;
+                }
                 selected->parkedDrop->drag = nullptr;
                 selected->parkedDrop->onPickup(dt);
             }

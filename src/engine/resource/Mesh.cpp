@@ -95,7 +95,7 @@ void Mesh::loadFromObjSource(const char* objSrc, const char* label)
                 barycentrics.push_back(bary[corner][2]);
 
                 // add normals if they exist
-                if(!attrib.normals.empty()) 
+                if(!attrib.normals.empty() && idx.normal_index >= 0)
                 {
                     normals.push_back(attrib.normals[3 * idx.normal_index + 0]);
                     normals.push_back(attrib.normals[3 * idx.normal_index + 1]);
@@ -110,6 +110,24 @@ void Mesh::loadFromObjSource(const char* objSrc, const char* label)
                 }
             }
             index_offset += fv;
+        }
+    }
+
+    // generate normals if they don't exist
+    if (normals.empty() && positions.size() >= 9)
+    {
+        for (size_t i = 0; i + 8 < positions.size(); i += 9)
+        {
+            const glm::vec3 a(positions[i], positions[i + 1], positions[i + 2]);
+            const glm::vec3 b(positions[i + 3], positions[i + 4], positions[i + 5]);
+            const glm::vec3 c(positions[i + 6], positions[i + 7], positions[i + 8]);
+            const glm::vec3 n = glm::normalize(glm::cross(b - a, c - a));
+            for (int k = 0; k < 3; ++k)
+            {
+                normals.push_back(n.x);
+                normals.push_back(n.y);
+                normals.push_back(n.z);
+            }
         }
     }
 

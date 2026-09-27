@@ -1,4 +1,5 @@
 #include <kerf/engine/node/Drag.h>
+#include <kerf/engine/node/Drop.h>
 #include <kerf/engine/scene/Scene.h>
 
 
@@ -11,11 +12,26 @@ Drag::Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
     velocity = glm::vec2(0.0f);
 }
 
-Drag::~Drag() {}
-
-void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+Drag::~Drag()
 {
-    Button::update(dt, mousePosition, mouseDown, mousePressed);
+    Drop* parked = parkedDrop;
+    parkedDrop = nullptr;
+    if (parked)
+    {
+        parked->forgetDrag(this);
+    }
+}
+
+void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+{
+    if (locked)
+    {
+        wasDragging = false;
+        getScene()->setSelectedDrag(nullptr);
+        return;
+    }
+
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
     // Follow the mouse only while this drag is selected and the button is held.
     // selectedDrag stays set until Scene::update ends so drops can claim on release.
@@ -26,7 +42,7 @@ void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
         return;
     }
 
-    const glm::vec2 pose2 = glm::vec2(getPose());
+    const glm::vec2 pose2 = glm::vec2(getWorldPose());
     if (!wasDragging)
     {
         // grab offset in world space, first frame has no previous mouse sample
@@ -35,7 +51,7 @@ void Drag::update(float dt, const glm::vec2& mousePosition, bool mouseDown, bool
 
     const glm::vec2 target = mousePosition - relativePosition;
     velocity = target - pose2;
-    setPose(glm::vec3(target, getPose().z));
+    setPose(glm::vec3(target, getWorldPose().z));
     wasDragging = true;
 }
 

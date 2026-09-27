@@ -2,7 +2,8 @@
 
 in vec2 vUV;
 
-out vec4 FragColor;
+layout(location = 0) out vec4 oColor;
+layout(location = 1) out vec4 oNormal;
 
 uniform sampler2D uAlbedo;
 uniform vec4 uColor;
@@ -10,5 +11,6 @@ uniform vec4 uColor;
 void main() {
     vec4 texel = texture(uAlbedo, vUV) * vec4(vUV.x, vUV.y, 0.0, 1.0);
     if (texel.a < 0.001) discard;
-    FragColor = texel;
+    oColor = texel;
+    oNormal = vec4(0.0, 0.0, 1.0, 1.0);
 }
