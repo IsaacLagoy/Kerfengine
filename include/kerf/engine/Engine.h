@@ -21,6 +21,9 @@ private:
     std::unique_ptr<Pipeline> defaultPipeline;
     Pipeline* pipeline = nullptr;
     Scene* scene = nullptr;
+    double previousTime = 0.0;
+    float deltaTime = 0.0f;
+    bool hasPreviousTime = false;
 
 public:
     Engine(int width, int height);
@@ -38,6 +41,7 @@ public:
 
     Mouse& getMouse();
     Keyboard& getKeyboard();
+    float getDeltaTime() const;
 
     /**
      * @brief Execute the current pipeline (default: scene → present) and swap.

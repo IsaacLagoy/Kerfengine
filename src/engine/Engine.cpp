@@ -68,6 +68,11 @@ Keyboard& Engine::getKeyboard()
     return keyboard;
 }
 
+float Engine::getDeltaTime() const
+{
+    return deltaTime;
+}
+
 void Engine::render()
 {
     pipeline->execute(scene, context);
@@ -75,10 +80,15 @@ void Engine::render()
 
 void Engine::update()
 {
+    const double now = glfwGetTime();
+    deltaTime = hasPreviousTime ? static_cast<float>(now - previousTime) : 0.0f;
+    previousTime = now;
+    hasPreviousTime = true;
+
     glfwPollEvents();
     mouse.update();
     keyboard.update();
-    if (scene) scene->update(0.016f, mouse); // 60 fps TODO real time
+    if (scene) scene->update(deltaTime, mouse);
 }
 
 bool Engine::shouldClose() const
