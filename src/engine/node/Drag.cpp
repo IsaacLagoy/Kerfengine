@@ -24,14 +24,16 @@ Drag::~Drag()
 
 void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
+    // Hit-test even while locked so a returning sticky piece can be caught.
+    // Do not clear selectedDrag: another drag may be picked up during the return.
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
+
     if (locked)
     {
         wasDragging = false;
-        getScene()->setSelectedDrag(nullptr);
+        velocity = glm::vec2(0.0f);
         return;
     }
-
-    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
     // Follow the mouse only while this drag is selected and the button is held.
     // selectedDrag stays set until Scene::update ends so drops can claim on release.
@@ -70,6 +72,7 @@ void Drag::onDown(float dt)
     // reserve self as selected drag
     if (getScene()->getSelectedDrag() == nullptr)
     {
+        setLocked(false);
         getScene()->setSelectedDrag(this);
         onPickup(dt);
     }

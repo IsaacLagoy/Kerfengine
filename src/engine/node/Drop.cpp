@@ -171,6 +171,10 @@ void Drop::onUp(float dt)
             }
             drag = selected;
             selected->parkedDrop = this;
+            {
+                const glm::vec3 dropPose = getWorldPose();
+                drag->setPose(glm::vec3(dropPose.x, dropPose.y, drag->getWorldPose().z));
+            }
             onDrop(dt);
         }
     }

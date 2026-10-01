@@ -8,8 +8,9 @@ namespace kerf {
 /**
  * @brief Acts as a regular drop but doesn't release ownership of its drag until the drag is placed in another drop.
  * If a drag is taken out of a sticky drop and released outside of a drop, the drag is locked and pulled back to the sticky drop in pullTime seconds.
- * While the drag is returning, this drop stays locked so another drop cannot take it.
- * Once the drag has returned, both are unlocked.
+ * While the drag is returning, it stays locked so another drop cannot take it, but it can still be clicked to catch.
+ * Catching, or picking a different drag, does not wait for the return to finish.
+ * Once the drag has returned, it is unlocked.
  */
 class StickyDrop : public Drop {
 private:

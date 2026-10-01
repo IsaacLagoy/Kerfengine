@@ -104,22 +104,43 @@ void StickyDrop::updateButton(float dt, const glm::vec2& mousePosition, bool mou
 {
     Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
-    // locked while returning: keep ownership and let update() ease the pose.
-    if (returning)
-    {
-        return;
-    }
-
-    // no drag
     Drag* piece = getDrag();
     if (!piece)
     {
         return;
     }
 
-    // still owned while in hand, including the release frame before another drop can claim.
     Scene* scene = getScene();
     if (scene && scene->getSelectedDrag() == piece)
+    {
+        // selectedDrag stays set through the release frame so drops can claim.
+        // Only treat the piece as in-hand while the mouse is still down.
+        if (mousePressed)
+        {
+            lifted = true;
+            returning = false;
+            piece->setLocked(false);
+            return;
+        }
+
+        if (getIsHovered())
+        {
+            lifted = false;
+            returning = false;
+            piece->setLocked(false);
+            const glm::vec3 dropPose = getWorldPose();
+            piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getWorldPose().z));
+            return;
+        }
+
+        lifted = true;
+        returning = false;
+        piece->setLocked(false);
+        return;
+    }
+
+    // keep ownership and let update() ease the pose while returning
+    if (returning)
     {
         return;
     }
