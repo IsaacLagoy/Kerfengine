@@ -25,8 +25,8 @@ public:
     Node2d& operator=(const Node2d& other) = delete;
     Node2d& operator=(Node2d&& other) = delete;
 
-    void setPose(const glm::vec3& pose);
-    void setScale(const glm::vec2& scale);
+    virtual void setPose(const glm::vec3& pose);
+    virtual void setScale(const glm::vec2& scale);
 
     glm::vec3 getPose() const;
     glm::vec2 getScale() const;

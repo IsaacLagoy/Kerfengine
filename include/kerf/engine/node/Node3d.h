@@ -25,9 +25,9 @@ public:
     Node3d& operator=(const Node3d& other) = delete;
     Node3d& operator=(Node3d&& other) = delete;
 
-    void setPosition(const glm::vec3& position);
-    void setRotation(const glm::quat& rotation);
-    void setScale(const glm::vec3& scale);
+    virtual void setPosition(const glm::vec3& position);
+    virtual void setRotation(const glm::quat& rotation);
+    virtual void setScale(const glm::vec3& scale);
 
     glm::vec3 getPosition() const;
     glm::quat getRotation() const;

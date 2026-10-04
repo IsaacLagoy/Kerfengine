@@ -75,7 +75,7 @@ void Button::draw(const glm::mat4& viewProjection)
 
 void Button::onDown(float dt)
 {
-    if (onDownCallback)
+    if (onDownCallback && !lockCallbacks)
     {
         onDownCallback(dt);
     }
@@ -83,7 +83,7 @@ void Button::onDown(float dt)
 
 void Button::onUp(float dt)
 {
-    if (onUpCallback)
+    if (onUpCallback && !lockCallbacks)
     {
         onUpCallback(dt);
     }
@@ -91,7 +91,7 @@ void Button::onUp(float dt)
 
 void Button::onPressed(float dt)
 {
-    if (onPressedCallback)
+    if (onPressedCallback && !lockCallbacks)
     {
         onPressedCallback(dt);
     }
@@ -99,7 +99,7 @@ void Button::onPressed(float dt)
 
 void Button::onReleased(float dt)
 {
-    if (onReleasedCallback)
+    if (onReleasedCallback && !lockCallbacks)
     {
         onReleasedCallback(dt);
     }
@@ -107,7 +107,7 @@ void Button::onReleased(float dt)
 
 void Button::onHover(float dt)
 {
-    if (onHoverCallback)
+    if (onHoverCallback && !lockCallbacks)
     {
         onHoverCallback(dt);
     }
@@ -115,7 +115,7 @@ void Button::onHover(float dt)
 
 void Button::onLeave(float dt)
 {
-    if (onLeaveCallback)
+    if (onLeaveCallback && !lockCallbacks)
     {
         onLeaveCallback(dt);
     }

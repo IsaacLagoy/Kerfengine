@@ -30,6 +30,8 @@ private:
     bool isDown = false;
     bool isHovered = false;
 
+    bool lockCallbacks = false;
+
     Button* nextButton = nullptr;
     Button* prevButton = nullptr;
 
@@ -42,6 +44,7 @@ public:
     const Collider2D& getCollider() const { return collider; }
     bool getIsDown() const { return isDown; }
     bool getIsHovered() const { return isHovered; }
+    bool getLockCallbacks() const { return lockCallbacks; }
 
     // ------------------------------------------------------------
     // Event callbacks
@@ -53,6 +56,8 @@ public:
     void setOnReleasedCallback(std::function<void(float dt)> callback) { onReleasedCallback = callback; }
     void setOnHoverCallback(std::function<void(float dt)> callback) { onHoverCallback = callback; }
     void setOnLeaveCallback(std::function<void(float dt)> callback) { onLeaveCallback = callback; }
+
+    void setLockCallbacks(bool lock) { lockCallbacks = lock; }
 
 protected:
     // protected constructor for scene sentinel nodes
