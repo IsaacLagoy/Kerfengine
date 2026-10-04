@@ -101,7 +101,9 @@ set(KERF_SOURCES
     src/engine/physics/collision/Collider2D.cpp
     src/engine/physics/collision/ColliderPolygon2DMesh.cpp
     src/engine/render/buffer/FrameBuffer.cpp
-    src/engine/render/pipeline/Pipeline.cpp
+    src/engine/render/pipeline/Target.cpp
+    src/engine/render/pipeline/TargetSize.cpp
+    src/engine/render/pipeline/RenderPasses.cpp
     src/engine/render/camera/Camera.cpp
     src/engine/render/context/Context.cpp
     src/engine/render/context/GLState.cpp

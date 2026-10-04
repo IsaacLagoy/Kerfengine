@@ -38,7 +38,7 @@
 // don't add context
 #include <kerf/engine/render/material/Material.h>
 #include <kerf/engine/render/pipeline/Format.h>
-#include <kerf/engine/render/pipeline/Pipeline.h>
+#include <kerf/engine/render/pipeline/Target.h>
 
 // resources
 #include <kerf/engine/resource/Font.h>

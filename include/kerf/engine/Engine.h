@@ -5,21 +5,24 @@
 #include <kerf/engine/render/context/Context.h>
 #include <kerf/engine/input/Mouse.h>
 #include <kerf/engine/input/Keyboard.h>
+#include <kerf/engine/render/pipeline/Target.h>
+#include <initializer_list>
 #include <memory>
+#include <string>
 
 
 namespace kerf {
 
 class Scene;
-class Pipeline;
+class Shader;
+class RenderSystem;
 
 class Engine {
 private:
     Context context;
     Mouse mouse;
     Keyboard keyboard;
-    std::unique_ptr<Pipeline> defaultPipeline;
-    Pipeline* pipeline = nullptr;
+    std::unique_ptr<RenderSystem> renderer;
     Scene* scene = nullptr;
     double previousTime = 0.0;
     float deltaTime = 0.0f;
@@ -35,7 +38,6 @@ public:
     Engine& operator=(Engine&&) = delete;
 
     void setScene(Scene* scene);
-    void setPipeline(Pipeline* pipeline);
     void setClearColor(const glm::vec4& color);
     void setTitle(const std::string& title);
 
@@ -43,13 +45,15 @@ public:
     Keyboard& getKeyboard();
     float getDeltaTime() const;
 
-    /**
-     * @brief Execute the current pipeline (default: scene → present) and swap.
-     */
-    void render();
+    void scenePass(Target output);
+    void postPass( Shader* shader, std::initializer_list<Target> inputs, Target output);
+    void present( Target color, PresentFit fit = PresentFit::Stretch, Filter filter = Filter::Linear);
 
     void update();
     bool shouldClose() const;
+private:
+    void framebufferSize(int& width, int& height) const;
+
 };
 
 } // namespace kerf

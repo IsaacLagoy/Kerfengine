@@ -253,6 +253,7 @@ int main()
     const int width = 800;
     const int height = 600;
     Engine engine(width, height);
+    const Target sceneColor(TargetSize::fromScale(1.0f), Format::RGBA8, Filter::Linear, "uColor");
 
     Camera camera(width, height, 1.0f);
     Scene scene;
@@ -285,7 +286,8 @@ int main()
         parent->setPose(pose);
 
         engine.update();
-        engine.render();
+        engine.scenePass(sceneColor);
+        engine.present(sceneColor);
     }
 
     return 0;

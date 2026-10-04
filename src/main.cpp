@@ -8,12 +8,7 @@ int main()
     const int width = 800;
     const int height = 600;
     Engine engine(width, height);
-
-    Pipeline pipeline;
-    pipeline.addTarget("scene", TargetDesc{ .scale = 0.5f, .filter = Filter::Nearest });
-    pipeline.add(ScenePass("scene"));
-    pipeline.add(PresentPass("scene"));
-    engine.setPipeline(&pipeline);
+    const Target sceneColor(TargetSize::fromScale(0.5f), Format::RGBA8, Filter::Nearest, "uColor");
 
     Camera camera(width, height, 1.0f);
     Scene scene;
@@ -128,7 +123,8 @@ int main()
 
         // std::cout << numPoints << std::endl;
 
-        engine.render();
+        engine.scenePass(sceneColor);
+        engine.present(sceneColor, PresentFit::Stretch, Filter::Nearest);
     }
 
     return 0;

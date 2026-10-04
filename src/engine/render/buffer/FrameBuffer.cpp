@@ -10,8 +10,7 @@ namespace kerf {
 
 FrameBuffer::FrameBuffer() :
     fbo(0),
-    depthRbo(0),
-    texture(nullptr)
+    depthRbo(0)
 {}
 
 FrameBuffer::~FrameBuffer()
@@ -20,30 +19,6 @@ FrameBuffer::~FrameBuffer()
     if (fbo) glDeleteFramebuffers(1, &fbo);
 }
 
-void FrameBuffer::setTexture(Texture* texture, int width, int height)
-{
-    if (!texture)
-    {
-        throw std::runtime_error(ANSI_RED + "[Gbuffer] setTexture requires a texture" + ANSI_RESET);
-    }
-    this->width = width;
-    this->height = height;
-    setAttachments({ Attachment{ "color", texture } });
-}
-
-void FrameBuffer::setColor(Texture* texture)
-{
-    if (!texture)
-    {
-        throw std::runtime_error(ANSI_RED + "[Gbuffer] setColor requires a texture" + ANSI_RESET);
-    }
-    setTexture(texture, texture->getWidth(), texture->getHeight());
-}
-
-// Rebuilds this framebuffer from the given attachments. An attachment named
-// "depth" is the depth target; every other name is a color target, in order.
-// With no color targets, the framebuffer is depth-only. With no depth target,
-// a depth-stencil renderbuffer is allocated to match the color size.
 void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
 {
     if (attachments.empty())
@@ -56,8 +31,6 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
     std::vector<Texture*> colorTextures;
     colorTextures.reserve(attachments.size());
 
-    // Split color targets from the optional depth target. Order of color
-    // attachments becomes the draw-buffer order.
     for (const Attachment& attachment : attachments)
     {
         if (!attachment.texture)
@@ -65,7 +38,7 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
             throw std::runtime_error(ANSI_RED + "[Gbuffer] attachment '" + attachment.name + "' is null" + ANSI_RESET);
         }
 
-        if (attachment.name == "depth")
+        if (attachment.format == Format::Depth24)
         {
             if (depthTexture)
             {
@@ -79,12 +52,9 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
         colorTextures.push_back(attachment.texture);
     }
 
-    // Viewport and the primary color texture come from the first color target,
-    // or from the depth texture when this is a depth-only framebuffer.
     Texture* sizeSource = firstColor ? firstColor : depthTexture;
     width = sizeSource->getWidth();
     height = sizeSource->getHeight();
-    texture = firstColor;
 
     if (!fbo)
     {
@@ -93,8 +63,6 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    // Drop previously bound color targets so a smaller set does not leave
-    // stale attachments behind.
     for (int i = 0; i < colorAttachmentCount; ++i)
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0);
@@ -115,8 +83,6 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
     }
     colorAttachmentCount = static_cast<int>(colorTextures.size());
 
-    // Depth-only framebuffers have no color output. Otherwise fragment shaders
-    // write into the color attachments in the order they were given.
     if (drawBuffers.empty())
     {
         glDrawBuffer(GL_NONE);
@@ -129,7 +95,6 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
 
     if (depthTexture)
     {
-        // A sampled depth texture replaces the fallback renderbuffer.
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
         glFramebufferTexture2D(
             GL_FRAMEBUFFER,
@@ -141,8 +106,6 @@ void FrameBuffer::setAttachments(const std::vector<Attachment>& attachments)
     }
     else
     {
-        // No depth texture: keep a private depth-stencil buffer so depth
-        // testing still works, resized to the color attachment.
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
         if (!depthRbo)
         {
@@ -175,11 +138,6 @@ int FrameBuffer::getWidth() const
 int FrameBuffer::getHeight() const
 {
     return height;
-}
-
-Texture* FrameBuffer::getTexture() const
-{
-    return texture;
 }
 
 void FrameBuffer::bind()

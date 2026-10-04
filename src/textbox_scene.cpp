@@ -8,6 +8,7 @@ int main()
     const int width = 800;
     const int height = 600;
     Engine engine(width, height);
+    const Target sceneColor(TargetSize::fromScale(1.0f), Format::RGBA8, Filter::Linear, "uColor");
 
     Camera camera(width, height, 0.5f);
     Scene scene;
@@ -46,7 +47,8 @@ int main()
 
     while (!engine.shouldClose()) {
         engine.update();
-        engine.render();
+        engine.scenePass(sceneColor);
+        engine.present(sceneColor);
     }
 
     return 0;
