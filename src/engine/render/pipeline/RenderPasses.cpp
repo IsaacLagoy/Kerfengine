@@ -23,21 +23,45 @@ void drawFullscreen()
     const GLboolean depth = glIsEnabled(GL_DEPTH_TEST);
     const GLboolean blend = glIsEnabled(GL_BLEND);
     const GLboolean msaa = glIsEnabled(GL_MULTISAMPLE);
-    if (depth) glDisable(GL_DEPTH_TEST);
-    if (blend) glDisable(GL_BLEND);
-    if (msaa) glDisable(GL_MULTISAMPLE);
+    if (depth) 
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
+
+    if (blend) 
+    {
+        glDisable(GL_BLEND);
+    }
+
+    if (msaa) 
+    {
+        glDisable(GL_MULTISAMPLE);
+    }
 
     ObjServer::getMesh("unit")->draw();
+    if (depth) 
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
 
-    if (depth) glEnable(GL_DEPTH_TEST);
-    if (blend) glEnable(GL_BLEND);
-    if (msaa) glEnable(GL_MULTISAMPLE);
+    if (blend) 
+    {
+        glEnable(GL_BLEND);
+    }
+
+    if (msaa) 
+    {
+        glEnable(GL_MULTISAMPLE);
+    }
 }
 
 void bindCameraUniforms(Shader* shader, Scene* scene)
 {
     Camera* camera = scene ? scene->getCamera() : nullptr;
-    if (!camera) return;
+    if (!camera) 
+    {
+        return;
+    }
 
     const GLuint program = shader->getProgramID();
     const GLint invLoc = glGetUniformLocation(program, "uInvProjection");
@@ -46,10 +70,17 @@ void bindCameraUniforms(Shader* shader, Scene* scene)
         const glm::mat4 invProjection = glm::inverse(camera->getProjection());
         glUniformMatrix4fv(invLoc, 1, GL_FALSE, glm::value_ptr(invProjection));
     }
+
     const GLint nearLoc = glGetUniformLocation(program, "uNear");
-    if (nearLoc >= 0) glUniform1f(nearLoc, camera->getNear());
+    if (nearLoc >= 0) 
+    {
+        glUniform1f(nearLoc, camera->getNear());
+    }
+
     const GLint farLoc = glGetUniformLocation(program, "uFar");
-    if (farLoc >= 0) glUniform1f(farLoc, camera->getFar());
+    if (farLoc >= 0) {
+        glUniform1f(farLoc, camera->getFar());
+    }
 }
 
 } // namespace
@@ -59,9 +90,12 @@ void RenderSystem::scenePass(
     int framebufferWidth,
     int framebufferHeight,
     Target output
-)
-{
-    if (!scene) return;
+) {
+    if (!scene) 
+    {
+        return;
+    }
+
     if (!output)
     {
         throw std::runtime_error(ANSI_RED + "[Engine] scenePass requires an output target" + ANSI_RESET);
@@ -69,16 +103,23 @@ void RenderSystem::scenePass(
 
     output.ensureSize(framebufferWidth, framebufferHeight);
     Camera* camera = scene->getCamera();
-    if (camera) camera->resize(output.width(), output.height());
+    if (camera) {
+        camera->resize(output.width(), output.height());
+    }
 
     output.beginOutput();
 
     const GLboolean blend = glIsEnabled(GL_BLEND);
-    if (blend) glDisable(GL_BLEND);
+    if (blend) {
+        glDisable(GL_BLEND);
+    }
 
     scene->draw();
 
-    if (blend) glEnable(GL_BLEND);
+    if (blend) 
+    {
+        glEnable(GL_BLEND);
+    }
     output.endOutput();
 }
 
@@ -89,8 +130,7 @@ void RenderSystem::postPass(
     Shader* shader,
     std::span<const Target> inputs,
     Target output
-)
-{
+) {
     if (!shader)
     {
         throw std::runtime_error(ANSI_RED + "[Engine] postPass has a null shader" + ANSI_RESET);
@@ -121,8 +161,7 @@ void RenderSystem::present(
     Target color,
     PresentFit fit,
     Filter filter
-)
-{
+) {
     if (!color)
     {
         throw std::runtime_error(ANSI_RED + "[Engine] present requires a color target" + ANSI_RESET);
@@ -148,8 +187,7 @@ void RenderSystem::present(
         const float srcW = static_cast<float>(std::max(1, color.width()));
         const float srcH = static_cast<float>(std::max(1, color.height()));
         const float srcAspect = srcW / srcH;
-        const float dstAspect = static_cast<float>(std::max(1, windowWidth))
-            / static_cast<float>(std::max(1, windowHeight));
+        const float dstAspect = static_cast<float>(std::max(1, windowWidth)) / static_cast<float>(std::max(1, windowHeight));
         if (srcAspect > dstAspect)
         {
             vpW = windowWidth;

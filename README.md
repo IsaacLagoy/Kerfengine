@@ -27,6 +27,10 @@ Public headers include `<glad/glad.h>`. Linking `kerf::kerf` defines `GLFW_INCLU
 
 Default shaders, `unit.obj`, and `white.png` are embedded in the library. Extra demo assets on disk are only for the example programs.
 
+## Shaders
+
+Kerfengine currently copies its shaders into the build folder and may override user haders using the same name
+
 ## Developer
 
 Configure and build from the repo root. Out-of-source `build/` is the usual layout:
