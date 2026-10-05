@@ -107,6 +107,7 @@ set(KERF_SOURCES
     src/engine/render/camera/Camera.cpp
     src/engine/render/context/Context.cpp
     src/engine/render/context/GLState.cpp
+    src/engine/render/material/AbstractModel.cpp
     src/engine/render/material/Material.cpp
     src/engine/resource/Font.cpp
     src/engine/resource/FontServer.cpp

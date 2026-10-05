@@ -1,4 +1,5 @@
 #include <kerf/engine/node/Textbox.h>
+#include <kerf/engine/render/material/Material.h>
 #include <kerf/engine/resource/ShaderServer.h>
 #include <kerf/engine/resource/TextureServer.h>
 #include <kerf/engine/resource/ObjServer.h>
@@ -22,9 +23,10 @@ Textbox::Textbox(
     TextLayout::Alignment alignment,
     const glm::bvec2& overflow,
     TextLayout::Alignment poseAlignment,
+    Material* material,
     Shader* shader
-) : 
-    Model(pose, glm::vec2(1.0f), nullptr, nullptr, shader),
+) :
+    Model(pose, glm::vec2(1.0f), ObjServer::getMesh("unit"), material, shader),
     content(content),
     wrap(wrap),
     alignment(alignment),
@@ -34,7 +36,7 @@ Textbox::Textbox(
     padding(padding),
     poseAlignment(poseAlignment)
 {
-    color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    setColor(glm::vec4(1.0f));
     initBuffers();
 }
 
@@ -150,47 +152,9 @@ void Textbox::draw(const glm::mat4& viewProjection)
 {
     rebuildIfDirty();
 
-    // draw background div
-    if (color.a > 0.0f)
+    if (getColor().a > 0.0f)
     {
-        // bind shader
-        Shader* shader = this->shader ? this->shader : ShaderServer::getShader("default2d");
-        shader->bind();
-
-        GLint loc = shader->getUniformLocation("uViewProjection");
-        if (loc >= 0)
-        {
-            glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(viewProjection));
-        }
-
-        loc = shader->getUniformLocation("uLayer");
-        if (loc >= 0)
-        {
-            glUniform1f(loc, layer);
-        }
-
-        loc = shader->getUniformLocation("uColor");
-        if (loc >= 0)
-        {
-            glUniform4fv(loc, 1, glm::value_ptr(color));
-        }
-
-        loc = shader->getUniformLocation("uAlbedo");
-        if (loc >= 0)
-        {
-            glActiveTexture(GL_TEXTURE0);
-            TextureServer::getTexture("white")->bind();
-            glUniform1i(loc, 0);
-        }
-
-        loc = shader->getUniformLocation("uModel");
-        if (loc >= 0)
-        {
-            glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(getTextboxModelMatrix()));
-        }
-
-        // draw background
-        ObjServer::getMesh("unit")->draw();
+        AbstractModel::draw(viewProjection, getTextboxModelMatrix(), layer);
     }
 
     // draw text TODO comment

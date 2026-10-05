@@ -31,6 +31,8 @@ Default shaders, `unit.obj`, and `white.png` are embedded in the library. Extra 
 
 Kerfengine currently copies its shaders into the build folder and may override user haders using the same name
 
+TODO add model custom uniform list
+
 ## Developer
 
 Configure and build from the repo root. Out-of-source `build/` is the usual layout:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <kerf/engine/node/Node2d.h>
+#include <kerf/engine/render/material/AbstractModel.h>
 #include <glm/glm.hpp>
 
 
@@ -12,33 +13,21 @@ class Scene;
 class Material;
 class Shader;
 
-class Model : public Node2d {
+class Model : public Node2d, public AbstractModel {
     friend class Scene;
 
 protected:
-    Mesh* mesh = nullptr;
-    Material* material = nullptr;
-    Shader* shader = nullptr;
-
     float layer = 0.0f;
-
-    // color multiplier applied to the material color
-    glm::vec4 color = glm::vec4(1.0f);
 
 public:
     Model(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader);
-    ~Model();
+    ~Model() = default;
+
+    // setters
+    void setLayer(float layer);
 
     // getters
     float getLayer() const;
-    glm::vec4 getColor() const;
-    Material* getMaterial() const;
-
-    // setters
-    void setMesh(Mesh* mesh);
-    void setMaterial(Material* material);
-    void setLayer(float layer);
-    void setColor(const glm::vec4& color);
 
 protected:
     // protected constructor for scene sentinel nodes
