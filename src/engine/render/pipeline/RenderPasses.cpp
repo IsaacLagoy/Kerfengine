@@ -182,13 +182,12 @@ void RenderSystem::present(
     int vpY = 0;
     int vpW = windowWidth;
     int vpH = windowHeight;
-    if (fit == PresentFit::Letterbox)
+    if (fit == PresentFit::Letterbox || fit == PresentFit::Letterboy)
     {
         const float srcW = static_cast<float>(std::max(1, color.width()));
         const float srcH = static_cast<float>(std::max(1, color.height()));
         const float srcAspect = srcW / srcH;
-        const float dstAspect = static_cast<float>(std::max(1, windowWidth)) / static_cast<float>(std::max(1, windowHeight));
-        if (srcAspect > dstAspect)
+        if (fit == PresentFit::Letterbox)
         {
             vpW = windowWidth;
             vpH = std::max(1, static_cast<int>(windowWidth / srcAspect + 0.5f));

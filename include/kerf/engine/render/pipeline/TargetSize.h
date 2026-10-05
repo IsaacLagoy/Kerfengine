@@ -21,5 +21,4 @@ struct TargetSize {
     // factories
     static TargetSize fromScale(float scale);
     static TargetSize fromPixels(int width, int height);
-    static TargetSize fromWidth(int width);
 };

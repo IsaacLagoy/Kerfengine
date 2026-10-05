@@ -27,8 +27,3 @@ TargetSize TargetSize::fromPixels(int width, int height)
     size.height = height;
     return size;
 }
-
-TargetSize TargetSize::fromWidth(int width)
-{
-    return fromPixels(width, 0);
-}

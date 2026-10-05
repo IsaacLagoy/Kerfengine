@@ -64,9 +64,9 @@ void validateSize(const TargetSize& size)
         return;
     }
 
-    if (size.width <= 0)
+    if (size.width <= 0 || size.height <= 0)
     {
-        throw std::runtime_error(ANSI_RED + "[Target] pixel width must be positive" + ANSI_RESET);
+        throw std::runtime_error(ANSI_RED + "[Target] pixel width and height must be positive" + ANSI_RESET);
     }
 }
 
@@ -84,17 +84,7 @@ glm::ivec2 resolvePixels(const TargetSize& size, int framebufferWidth, int frame
         );
     }
 
-    // pixel size
-    const int width = size.width;
-    int height = size.height;
-    if (height <= 0)
-    {
-        // scale height to fit aspect ratio TODO we may want to add Letterboy
-        height = std::max(1, static_cast<int>(
-            (static_cast<long long>(width) * fbH + fbW / 2) / fbW
-        ));
-    }
-    return glm::ivec2(width, height);
+    return glm::ivec2(size.width, size.height);
 }
 
 GLenum filterToGL(Filter filter)

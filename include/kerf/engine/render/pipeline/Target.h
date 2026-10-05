@@ -25,8 +25,8 @@ class FrameBuffer;
 
 enum class PresentFit {
     Stretch,
-    Letterbox, // fit X to window, keep Y aspect ratio
-    Letterboy, // fit Y to window, keep X aspect ratio // TODO
+    Letterbox, // fit window width; preserve aspect (bars top/bottom when needed)
+    Letterboy, // fit window height; preserve aspect (bars left/right when needed)
 };
 
 // ------------------------------------------------------------
