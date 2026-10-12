@@ -40,6 +40,7 @@ public:
     void setScene(Scene* scene);
     void setClearColor(const glm::vec4& color);
     void setTitle(const std::string& title);
+    
 
     Mouse& getMouse();
     Keyboard& getKeyboard();
@@ -51,6 +52,8 @@ public:
 
     void update();
     bool shouldClose() const;
+    void close() const;
+
 private:
     void framebufferSize(int& width, int& height) const;
 

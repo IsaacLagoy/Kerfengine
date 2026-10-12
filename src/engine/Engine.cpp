@@ -121,4 +121,9 @@ bool Engine::shouldClose() const
     return context.shouldClose();
 }
 
+void Engine::close() const
+{
+    context.close();
+}
+
 } // namespace kerf

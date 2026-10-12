@@ -27,6 +27,11 @@ bool Context::shouldClose() const
     return glfwWindowShouldClose(window);
 }
 
+void Context::close() const
+{
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
 void Context::resize(int width, int height) const
 {
     glfwSetWindowSize(window, width, height);

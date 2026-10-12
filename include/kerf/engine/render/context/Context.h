@@ -48,6 +48,8 @@ public:
      */
     bool shouldClose() const;
 
+    void close() const;
+
     /**
      * @brief resizes the window to the given size.
      * 
