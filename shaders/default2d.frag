@@ -9,8 +9,10 @@ uniform sampler2D uAlbedo;
 uniform vec4 uColor;
 
 void main() {
-    vec4 texel = texture(uAlbedo, vUV) * uColor;
-    if (texel.a < 0.001) discard;
-    oColor = texel;
+    vec4 albedo = texture(uAlbedo, vUV);
+    vec3 rgb = albedo.rgb * uColor.rgb;
+    float alpha = albedo.a * uColor.a;
+    if (alpha < 0.001) discard;
+    oColor = vec4(rgb * alpha, alpha);
     oNormal = vec4(0.0, 0.0, 1.0, 1.0);
 }
