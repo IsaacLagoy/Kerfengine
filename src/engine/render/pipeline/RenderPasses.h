@@ -30,6 +30,7 @@ public:
 
     void present(
         Context& context,
+        Scene* scene,
         int windowWidth,
         int windowHeight,
         Target color,

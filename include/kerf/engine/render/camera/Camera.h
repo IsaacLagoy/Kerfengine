@@ -19,6 +19,9 @@ private:
     float viewportWidth = 1.0f;
     float viewportHeight = 1.0f;
 
+    // where the rendered image lands in the window, in framebuffer pixels (x, y, width, height), top-left origin
+    glm::vec4 screenRect = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+
     glm::mat4 proj = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
 
@@ -27,6 +30,7 @@ public:
     ~Camera();
 
     void resize(int viewportWidth, int viewportHeight);
+    void setScreenRect(float x, float y, float width, float height);
 
     void setAspect(float aspect);
     void setZoom(float zoom);
@@ -42,7 +46,7 @@ public:
     glm::vec2 screenToWorld(const glm::vec2& screen) const;
     glm::vec2 worldToScreen(const glm::vec2& world) const;
 
-    // Window corners in world space, keyed "topLeft", "topRight", "bottomLeft", "bottomRight".
+    // Corners of the presented image in world space, keyed "topLeft", "topRight", "bottomLeft", "bottomRight".
     std::map<std::string, glm::vec2> getWindowCorners() const;
 
 private:

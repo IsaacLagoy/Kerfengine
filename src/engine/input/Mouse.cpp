@@ -20,8 +20,6 @@ glm::vec2 Mouse::mouseWorld(Camera& camera) {
     glfwGetWindowSize(window, &winW, &winH);
     glfwGetFramebufferSize(window, &fbW, &fbH);
 
-    camera.resize(fbW, fbH);
-
     if (winW <= 0 || winH <= 0) 
     {
         return glm::vec2(0.0f);

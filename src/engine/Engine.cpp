@@ -100,7 +100,7 @@ void Engine::present(Target color, PresentFit fit, Filter filter)
     int width = 0;
     int height = 0;
     framebufferSize(width, height);
-    renderer->present(context, width, height, color, fit, filter);
+    renderer->present(context, scene, width, height, color, fit, filter);
 }
 
 void Engine::update()

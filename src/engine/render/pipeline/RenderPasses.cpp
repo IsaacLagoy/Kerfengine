@@ -156,6 +156,7 @@ void RenderSystem::postPass(
 
 void RenderSystem::present(
     Context& context,
+    Scene* scene,
     int windowWidth,
     int windowHeight,
     Target color,
@@ -201,6 +202,18 @@ void RenderSystem::present(
         }
     }
     glViewport(vpX, vpY, vpW, vpH);
+
+    // camera maps mouse coordinates (top-left origin) through the presented rect
+    Camera* camera = scene ? scene->getCamera() : nullptr;
+    if (camera)
+    {
+        camera->setScreenRect(
+            static_cast<float>(vpX),
+            static_cast<float>(windowHeight - vpY - vpH),
+            static_cast<float>(vpW),
+            static_cast<float>(vpH)
+        );
+    }
 
     Shader* shader = ShaderServer::getShader("present");
     shader->bind();

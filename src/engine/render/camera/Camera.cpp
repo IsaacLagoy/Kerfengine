@@ -1,5 +1,6 @@
 #include <kerf/engine/render/camera/Camera.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <algorithm>
 
 namespace kerf {
     
@@ -7,6 +8,7 @@ Camera::Camera(int viewportWidth, int viewportHeight, float zoom) :
       zoom(zoom)
 {
     resize(viewportWidth, viewportHeight);
+    setScreenRect(0.0f, 0.0f, static_cast<float>(viewportWidth), static_cast<float>(viewportHeight));
     updateProjection();
     updateView();
 }
@@ -21,6 +23,11 @@ void Camera::resize(int viewportWidth, int viewportHeight)
     this->viewportWidth = static_cast<float>(viewportWidth);
     this->viewportHeight = static_cast<float>(viewportHeight);
     setAspect(this->viewportWidth / this->viewportHeight);
+}
+
+void Camera::setScreenRect(float x, float y, float width, float height)
+{
+    screenRect = glm::vec4(x, y, std::max(width, 1.0f), std::max(height, 1.0f));
 }
 
 void Camera::setAspect(float aspect)
@@ -77,8 +84,8 @@ glm::vec2 Camera::screenToWorld(const glm::vec2& screen) const
 {
     // GLFW / window pixels: origin top-left, Y down
     const glm::vec2 ndc(
-        (screen.x / viewportWidth) * 2.0f - 1.0f,
-        1.0f - (screen.y / viewportHeight) * 2.0f
+        ((screen.x - screenRect.x) / screenRect.z) * 2.0f - 1.0f,
+        1.0f - ((screen.y - screenRect.y) / screenRect.w) * 2.0f
     );
 
     const glm::vec4 world = glm::inverse(proj * view) * glm::vec4(ndc, 0.0f, 1.0f);
@@ -87,11 +94,15 @@ glm::vec2 Camera::screenToWorld(const glm::vec2& screen) const
 
 std::map<std::string, glm::vec2> Camera::getWindowCorners() const
 {
+    const float left = screenRect.x;
+    const float top = screenRect.y;
+    const float right = screenRect.x + screenRect.z;
+    const float bottom = screenRect.y + screenRect.w;
     return {
-        { "topLeft", screenToWorld(glm::vec2(0.0f, 0.0f)) },
-        { "topRight", screenToWorld(glm::vec2(viewportWidth, 0.0f)) },
-        { "bottomLeft", screenToWorld(glm::vec2(0.0f, viewportHeight)) },
-        { "bottomRight", screenToWorld(glm::vec2(viewportWidth, viewportHeight)) },
+        { "topLeft", screenToWorld(glm::vec2(left, top)) },
+        { "topRight", screenToWorld(glm::vec2(right, top)) },
+        { "bottomLeft", screenToWorld(glm::vec2(left, bottom)) },
+        { "bottomRight", screenToWorld(glm::vec2(right, bottom)) },
     };
 }
 
@@ -101,8 +112,8 @@ glm::vec2 Camera::worldToScreen(const glm::vec2& world) const
     const glm::vec2 ndc = glm::vec2(clip) / clip.w;
 
     return glm::vec2(
-        (ndc.x + 1.0f) * 0.5f * viewportWidth,
-        (1.0f - ndc.y) * 0.5f * viewportHeight
+        screenRect.x + (ndc.x + 1.0f) * 0.5f * screenRect.z,
+        screenRect.y + (1.0f - ndc.y) * 0.5f * screenRect.w
     );
 }
 
