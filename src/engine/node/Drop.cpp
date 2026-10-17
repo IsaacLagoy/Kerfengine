@@ -43,7 +43,7 @@ void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown
     // Piece was picked up from this slot.
     if (drag->isDragging() && mousePressed)
     {
-        if (locked)
+        if (locked || drag->locked)
         {
             return;
         }

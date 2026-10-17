@@ -179,12 +179,6 @@ void StickyDrop::setDrag(Drag* next)
     lifted = false;
     returning = false;
     assignParkedDrop(next);
-
-    // unlock new drag
-    if (next)
-    {
-        next->setLocked(false);
-    }
 }
 
 void StickyDrop::onDrop(float dt)
@@ -193,8 +187,7 @@ void StickyDrop::onDrop(float dt)
     lifted = false;
     returning = false;
 
-    // unlock drag
-    if (Drag* piece = getDrag())
+    if (Drag* piece = getDrag(); piece && !piece->isLocked())
     {
         piece->setLocked(false);
     }

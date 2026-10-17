@@ -24,7 +24,7 @@ Drag::~Drag()
 
 void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
 {
-    // Hit-test even while locked so a returning sticky piece can be caught.
+    // Hit-test while locked (hover only); locked drags cannot be picked up in onDown.
     // Do not clear selectedDrag: another drag may be picked up during the return.
     Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
 
@@ -69,6 +69,12 @@ void Drag::setOnPickupCallback(const std::function<void(float)>& callback)
 
 void Drag::onDown(float dt)
 {
+    if (locked)
+    {
+        Button::onDown(dt);
+        return;
+    }
+
     // reserve self as selected drag
     if (getScene()->getSelectedDrag() == nullptr)
     {

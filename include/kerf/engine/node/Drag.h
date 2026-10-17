@@ -40,6 +40,7 @@ public:
     void setOnDropCallback(const std::function<void(float)>& callback);
     void setOnPickupCallback(const std::function<void(float)>& callback);
 
+    bool isLocked() const { return locked; }
     void setLocked(bool locked) { this->locked = locked; }
 
 protected:
