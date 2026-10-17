@@ -24,7 +24,8 @@ Textbox::Textbox(
     const glm::bvec2& overflow,
     TextLayout::Alignment poseAlignment,
     Material* material,
-    Shader* shader
+    Shader* shader,
+    float lineGapScale
 ) :
     Model(pose, glm::vec2(1.0f), ObjServer::getMesh("unit"), material, shader),
     content(content),
@@ -34,6 +35,7 @@ Textbox::Textbox(
     minSize(minSize),
     maxSize(maxSize),
     padding(padding),
+    lineGapScale(lineGapScale),
     poseAlignment(poseAlignment)
 {
     setColor(glm::vec4(1.0f));
@@ -87,6 +89,12 @@ void Textbox::setPadding(const glm::vec2& padding)
     layoutDirty = true;
 }
 
+void Textbox::setLineGapScale(float lineGapScale)
+{
+    this->lineGapScale = lineGapScale;
+    layoutDirty = true;
+}
+
 void Textbox::setPoseAlignment(TextLayout::Alignment poseAlignment)
 {
     this->poseAlignment = poseAlignment;
@@ -135,6 +143,11 @@ const glm::vec2& Textbox::getMaxSize() const
 const glm::vec2& Textbox::getPadding() const
 {
     return padding;
+}
+
+float Textbox::getLineGapScale() const
+{
+    return lineGapScale;
 }
 
 TextLayout::Alignment Textbox::getPoseAlignment() const
@@ -256,7 +269,7 @@ void Textbox::rebuildIfDirty()
 
     // CPU positions, per-glyph color.
     glm::vec2 effMaxSize = getEffectiveMaxSize();
-    layout = TextLayout(content, effMaxSize.x, effMaxSize.y, wrap, alignment, overflow);
+    layout = TextLayout(content, effMaxSize.x, effMaxSize.y, wrap, alignment, overflow, lineGapScale);
 
     // GPU: two triangles per glyph. Color is per-vertex for mixed runs.
     std::vector<TextVertex> verts;

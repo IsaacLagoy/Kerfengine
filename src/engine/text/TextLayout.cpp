@@ -17,6 +17,8 @@ struct Line {
     float ascent = 0.0f;  // tallest ascent of any glyph on this line (>= 0)
     float descent = 0.0f; // lowest descent of any glyph on this line (<= 0)
     float gap = 0.0f;     // largest recommended line-gap of any glyph/font on this line
+    float inkTop = 0.0f;    // highest glyph ink relative to this line's baseline
+    float inkBottom = 0.0f; // lowest glyph ink relative to this line's baseline
     bool hardBreak = false; // true if this line ended because of an explicit '\n'
                              // (as opposed to a wrap or the end of the text)
 };
@@ -54,8 +56,19 @@ void recomputeLineMetrics(Line& line, const Font& font)
     line.ascent = 0.0f;
     line.descent = 0.0f;
     line.gap = 0.0f;
+    line.inkTop = 0.0f;
+    line.inkBottom = 0.0f;
+    bool hasInk = false;
     for (const LaidOutChar& ch : line.chars) {
         applyLineMetrics(line, font, ch.displayScale);
+        if (!hasInk) {
+            line.inkTop = ch.yTop;
+            line.inkBottom = ch.yBottom;
+            hasInk = true;
+        } else {
+            line.inkTop = std::max(line.inkTop, ch.yTop);
+            line.inkBottom = std::min(line.inkBottom, ch.yBottom);
+        }
     }
 }
 
@@ -159,14 +172,15 @@ void centerLine(Line& line, float boxWidth)
     }
 }
 
-// Baseline-to-baseline distance from this line to the next line below it:
-// the space this line's own text occupies (ascent above baseline, plus the
-// magnitude of its descent below baseline) plus the font's recommended
-// extra line-gap. Descent is negative, hence "ascent - descent" instead of
-// "ascent + descent".
-float lineStep(const Line& line)
+// Distance to move from `prev`'s baseline down to `next`'s.
+// lineGapScale 0 = adjacent lines' glyph ink can touch.
+// lineGapScale 1 = font line box of `prev` plus its recommended line-gap.
+float lineStep(const Line& prev, const Line& next, float lineGapScale)
 {
-    return line.ascent - line.descent + line.gap;
+    const float tight = next.inkTop - prev.inkBottom;
+    const float recommended = prev.ascent - prev.descent + prev.gap;
+    const float extra = std::max(0.0f, recommended - tight);
+    return tight + extra * lineGapScale;
 }
 
 // A line with no glyphs (e.g. an empty line from consecutive "\n\n") would
@@ -187,6 +201,8 @@ void fillEmptyLineMetrics(Line& line, const Font& font, const TextContent& conte
         size = content.spans.front().style.size;
     }
     applyLineMetrics(line, font, scaleFor(font, size));
+    line.inkTop = line.ascent;
+    line.inkBottom = line.descent;
 }
 
 } // namespace
@@ -198,7 +214,8 @@ TextLayout::TextLayout(
     float maxHeight,
     Wrap wrap,
     [[maybe_unused]] Alignment alignment,
-    glm::bvec2 overflow)
+    glm::bvec2 overflow,
+    float lineGapScale)
 {
     if (!content.font) {
         return; // nothing we can shape without a font; layout stays empty
@@ -226,24 +243,24 @@ TextLayout::TextLayout(
     // What would the total block height be if `next` were appended as the
     // final line after everything already committed in `lines`? Used to
     // decide whether adding one more line would bust maxHeight.
-    // Note: unlike lineStep(), this does NOT add `next`'s own line-gap,
-    // since a line-gap only matters *between* two lines, not after the
-    // last one.
     auto heightIfCommit = [&](const Line& next) {
-        float h = 0.0f;
-        for (const Line& L : lines) {
-            h += lineStep(L);
+        if (lines.empty()) {
+            return next.inkTop - next.inkBottom;
         }
-        h += next.ascent - next.descent;
-        return h;
+        float baseline = 0.0f;
+        for (size_t i = 1; i < lines.size(); ++i) {
+            baseline -= lineStep(lines[i - 1], lines[i], lineGapScale);
+        }
+        baseline -= lineStep(lines.back(), next, lineGapScale);
+        return lines.front().inkTop - (baseline + next.inkBottom);
     };
 
     // Finalizes the in-progress `line`: fills in metrics, re-bases its x
     // positions to start at 0, and either appends it to `lines` or (if it
     // would push the block past maxHeight) discards it and sets `stop`.
     auto commitLine = [&](bool hardBreak) {
-        fillEmptyLineMetrics(line, *font, content);
         recomputeLineMetrics(line, *font);
+        fillEmptyLineMetrics(line, *font, content);
         rebaseLineX(line);
         line.hardBreak = hardBreak;
 
@@ -361,7 +378,15 @@ TextLayout::TextLayout(
     }
 
     // --- Per-line horizontal treatment for justify / center wrap modes ---
-    const float boxW = (maxWidth > 0.0f) ? maxWidth : 0.0f;
+    // With a finite maxWidth, lines are centered/justified in that box.
+    // With no max width, use the widest line so shorter lines (e.g. "(10)"
+    // under "Reroll") still center relative to the block.
+    float boxW = (maxWidth > 0.0f) ? maxWidth : 0.0f;
+    if (boxW <= 0.0f && (wrap == Wrap::CENTER || wrap == Wrap::EVEN)) {
+        for (const Line& L : lines) {
+            boxW = std::max(boxW, L.width);
+        }
+    }
     for (size_t i = 0; i < lines.size(); ++i) {
         Line& L = lines[i];
         const bool last = (i + 1 == lines.size());
@@ -377,13 +402,13 @@ TextLayout::TextLayout(
 
     // --- Stack the lines vertically, assigning each a baseline Y ---
     // Y increases upward here: the first line's baseline is 0, and each
-    // subsequent line's baseline is pushed further negative by the
-    // previous line's lineStep() (its own height plus line-gap).
+    // subsequent line's baseline is pushed further negative by lineStep()
+    // (ink-tight at 0, font line box + gap at 1).
     float baseline = 0.0f;
     for (size_t i = 0; i < lines.size(); ++i) {
         Line& L = lines[i];
         if (i > 0) {
-            baseline -= lineStep(lines[i - 1]);
+            baseline -= lineStep(lines[i - 1], L, lineGapScale);
         }
         for (LaidOutChar& ch : L.chars) {
             ch.baselineY = baseline;
@@ -416,8 +441,8 @@ TextLayout::TextLayout(
     // (BOTTOM / CENTER / RIGHT) is applied later by Textbox against the
     // *final* inner size — aligning here against maxHeight/maxWidth would
     // leave slack in glyph positions while the box still shrinks to content.
-    // EVEN/CENTER wrap already placed each line in [0, maxWidth]; keep that.
-    const bool wrapOwnsX = (wrap == Wrap::EVEN || wrap == Wrap::CENTER) && maxWidth > 0.0f;
+    // EVEN/CENTER wrap already placed each line in [0, boxW]; keep that.
+    const bool wrapOwnsX = (wrap == Wrap::EVEN || wrap == Wrap::CENTER) && boxW > 0.0f;
     const float dx = wrapOwnsX ? 0.0f : -contentLeft;
     const float dy = -contentTop;
 

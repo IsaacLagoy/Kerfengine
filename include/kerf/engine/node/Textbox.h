@@ -26,6 +26,7 @@ private:
     glm::vec2 minSize = glm::vec2(0.0f);
     glm::vec2 maxSize = glm::vec2(-1.0f);
     glm::vec2 padding = glm::vec2(0.0f);
+    float lineGapScale = 1.0f;
 
     // the slignment of the textbox itself relative to the pose
     TextLayout::Alignment poseAlignment = TextLayout::Alignment::INVALID;
@@ -51,7 +52,8 @@ public:
         const glm::bvec2& overflow,
         TextLayout::Alignment poseAlignment,
         Material* material,
-        Shader* shader
+        Shader* shader,
+        float lineGapScale = 1.0f
     );
     ~Textbox() override;
 
@@ -69,6 +71,7 @@ public:
     void setMinSize(const glm::vec2& minSize);
     void setMaxSize(const glm::vec2& maxSize);
     void setPadding(const glm::vec2& padding);
+    void setLineGapScale(float lineGapScale);
     void setPoseAlignment(TextLayout::Alignment poseAlignment);
 
     // getters
@@ -80,6 +83,7 @@ public:
     const glm::vec2& getMinSize() const;
     const glm::vec2& getMaxSize() const;
     const glm::vec2& getPadding() const;
+    float getLineGapScale() const;
     TextLayout::Alignment getPoseAlignment() const;
 
     // Local size of the background mesh at scale (1, 1).

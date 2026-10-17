@@ -83,6 +83,7 @@ public:
      * @param maxWidth  inner content width (Textbox: maxSize.x - 2*padding). <= 0 means unbounded.
      * @param maxHeight inner content height (Textbox: maxSize.y - 2*padding). <= 0 means unbounded.
      * @param overflow  if false, do not emit glyphs past maxWidth / maxHeight. Ignored when that max is unbounded.
+     * @param lineGapScale extra space between lines: 0 packs glyph ink tight, 1 uses the font line box + gap.
      *
      * Block alignment is applied by Textbox against the final inner size.
      * Padding, minSize, and poseAlignment stay on Textbox.
@@ -93,7 +94,8 @@ public:
         float maxHeight = -1.0f,
         Wrap wrap = Wrap::NONE,
         Alignment alignment = Alignment::TOP_LEFT,
-        glm::bvec2 overflow = glm::bvec2(true)
+        glm::bvec2 overflow = glm::bvec2(true),
+        float lineGapScale = 1.0f
     );
 };
 
