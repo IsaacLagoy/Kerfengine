@@ -173,7 +173,6 @@ void Textbox::draw(const glm::mat4& viewProjection)
     // draw text TODO comment
     if (vertCount > 0)
     {
-
         // bind shader
         Shader* textShader = ShaderServer::getShader("text");
         textShader->bind();
