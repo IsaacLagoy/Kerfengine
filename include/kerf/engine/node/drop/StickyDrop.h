@@ -1,6 +1,7 @@
 #pragma once
 
-#include <kerf/engine/node/Drop.h>
+#include <kerf/engine/node/drop/Drop.h>
+#include <kerf/engine/node/drop/PullBack.h>
 
 
 namespace kerf {
@@ -8,17 +9,13 @@ namespace kerf {
 /**
  * @brief Acts as a regular drop but doesn't release ownership of its drag until the drag is placed in another drop.
  * If a drag is taken out of a sticky drop and released outside of a drop, the drag is locked and pulled back to the sticky drop in pullTime seconds.
- * While the drag is returning, it stays locked so another drop cannot take it, but it can still be clicked to catch.
- * Catching, or picking a different drag, does not wait for the return to finish.
+ * While the drag is returning, it stays locked, so it can't be picked up or taken by another drop.
+ * Picking a different drag does not wait for the return to finish.
  * Once the drag has returned, it is unlocked.
  */
 class StickyDrop : public Drop {
 private:
-    float pullTime = 1.0f; // > 0.0 so no div by 0
-    bool lifted = false;
-    bool returning = false;
-    float pullElapsed = 0.0f;
-    glm::vec2 pullFrom = glm::vec2(0.0f);
+    PullBack pullBack;
 
 public:
     StickyDrop(

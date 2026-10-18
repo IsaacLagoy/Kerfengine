@@ -1,4 +1,4 @@
-#include <kerf/engine/node/StickyDrop.h>
+#include <kerf/engine/node/drop/StickyDrop.h>
 #include <kerf/engine/node/Drag.h>
 #include <kerf/engine/scene/Scene.h>
 
@@ -6,17 +6,6 @@
 
 
 namespace kerf {
-
-namespace {
-
-constexpr float kMinPullTime = 1.0e-4f;
-
-float sanitizePullTime(float pullTime)
-{
-    return pullTime < kMinPullTime ? kMinPullTime : pullTime;
-}
-
-} // namespace
 
 StickyDrop::StickyDrop(
     const glm::vec3& pose,
@@ -28,7 +17,7 @@ StickyDrop::StickyDrop(
     float pullTime
 ) :
     Drop(pose, scale, mesh, material, shader, collider),
-    pullTime(sanitizePullTime(pullTime))
+    pullBack(pullTime)
 {}
 
 StickyDrop::~StickyDrop()
@@ -37,8 +26,7 @@ StickyDrop::~StickyDrop()
     {
         piece->setLocked(false);
     }
-    lifted = false;
-    returning = false;
+    pullBack.seat();
 }
 
 void StickyDrop::update(float dt)
@@ -49,54 +37,39 @@ void StickyDrop::update(float dt)
     Drag* piece = getDrag();
     if (!piece)
     {
-        lifted = false;
-        returning = false;
+        pullBack.seat();
         return;
     }
 
-    // dragging is being moved by the user
+    // drag is being moved by the user
     Scene* scene = getScene();
     if (scene && scene->getSelectedDrag() == piece)
     {
-        lifted = true;
-        returning = false;
+        pullBack.lift();
         piece->setLocked(false);
         return;
     }
 
     // still sitting in the slot
     // ownership stays on this drop, with no return
-    if (!lifted)
+    if (pullBack.isSeated())
     {
         return;
     }
 
     // needs to be pulled, start returning
-    if (!returning)
+    if (pullBack.beginReturn(glm::vec2(piece->getWorldPose())))
     {
-        returning = true;
-        pullElapsed = 0.0f;
-        pullFrom = glm::vec2(piece->getWorldPose());
         piece->setLocked(true);
     }
 
-    // interpolate between pullFrom and target
-    pullElapsed += dt;
-    float t = glm::clamp(pullElapsed / pullTime, 0.0f, 1.0f);
-    t = t * t * (3.0f - 2.0f * t);
-
-    const glm::vec2 target(getWorldPose());
-    const glm::vec2 pos = glm::mix(pullFrom, target, t);
-    piece->setPose(glm::vec3(pos, piece->getWorldPose().z));
+    // ease toward the slot; advance() lands exactly on it when done
+    placeDrag(piece, pullBack.advance(dt, glm::vec2(getWorldPose())));
 
     // done returning
-    if (pullElapsed >= pullTime)
+    if (pullBack.isSeated())
     {
-        lifted = false;
-        returning = false;
         piece->setLocked(false);
-        const glm::vec3 dropPose = getWorldPose();
-        piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getWorldPose().z));
     }
 }
 
@@ -113,52 +86,47 @@ void StickyDrop::updateButton(float dt, const glm::vec2& mousePosition, bool mou
     Scene* scene = getScene();
     if (scene && scene->getSelectedDrag() == piece)
     {
+        piece->setLocked(false);
+
         // selectedDrag stays set through the release frame so drops can claim.
         // Only treat the piece as in-hand while the mouse is still down.
         if (mousePressed)
         {
-            lifted = true;
-            returning = false;
-            piece->setLocked(false);
+            pullBack.lift();
             return;
         }
 
+        // released back onto this drop
         if (getIsHovered())
         {
-            lifted = false;
-            returning = false;
-            piece->setLocked(false);
-            const glm::vec3 dropPose = getWorldPose();
-            piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getWorldPose().z));
+            pullBack.seat();
+            placeDrag(piece, glm::vec2(getWorldPose()));
             return;
         }
 
-        lifted = true;
-        returning = false;
-        piece->setLocked(false);
+        // released elsewhere, update() starts the return
+        pullBack.lift();
         return;
     }
 
     // keep ownership and let update() ease the pose while returning
-    if (returning)
+    if (pullBack.isReturning())
     {
         return;
     }
 
     // recenter drag to here
-    const glm::vec3 dropPose = getWorldPose();
-    piece->setPose(glm::vec3(dropPose.x, dropPose.y, piece->getWorldPose().z));
+    placeDrag(piece, glm::vec2(getWorldPose()));
 }
 
 float StickyDrop::getPullTime() const
 {
-    return pullTime;
+    return pullBack.getDuration();
 }
 
 void StickyDrop::setPullTime(float pullTime)
 {
-    // clamp into bounds
-    this->pullTime = sanitizePullTime(pullTime);
+    pullBack.setDuration(pullTime);
 }
 
 void StickyDrop::setDrag(Drag* next)
@@ -175,36 +143,25 @@ void StickyDrop::setDrag(Drag* next)
         previous->setLocked(false);
     }
 
-    // reset state
-    lifted = false;
-    returning = false;
+    pullBack.seat();
     assignParkedDrop(next);
 }
 
 void StickyDrop::onDrop(float dt)
 {
-    // reset state
-    lifted = false;
-    returning = false;
-
-    if (Drag* piece = getDrag(); piece && !piece->isLocked())
-    {
-        piece->setLocked(false);
-    }
+    pullBack.seat();
     Drop::onDrop(dt);
 }
 
 void StickyDrop::onPickup(float dt)
 {
-    // reset state
-    lifted = false;
-    returning = false;
+    pullBack.seat();
     Drop::onPickup(dt);
 }
 
 bool StickyDrop::shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool mousePressed) const
 {
-    if (returning)
+    if (pullBack.isReturning())
     {
         return false;
     }
@@ -213,7 +170,25 @@ bool StickyDrop::shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool
 
 void StickyDrop::setLifted(bool lifted)
 {
-    this->lifted = lifted;
+    if (lifted)
+    {
+        // a return already in progress keeps going
+        if (pullBack.isSeated())
+        {
+            pullBack.lift();
+        }
+        return;
+    }
+
+    // cancelling a return: release the lock it took, updateButton re-centers the drag
+    if (pullBack.isReturning())
+    {
+        if (Drag* piece = getDrag())
+        {
+            piece->setLocked(false);
+        }
+    }
+    pullBack.seat();
 }
 
 } // namespace kerf

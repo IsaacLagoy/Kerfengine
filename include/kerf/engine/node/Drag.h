@@ -6,20 +6,20 @@
 namespace kerf {
 
 // forward declarations
-class Drop;
+class DropBase;
 
 // ------------------------------------------------
 // Drag
 // ------------------------------------------------
 
 class Drag : public Button {
-    friend class Drop;
+    friend class DropBase;
 
 private:
     glm::vec2 relativePosition; // world space
     glm::vec2 velocity; // world space, uses dt
     bool wasDragging = false;
-    Drop* parkedDrop = nullptr;
+    DropBase* parkedDrop = nullptr;
 
     std::function<void(float)> onDropCallback;
     std::function<void(float)> onPickupCallback;

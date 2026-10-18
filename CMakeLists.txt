@@ -88,8 +88,13 @@ set(KERF_SOURCES
     src/engine/input/Mouse.cpp
     src/engine/node/Button.cpp
     src/engine/node/Drag.cpp
-    src/engine/node/Drop.cpp
-    src/engine/node/StickyDrop.cpp
+    src/engine/node/drop/AccordionLayout.cpp
+    src/engine/node/drop/Drop.cpp
+    src/engine/node/drop/DropAccordion.cpp
+    src/engine/node/drop/DropBase.cpp
+    src/engine/node/drop/PullBack.cpp
+    src/engine/node/drop/StickyDrop.cpp
+    src/engine/node/drop/StickyDropAccordion.cpp
     src/engine/node/Model.cpp
     src/engine/node/Model3d.cpp
     src/engine/node/Node.cpp

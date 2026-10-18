@@ -1,5 +1,5 @@
 #include <kerf/engine/node/Drag.h>
-#include <kerf/engine/node/Drop.h>
+#include <kerf/engine/node/drop/DropBase.h>
 #include <kerf/engine/scene/Scene.h>
 
 
@@ -14,7 +14,7 @@ Drag::Drag(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* 
 
 Drag::~Drag()
 {
-    Drop* parked = parkedDrop;
+    DropBase* parked = parkedDrop;
     parkedDrop = nullptr;
     if (parked)
     {

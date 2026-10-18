@@ -397,12 +397,26 @@ void Target::beginOutput() const
 
     // bind offscreen target and clear any plane marked clearBeforeRender
     impl->fbo->bind();
+    bool hasDepthPlane = false;
     for (const TargetPlane& plane : impl->planes)
     {
+        hasDepthPlane = hasDepthPlane || plane.getFormat() == Format::Depth24;
         if (plane.getClearBeforeRender())
         {
             impl->clearBound(plane);
         }
+    }
+
+    // Without a depth plane the FBO uses its own hidden depth buffer, which nothing
+    // else clears. Left alone, depth from earlier frames rejects later draws.
+    if (!hasDepthPlane)
+    {
+        GLboolean depthMask = GL_TRUE;
+        glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+        glDepthMask(GL_TRUE);
+        const GLfloat farDepth = 1.0f;
+        glClearBufferfv(GL_DEPTH, 0, &farDepth);
+        glDepthMask(depthMask);
     }
 }
 

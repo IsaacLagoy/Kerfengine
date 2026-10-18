@@ -18,8 +18,13 @@
 // nodes
 #include <kerf/engine/node/Button.h>
 #include <kerf/engine/node/Drag.h>
-#include <kerf/engine/node/Drop.h>
-#include <kerf/engine/node/StickyDrop.h>
+#include <kerf/engine/node/drop/DropBase.h>
+#include <kerf/engine/node/drop/Drop.h>
+#include <kerf/engine/node/drop/AccordionLayout.h>
+#include <kerf/engine/node/drop/DropAccordion.h>
+#include <kerf/engine/node/drop/PullBack.h>
+#include <kerf/engine/node/drop/StickyDrop.h>
+#include <kerf/engine/node/drop/StickyDropAccordion.h>
 #include <kerf/engine/node/Model.h>
 #include <kerf/engine/node/Model3d.h>
 #include <kerf/engine/node/Node.h>
