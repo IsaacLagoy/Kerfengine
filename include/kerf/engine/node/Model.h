@@ -24,7 +24,8 @@ public:
     ~Model() = default;
 
     // setters
-    void setLayer(float layer);
+    // virtual so models with child models can move them along
+    virtual void setLayer(float layer);
 
     // getters
     float getLayer() const;
