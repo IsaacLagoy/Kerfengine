@@ -69,6 +69,7 @@ public:
     Material* getMaterial() const;
     Shader* getShader() const;
     glm::vec4 getColor() const;
+    const std::unordered_map<std::string, UniformType>& getUniforms() const;
 
     // setters
     void setMesh(Mesh* mesh);

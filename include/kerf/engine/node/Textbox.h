@@ -35,6 +35,10 @@ private:
     TextLayout layout;
     bool layoutDirty = true;
 
+    // shader for the glyphs
+    // must accept text.vert's vertex layout (pos.xy, uv, color)
+    Shader* textShader = nullptr;
+
     // dynamic glyph mesh: pos.xy, uv, color. Not a Mesh (wrong vertex layout).
     GLuint vao = 0;
     GLuint vbo = 0;
@@ -73,6 +77,7 @@ public:
     void setPadding(const glm::vec2& padding);
     void setLineGapScale(float lineGapScale);
     void setPoseAlignment(TextLayout::Alignment poseAlignment);
+    void setTextShader(Shader* textShader);
 
     // getters
     const TextContent& getContent() const;
@@ -85,6 +90,7 @@ public:
     const glm::vec2& getPadding() const;
     float getLineGapScale() const;
     TextLayout::Alignment getPoseAlignment() const;
+    Shader* getTextShader() const;
 
     // Local size of the background mesh at scale (1, 1).
     // Rebuilds layout when content or constraints have changed.

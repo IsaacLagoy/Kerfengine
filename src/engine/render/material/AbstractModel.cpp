@@ -112,6 +112,11 @@ glm::vec4 AbstractModel::getColor() const
     return color;
 }
 
+const std::unordered_map<std::string, UniformType>& AbstractModel::getUniforms() const
+{
+    return uniforms;
+}
+
 // setters
 void AbstractModel::setMesh(Mesh* mesh)
 {

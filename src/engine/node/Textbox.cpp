@@ -101,6 +101,11 @@ void Textbox::setPoseAlignment(TextLayout::Alignment poseAlignment)
     // should only shift the mesh, not change the layout: no need to be dirty
 }
 
+void Textbox::setTextShader(Shader* textShader)
+{
+    this->textShader = textShader;
+}
+
 const TextContent& Textbox::getContent() const
 {
     return content;
@@ -155,6 +160,11 @@ TextLayout::Alignment Textbox::getPoseAlignment() const
     return poseAlignment;
 }
 
+Shader* Textbox::getTextShader() const
+{
+    return textShader;
+}
+
 glm::vec2 Textbox::getSize()
 {
     rebuildIfDirty();
@@ -173,9 +183,15 @@ void Textbox::draw(const glm::mat4& viewProjection)
     // draw text TODO comment
     if (vertCount > 0)
     {
-        // bind shader
-        Shader* textShader = ShaderServer::getShader("text");
+        // bind shader, falling back to the engine's text shader
+        Shader* textShader = this->textShader ? this->textShader : ShaderServer::getShader("text");
         textShader->bind();
+
+        // same uniforms as the background; shaders skip ones they don't declare
+        for (const auto& [name, value] : getUniforms())
+        {
+            uploadUniform(textShader, name, value);
+        }
 
         GLint loc = textShader->getUniformLocation("uViewProjection");
         if (loc >= 0)
