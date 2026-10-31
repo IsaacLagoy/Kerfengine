@@ -55,6 +55,7 @@
 #include <kerf/engine/resource/TextureServer.h>
 
 // scene
+#include <kerf/engine/scene/InputScope.h>
 #include <kerf/engine/scene/Scene.h>
 
 // text

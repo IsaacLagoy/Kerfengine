@@ -21,7 +21,7 @@ public:
     Drop(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider);
     ~Drop();
 
-    virtual void updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed) override;
+    virtual void updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff) override;
 
     // getters
     Drag* getDrag() const;

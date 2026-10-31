@@ -39,9 +39,9 @@ void Drop::accept(Drag* incoming)
     placeDrag(incoming, glm::vec2(getWorldPose()));
 }
 
-void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void Drop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff)
 {
-    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed, forceOff);
 
     if (!drag)
     {

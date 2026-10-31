@@ -38,11 +38,11 @@ DropAccordion::~DropAccordion()
     pending = nullptr;
 }
 
-void DropAccordion::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void DropAccordion::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff)
 {
     // may claim on release, which calls accept()
     lastMouse = mousePosition;
-    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed, forceOff);
 
     // cards in the user's hand leave the row, unless this row keeps them
     // (copy first: releasing erases from items)

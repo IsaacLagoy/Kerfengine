@@ -1,4 +1,5 @@
 #include <kerf/engine/scene/Scene.h>
+#include <kerf/engine/scene/InputScope.h>
 #include <kerf/engine/node/Node.h>
 #include <kerf/engine/node/RigidBody.h>
 #include <kerf/engine/node/Button.h>
@@ -107,6 +108,20 @@ Drag* Scene::getSelectedDrag() const
     return selectedDrag;
 }
 
+// ------------------------------------------------
+// input
+// ------------------------------------------------
+
+void Scene::setInputScope(const InputScope* scope)
+{
+    inputScope = scope;
+}
+
+const InputScope* Scene::getInputScope() const
+{
+    return inputScope;
+}
+
 Node* Scene::getRoot() const
 {
     return root;
@@ -164,9 +179,19 @@ void Scene::update(float dt, Mouse& mouse)
     const bool mouseDown = mouse.getLeftDown();
     const bool mousePressed = mouse.getLeftPressed();
 
-    for (Button* button = buttonTail->prevButton; button != buttonHead; button = button->prevButton) 
+    // read once so a callback that changes the scope only takes effect next frame
+    const InputScope* scope = inputScope;
+
+    for (Button* button = buttonTail->prevButton; button != buttonHead; button = button->prevButton)
     {
-        button->updateButton(dt, mousePosition, mouseDown, mousePressed);
+        if (scope && !scope->contains(button))
+        {
+            // hovers end and held buttons release, but nothing new is clicked
+            button->updateButton(dt, mousePosition, false, false, true);
+            continue;
+        }
+
+        button->updateButton(dt, mousePosition, mouseDown, mousePressed, false);
     }
 
     // Drops claim selectedDrag in onUp; clear only after every button has updated.

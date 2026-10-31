@@ -9,6 +9,7 @@ class Camera;
 class Button;
 class Mouse;
 class Drag;
+class InputScope;
 
 // ------------------------------------------------
 // Scene
@@ -34,6 +35,9 @@ private:
     Button* buttonTail;
 
     Drag* selectedDrag = nullptr;
+
+    // whitelist for button input, nullptr for all buttons
+    const InputScope* inputScope = nullptr;
 
     // ------------------------------------------------
     // camera
@@ -65,6 +69,14 @@ public:
 
     void setSelectedDrag(Drag* drag);
     Drag* getSelectedDrag() const;
+
+    // ------------------------------------------------
+    // input
+    // ------------------------------------------------
+
+    // buttons outside the scope see the mouse as away and released
+    void setInputScope(const InputScope* scope);
+    const InputScope* getInputScope() const;
 
     // ------------------------------------------------
     // rendering

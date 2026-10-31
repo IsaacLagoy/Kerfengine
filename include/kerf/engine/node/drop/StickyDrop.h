@@ -30,7 +30,7 @@ public:
     ~StickyDrop() override;
 
     virtual void update(float dt) override;
-    virtual void updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed) override;
+    virtual void updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff) override;
 
     // getters
     float getPullTime() const;

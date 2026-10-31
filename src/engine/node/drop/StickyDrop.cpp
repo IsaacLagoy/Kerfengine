@@ -73,9 +73,9 @@ void StickyDrop::update(float dt)
     }
 }
 
-void StickyDrop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void StickyDrop::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff)
 {
-    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed, forceOff);
 
     Drag* piece = getDrag();
     if (!piece)

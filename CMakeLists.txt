@@ -121,6 +121,7 @@ set(KERF_SOURCES
     src/engine/resource/ShaderServer.cpp
     src/engine/resource/Texture.cpp
     src/engine/resource/TextureServer.cpp
+    src/engine/scene/InputScope.cpp
     src/engine/scene/Scene.cpp
     src/engine/text/TextLayout.cpp
 )

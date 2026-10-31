@@ -19,12 +19,19 @@ Button::~Button()
     unlinkButton();
 }
 
-void Button::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void Button::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff)
 {
     bool wasDown = isDown;
     bool wasHovered = isHovered;
 
-    isHovered = collider.isPointInside(pointToLocalSpace(mousePosition));
+    // forced off
+    if (forceOff)
+    {
+        mouseDown = false;
+        mousePressed = false;
+    }
+
+    isHovered = !forceOff && collider.isPointInside(pointToLocalSpace(mousePosition));
 
     isDown = shouldBeDown(wasDown, isHovered, mouseDown, mousePressed);
     const bool isPressed = isHovered && mousePressed;
@@ -63,7 +70,8 @@ void Button::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDo
 bool Button::shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool mousePressed) const
 {
     // mouseDown = press edge this frame; mousePressed = button currently held.
-    // Latch only if the press started on this button; keep it until release so
+    // Latch only if the press started on this button
+    // keep it until release so
     // dragging onto a button does not count as a click.
     return mousePressed && (wasDown || (mouseDown && isHovered));
 }

@@ -22,11 +22,11 @@ Drag::~Drag()
     }
 }
 
-void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed)
+void Drag::updateButton(float dt, const glm::vec2& mousePosition, bool mouseDown, bool mousePressed, bool forceOff)
 {
     // Hit-test while locked (hover only); locked drags cannot be picked up in onDown.
     // Do not clear selectedDrag: another drag may be picked up during the return.
-    Button::updateButton(dt, mousePosition, mouseDown, mousePressed);
+    Button::updateButton(dt, mousePosition, mouseDown, mousePressed, forceOff);
 
     if (locked)
     {
