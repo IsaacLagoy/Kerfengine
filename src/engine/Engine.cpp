@@ -5,6 +5,7 @@
 #include <kerf/engine/scene/Scene.h>
 #include <kerf/engine/resource/ObjServer.h>
 #include <kerf/engine/resource/ShaderServer.h>
+#include <kerf/engine/resource/SoundServer.h>
 #include <kerf/engine/resource/TextureServer.h>
 #include "EmbeddedShaders.h"
 #include "EmbeddedMeshes.h"
@@ -29,9 +30,13 @@ Engine::Engine(int width, int height) :
     ShaderServer::loadShaderFromSource("text", embedded::text_vert, embedded::text_frag);
     ShaderServer::loadShaderFromSource("present", embedded::present_vert, embedded::present_frag);
     TextureServer::loadTextureFromMemory("white", embedded::white_png, static_cast<int>(embedded::white_png_len));
+    SoundServer::init();
 }
 
-Engine::~Engine() = default;
+Engine::~Engine()
+{
+    SoundServer::shutdown();
+}
 
 void Engine::framebufferSize(int& width, int& height) const
 {
@@ -113,6 +118,7 @@ void Engine::update()
     glfwPollEvents();
     mouse.update();
     keyboard.update();
+    SoundServer::update();
     if (scene) scene->update(deltaTime, mouse);
 }
 

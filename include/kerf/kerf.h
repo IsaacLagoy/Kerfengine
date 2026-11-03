@@ -51,6 +51,8 @@
 #include <kerf/engine/resource/Mesh.h>
 #include <kerf/engine/resource/ObjServer.h>
 #include <kerf/engine/resource/ShaderServer.h>
+#include <kerf/engine/resource/Sound.h>
+#include <kerf/engine/resource/SoundServer.h>
 #include <kerf/engine/resource/Texture.h>
 #include <kerf/engine/resource/TextureServer.h>
 

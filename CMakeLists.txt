@@ -119,6 +119,8 @@ set(KERF_SOURCES
     src/engine/resource/Mesh.cpp
     src/engine/resource/ObjServer.cpp
     src/engine/resource/ShaderServer.cpp
+    src/engine/resource/Sound.cpp
+    src/engine/resource/SoundServer.cpp
     src/engine/resource/Texture.cpp
     src/engine/resource/TextureServer.cpp
     src/engine/scene/InputScope.cpp
@@ -163,6 +165,24 @@ else()
     target_compile_definitions(kerf_glad PUBLIC GLFW_INCLUDE_NONE)
     target_link_libraries(kerf PUBLIC kerf_glad)
 endif()
+
+# --------------------------------------------------
+# miniaudio: compiled on its own so engine warning flags don't apply to it.
+# --------------------------------------------------
+add_library(kerf_miniaudio STATIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/external/miniaudio/miniaudio.c"
+)
+add_library(kerf::miniaudio ALIAS kerf_miniaudio)
+target_include_directories(kerf_miniaudio SYSTEM PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/external/miniaudio"
+)
+find_package(Threads REQUIRED)
+target_link_libraries(kerf_miniaudio PUBLIC Threads::Threads ${CMAKE_DL_LIBS})
+if(UNIX AND NOT APPLE)
+    target_link_libraries(kerf_miniaudio PUBLIC m)
+endif()
+kerf_apply_sanitizer_flags(kerf_miniaudio PRIVATE)
+target_link_libraries(kerf PRIVATE kerf_miniaudio)
 
 # --------------------------------------------------
 # Embed shaders, meshes, and images
