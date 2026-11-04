@@ -29,6 +29,7 @@ private:
 
     std::function<void(float)> onDropCallback;
     std::function<void(float)> onPickupCallback;
+    std::function<bool(const Drag*)> acceptDragCallback;
 
 public:
     DropBase(const glm::vec3& pose, const glm::vec2& scale, Mesh* mesh, Material* material, Shader* shader, const Collider2D& collider);
@@ -40,6 +41,9 @@ public:
     void setLocked(bool locked);
     void setOnDropCallback(const std::function<void(float)>& callback);
     void setOnPickupCallback(const std::function<void(float)>& callback);
+
+    // drags this target may claim, unset accepts every drag
+    void setAcceptDragCallback(const std::function<bool(const Drag*)>& callback);
 
 protected:
     // ------------------------------------------------------------
@@ -88,9 +92,11 @@ protected:
     static void placeDrag(Drag* piece, const glm::vec2& worldXY);
 
     // True if releasing incoming over this target right now would claim it:
-    // canAccept, neither this target nor incoming is locked, and incoming's
-    // previous owner (if another target) is not locked. Same checks claim() uses.
+    // locked, and incoming's previous owner is not locked when it is another target
     bool wouldClaim(const Drag* incoming) const;
+
+    // True unless this target's or incoming's accept callback refuses the pairing
+    bool acceptCallbacksAllow(const Drag* incoming) const;
 
     // If piece is in the user's hand and may leave, release it from this target:
     // clear its back-pointer, forgetDrag it, and fire onPickup. Returns true if released.

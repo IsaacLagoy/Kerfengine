@@ -23,6 +23,7 @@ private:
 
     std::function<void(float)> onDropCallback;
     std::function<void(float)> onPickupCallback;
+    std::function<bool(const DropBase*)> acceptDropCallback;
 
     bool locked = false;
 
@@ -39,6 +40,9 @@ public:
     // setters
     void setOnDropCallback(const std::function<void(float)>& callback);
     void setOnPickupCallback(const std::function<void(float)>& callback);
+
+    // drops this drag may be claimed by, unset accepts every drop
+    void setAcceptDropCallback(const std::function<bool(const DropBase*)>& callback);
 
     bool isLocked() const { return locked; }
     void setLocked(bool locked) { this->locked = locked; }

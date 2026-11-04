@@ -67,6 +67,11 @@ void Drag::setOnPickupCallback(const std::function<void(float)>& callback)
     onPickupCallback = callback;
 }
 
+void Drag::setAcceptDropCallback(const std::function<bool(const DropBase*)>& callback)
+{
+    acceptDropCallback = callback;
+}
+
 void Drag::onDown(float dt)
 {
     if (locked)

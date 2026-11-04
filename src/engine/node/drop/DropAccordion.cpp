@@ -188,7 +188,7 @@ void DropAccordion::forgetDrag(Drag* leaving)
 
 bool DropAccordion::insertDrag(Drag* drag, int index)
 {
-    if (!drag || isLocked() || !canAccept(drag) || isParked(drag))
+    if (!drag || isLocked() || !canAccept(drag) || !acceptCallbacksAllow(drag) || isParked(drag))
     {
         return false;
     }

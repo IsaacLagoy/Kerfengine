@@ -29,6 +29,11 @@ void DropBase::setOnPickupCallback(const std::function<void(float)>& callback)
     onPickupCallback = callback;
 }
 
+void DropBase::setAcceptDragCallback(const std::function<bool(const Drag*)>& callback)
+{
+    acceptDragCallback = callback;
+}
+
 bool DropBase::shouldBeDown(bool wasDown, bool isHovered, bool mouseDown, bool mousePressed) const
 {
     (void) wasDown;
@@ -59,13 +64,22 @@ void DropBase::onUp(float dt)
 
 bool DropBase::wouldClaim(const Drag* incoming) const
 {
-    if (!canAccept(incoming) || locked || incoming->locked)
+    if (!canAccept(incoming) || !acceptCallbacksAllow(incoming) || locked || incoming->locked)
     {
         return false;
     }
 
     const DropBase* previous = incoming->parkedDrop;
     return !(previous && previous != this && previous->locked);
+}
+
+bool DropBase::acceptCallbacksAllow(const Drag* incoming) const
+{
+    if (acceptDragCallback && !acceptDragCallback(incoming))
+    {
+        return false;
+    }
+    return !(incoming->acceptDropCallback && !incoming->acceptDropCallback(this));
 }
 
 void DropBase::claim(Drag* incoming, float dt)
