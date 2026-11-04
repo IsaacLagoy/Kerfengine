@@ -69,6 +69,13 @@ bool StickyDropAccordion::keepsCarried() const
 glm::vec2 StickyDropAccordion::moveItem(Drag* drag, const glm::vec2& pos, const glm::vec2& target, float dt)
 {
     PullBack& pull = pullFor(drag);
+
+    // released this frame, hold still until update starts the return
+    if (pull.isLifted() && !pull.isReturning())
+    {
+        return pos;
+    }
+
     if (!pull.isReturning())
     {
         return DropAccordion::moveItem(drag, pos, target, dt);
